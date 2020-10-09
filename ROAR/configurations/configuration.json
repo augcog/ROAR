@@ -1,0 +1,61 @@
+{
+  "front_depth_cam": {
+    "fov": 70,
+    "transform": {
+      "location": {
+        "x": 1.6,
+        "y": 0.0,
+        "z": 1.7
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "front_rgb_cam": {
+    "fov": 70,
+    "transform": {
+      "location": {
+        "x": 1.6,
+        "y": 0.0,
+        "z": 1.7
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "rear_rgb_cam": {
+    "fov": 145,
+    "transform": {
+      "location": {
+        "x": -1.5,
+        "y": 0.0,
+        "z": 1.4
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 180.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "waypoint_file_path": "./ROAR_Sim/data/easy_map_waypoints.txt",
+  "output_data_folder_path": "./output/",
+  "enable_autopilot": true,
+  "spawn_point_id": 1,
+  "show_sensors_data": false,
+  "save_sensor_data": false
+}
+
+
