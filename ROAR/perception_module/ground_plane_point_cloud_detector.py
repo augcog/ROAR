@@ -35,7 +35,6 @@ class GroundPlanePointCloudDetector(PointCloudDetector):
         self.std_ratio = std_ratio
         self.nb_neighbors = nb_neighbors
         self.ground_tilt_threshold = ground_tilt_threshhold
-        self.counter = 0
         self.reference_normal = None
 
     def run_step(self) -> np.ndarray:
@@ -54,24 +53,7 @@ class GroundPlanePointCloudDetector(PointCloudDetector):
         planes = points_3d[norm_flat > 1-self.ground_tilt_threshold]
         ground = planes[planes[:, 2] < self.agent.vehicle.transform.location.z +
                         self.max_ground_height_relative_to_vehcile]
-        # pcd.points = o3d.utility.Vector3dVector(ground)  # - np.mean(planes, axis=0))
-
-        # pcd, ids = pcd.remove_statistical_outlier(nb_neighbors=self.nb_neighbors, std_ratio=self.std_ratio)
-
-        # self.pcd.points = o3d.utility.Vector3dVector(np.asarray(pcd.points) - np.mean(np.asarray(pcd.points), axis=0))
-        # if self.counter == 0:
-        #     self.vis.create_window(window_name="Open3d", width=400, height=400)
-        #     self.vis.add_geometry(self.pcd)
-        #     render_option: o3d.visualization.RenderOption = self.vis.get_render_option()
-        #     render_option.show_coordinate_frame = True
-        # else:
-        #     self.vis.update_geometry(self.pcd)
-        #     render_option: o3d.visualization.RenderOption = self.vis.get_render_option()
-        #     render_option.show_coordinate_frame = True
-        #     self.vis.poll_events()
-        #     self.vis.update_renderer()
-        self.counter += 1
-        return np.asarray(pcd.points)
+        return ground
 
     def calculate_world_cords(self):
         depth_img = self.agent.front_depth_camera.data.copy()

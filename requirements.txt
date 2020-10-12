@@ -11,3 +11,4 @@ pygame==1.9.6
 pyserial==3.4
 scipy==1.5.2
 sympy
+deprecated
