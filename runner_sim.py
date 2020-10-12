@@ -17,7 +17,7 @@ def main():
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-        agent = PointCloudAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
 
         carla_runner.start_game_loop(agent=agent, use_manual_control=True)
     except Exception as e:
