@@ -5,7 +5,7 @@
 
 ### Quick Start
 1. clone the repo
-    - `git clone --recursive https://github.com/augcog/ROAR.git`
+    - `git clone --recursive https://github.com/YOURUSERNAME/ROAR.git`
 
 2. Create virtual environment with *python3.7*
     - `conda create -n ROAR python=3.7`
