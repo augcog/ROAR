@@ -130,3 +130,7 @@ dmypy.json
 
 .idea
 __pycache__
+LinuxNoEditor
+
+data
+output

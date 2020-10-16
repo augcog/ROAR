@@ -1,11 +1,12 @@
 # Robot Open Autonomous Racing (ROAR)
 ### To Contribute
 - Please click the [Fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) button on the upper right corner and submit a pull request to master branch.
+    - For a more in-depth tutorial on recommended setup [video](https://youtu.be/VA13dAZ9iAw)
 - Please follow suggested guidelines on Pull Request. 
 
 ### Quick Start
 1. clone the repo
-    - `git clone --recursive https://github.com/augcog/ROAR.git`
+    - `git clone --recursive https://github.com/YOURUSERNAME/ROAR.git`
 
 2. Create virtual environment with *python3.7*
     - `conda create -n ROAR python=3.7`

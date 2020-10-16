@@ -19,7 +19,11 @@ def main():
         agent_config = AgentConfig.parse_file(Path("./ROAR_Jetson/configurations/agent_configuration.json"))
         jetson_config = JetsonConfig.parse_file(Path("./ROAR_Jetson/configurations/configuration.json"))
 
-        prepare(jetson_config=jetson_config)
+        try:
+            prepare(jetson_config=jetson_config)
+        except Exception as e:
+            logging.error(f"Ignoring Error during setup: {e}")
+
         agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
         jetson_runner.start_game_loop(use_manual_control=True)
