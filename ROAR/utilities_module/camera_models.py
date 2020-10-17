@@ -19,10 +19,12 @@ class Camera(BaseModel):
     )
     image_size_x: int = Field(default=800, title="Image size width")
     image_size_y: int = Field(default=600, title="Image size width")
+    distortion_coefficient: Optional[np.ndarray] = Field(default=np.array([0, 0, 0, 0, 0]),
+                                                         title="Distortion Coefficient from Intel Realsense")
     data: Optional[np.ndarray] = Field(default=None)
     intrinsics_matrix: Optional[np.ndarray] = Field(default=None)
 
-    def calculate_intrinsic_matrix(self) -> np.ndarray:
+    def calculate_default_intrinsics_matrix(self) -> np.ndarray:
         """
         Calculate intrinsics matrix
         Will set the attribute intrinsic matrix so that re-calculation is not

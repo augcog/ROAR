@@ -19,7 +19,7 @@ class FloodfillBasedLaneFollower(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         try:
-            img = self.floodfill_lane_detector.run_step()
+            img = self.floodfill_lane_detector.run_in_series()
 
             # left, front, right dot img location
             left_dot_coord = (self.front_rgb_camera.image_size_x // 4, 350)

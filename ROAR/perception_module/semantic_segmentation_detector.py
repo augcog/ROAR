@@ -34,7 +34,7 @@ class SemanticSegmentationDetector(Detector):
     def convert_to_log(x):
         return np.clip(1 + np.log(x + 1e-10) / 5.70378, 0.005, 1.0)
 
-    def run_step(self) -> Any:
+    def run_in_series(self) -> Any:
         logged_depth = self.convert_to_log(self.agent.front_depth_camera.data.copy())
         if self.orig_preds is None or self.preds is None:
             self.orig_preds = self.gpd_mesh(logged_depth)

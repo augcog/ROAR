@@ -107,8 +107,8 @@ class VehicleMPCController(Controller):
         # self.logger.debug(f"  cost_grad_func: {self.cost_grad_func}")
         # self.logger.debug(f"  constr_funcs:   {self.constr_funcs}")
 
-    def run_step(self, next_waypoint: Transform) -> VehicleControl:
-        super(VehicleMPCController, self).run_step(next_waypoint)
+    def run_in_series(self, next_waypoint: Transform) -> VehicleControl:
+        super(VehicleMPCController, self).run_in_series(next_waypoint)
         # get vehicle location (x, y)
         # location = self.vehicle.transform.location
 

@@ -53,6 +53,11 @@ class Configuration(BaseModel):
 
     json_waypoint_file_path: str = Field(default=(Path(
         os.getcwd()) / "data" / "easy_map_waypoints.json").as_posix())
+
+    json_qr_code_file_path: str = Field(default=(Path(
+        os.getcwd()) / "ROAR_Jetson" / "data" / "track_1.json"
+    ).as_posix())
+
     output_data_folder_path: str = Field(
         default=(Path(os.getcwd()) / "data" / "output"))
 

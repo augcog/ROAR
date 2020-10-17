@@ -5,7 +5,7 @@ from pathlib import Path
 from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
-from ROAR.agent_module.point_cloud_agent import PointCloudAgent
+# from ROAR.agent_module.point_cloud_agent import PointCloudAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 
 

@@ -15,8 +15,9 @@ class LocalPlanner(AbstractPlanner):
             controller: Optional[Controller] = None,
             behavior_planner: Optional[BehaviorPlanner] = None,
             mission_planner: Optional[MissionPlanner] = None,
+            **kwargs
     ):
-        super().__init__(agent=agent)
+        super().__init__(agent=agent, **kwargs)
         self.controller = (
             Controller(agent=agent) if controller is None else controller
         )
@@ -33,5 +34,5 @@ class LocalPlanner(AbstractPlanner):
         self.way_points_queue = deque()
 
     @abstractmethod
-    def run_step(self) -> VehicleControl:
+    def run_in_series(self) -> VehicleControl:
         return VehicleControl()

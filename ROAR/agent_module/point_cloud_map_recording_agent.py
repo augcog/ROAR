@@ -44,9 +44,9 @@ class PointCloudMapRecordingAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(PointCloudMapRecordingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
-        control = self.local_planner.run_step()
+        control = self.local_planner.run_in_series()
         try:
-            ground_points = self.ground_plane_point_cloud_detector.run_step()
+            ground_points = self.ground_plane_point_cloud_detector.run_in_series()
 
             # print(np.shape(ground_points))
             color_image = self.front_rgb_camera.data.copy()

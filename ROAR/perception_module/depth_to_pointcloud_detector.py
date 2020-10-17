@@ -15,7 +15,7 @@ class DepthToPointCloudDetector(Detector):
         self.max_detectable_distance = max_detectable_distance
         self.max_points_to_convert = max_points_to_convert
 
-    def run_step(self) -> Optional[np.ndarray]:
+    def run_in_series(self) -> Optional[np.ndarray]:
         """
 
         :return: 3 x N array of point cloud

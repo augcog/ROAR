@@ -12,10 +12,10 @@ class JSONWaypointPlanner(MissionPlanner):
     def __init__(self, agent: Agent):
         super().__init__(agent=agent)
         self.file_path: Path = Path(self.agent.agent_settings.json_waypoint_file_path)
-        self.mission_plan: deque = self.run_step()
+        self.mission_plan: deque = self.run_in_series()
         # print(self._read_data_file())
 
-    def run_step(self) -> deque:
+    def run_in_series(self) -> deque:
         result = deque()
         map_entries = self._read_data_file()
         for m in map_entries:

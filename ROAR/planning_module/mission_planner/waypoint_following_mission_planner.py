@@ -14,7 +14,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
     A mission planner that takes in a file that contains x,y,z coordinates, formulate into carla.Transform
     """
 
-    def run_step(self) -> deque:
+    def run_in_series(self) -> deque:
         """
         Regenerate waypoints from file
         Find the waypoint that is closest to the current vehicle location.
@@ -26,7 +26,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         Returns:
             mission plan that start from the current vehicle location
         """
-        super(WaypointFollowingMissionPlanner, self).run_step()
+        super(WaypointFollowingMissionPlanner, self).run_in_series()
         self.logger.debug("TO BE IMPLEMENTED")
         return self.produce_mission_plan()
 

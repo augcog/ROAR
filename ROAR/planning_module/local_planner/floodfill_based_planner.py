@@ -3,5 +3,5 @@ from ROAR.utilities_module.vehicle_models import VehicleControl
 
 
 class FloodfillBasedPlanner(LocalPlanner):
-    def run_step(self) -> VehicleControl:
+    def run_in_series(self) -> VehicleControl:
         pass

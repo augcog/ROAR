@@ -6,8 +6,8 @@ import open3d as o3d
 
 
 class GP_pointcloud_detector(GroundPlanePointCloudDetector):
-    def run_step(self) -> Any:
-        super(GP_pointcloud_detector, self).run_step()
+    def run_in_series(self) -> Any:
+        super(GP_pointcloud_detector, self).run_in_series()
         if self.agent.front_depth_camera.data is not None:
             depth_image: np.ndarray = self.agent.front_depth_camera.data.copy()
             color_image = self.agent.front_rgb_camera.data.copy()

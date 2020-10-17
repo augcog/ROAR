@@ -46,8 +46,8 @@ class PointCloudAgent(Agent):
         super(PointCloudAgent, self).run_step(sensors_data, vehicle)
         try:
 
-            self.local_planner.run_step()
-            points = self.gp_pointcloud_detector.run_step()  # (N x 3)
+            self.local_planner.run_in_series()
+            points = self.gp_pointcloud_detector.run_in_series()  # (N x 3)
             self.occupancy_grid_map.update_grid_map_from_world_cord(world_cords_xy=points[:, :2])
             self.occupancy_grid_map.visualize(vehicle_location=self.vehicle.transform.location)
             # print(np.amin(points, axis=0), np.amax(points, axis=0), self.vehicle.transform.location.to_array())
@@ -60,4 +60,4 @@ class PointCloudAgent(Agent):
         except Exception as e:
             self.logger.error(f"Point cloud RunStep Error: {e}")
         finally:
-            return self.local_planner.run_step()
+            return self.local_planner.run_in_series()
