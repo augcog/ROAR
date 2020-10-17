@@ -25,7 +25,7 @@ class Agent(ABC):
     def __init__(self,
                  vehicle: Vehicle,
                  agent_settings: AgentConfig,
-                 imu: Optional[IMUData] = None):
+                 imu: Optional[IMUData] = None, should_init_default_cam=True):
         """
         Initialize cameras, output folder, and logging utilities
 
@@ -61,7 +61,8 @@ class Agent(ABC):
 
         self.transform_history: List[Transform] = []
 
-        self.init_cam()
+        if should_init_default_cam:
+            self.init_cam()
 
     def init_cam(self) -> None:
         """
@@ -74,15 +75,15 @@ class Agent(ABC):
 
         if self.front_rgb_camera is not None:
             self.front_rgb_camera.intrinsics_matrix = (
-                self.front_rgb_camera.calculate_intrinsic_matrix()
+                self.front_rgb_camera.calculate_default_intrinsics_matrix()
             )
         if self.front_depth_camera is not None:
             self.front_depth_camera.intrinsics_matrix = (
-                self.front_depth_camera.calculate_intrinsic_matrix()
+                self.front_depth_camera.calculate_default_intrinsics_matrix()
             )
         if self.rear_rgb_camera is not None:
             self.rear_rgb_camera.intrinsics_matrix = (
-                self.rear_rgb_camera.calculate_intrinsic_matrix()
+                self.rear_rgb_camera.calculate_default_intrinsics_matrix()
             )
 
         if self.should_save_sensor_data:
