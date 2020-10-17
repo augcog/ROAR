@@ -91,7 +91,7 @@ class VehiclePIDController(Controller):
         )
         self.logger.debug("PID Controller initiated")
 
-    def run_step(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
+    def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         """
         Execute one step of control invoking both lateral and longitudinal
         PID controllers to reach a target waypoint at a given target_speed.

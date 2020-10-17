@@ -42,7 +42,7 @@ class PurePursuitController(Controller):
             agent=self.agent, target_speed=target_speed
         )
 
-    def run_step(
+    def run_in_series(
             self, next_waypoint: Transform, **kwargs
     ) -> VehicleControl:
         """

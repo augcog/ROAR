@@ -49,5 +49,5 @@ class MPCAgent(Agent):
             control = VehicleControl()
             self.logger.debug("Path Following Agent is Done. Idling.")
         else:
-            control = self.local_planner.run_step()
+            control = self.local_planner.run_in_series()
         return control

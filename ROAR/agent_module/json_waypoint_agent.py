@@ -22,6 +22,6 @@ class JsonWaypointAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(JsonWaypointAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
-        next_control = self.local_planner.run_step()
+        next_control = self.local_planner.run_in_series()
 
         return next_control

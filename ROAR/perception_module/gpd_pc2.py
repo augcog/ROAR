@@ -29,7 +29,7 @@ class GPD_PC2(GroundPlanePointCloudDetector):
         self.max_ground_height_relative_to_vehicle = max_ground_height_relative_to_vehcile
         self.logger = logging.getLogger("Point Cloud Detector")
 
-    def run_step(self) -> np.ndarray:
+    def run_in_series(self) -> np.ndarray:
         points_3d = self.calculate_world_cords()  # (Nx3)
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(points_3d)  # - np.mean(points_3d, axis=0))

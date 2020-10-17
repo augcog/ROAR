@@ -26,7 +26,7 @@ class PointCloudDetector(Detector):
 
         self.counter = 0
 
-    def run_step(self) -> Optional[np.ndarray]:
+    def run_in_series(self) -> Optional[np.ndarray]:
         points_3d = self.calculate_world_cords()  # (Nx3)
         return points_3d
 

@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
 import logging
-
+from ROAR.utilities_module.module import Module
 from ROAR.utilities_module.vehicle_models import VehicleControl
 from ROAR.utilities_module.data_structures_models import Transform
 
 
-class Controller(ABC):
-    def __init__(self, agent):
+class Controller(Module):
+    def __init__(self, agent, **kwargs):
+        super().__init__(**kwargs)
         self.agent = agent
 
     @abstractmethod
-    def run_step(self, next_waypoint: Transform, **kwargs) \
+    def run_in_series(self, next_waypoint: Transform, **kwargs) \
             -> VehicleControl:
         """
         Abstract function for run step
@@ -23,3 +24,6 @@ class Controller(ABC):
             VehicleControl
         """
         return VehicleControl()
+
+    def run_in_threaded(self, **kwargs):
+        pass

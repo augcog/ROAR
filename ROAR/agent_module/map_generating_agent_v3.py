@@ -38,8 +38,8 @@ class MapGeneratingAgentV3(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(MapGeneratingAgentV3, self).run_step(sensors_data, vehicle)
-        self.ground_plane_detector.run_step()
-        control = self.local_planner.run_step()
+        self.ground_plane_detector.run_in_series()
+        control = self.local_planner.run_in_series()
         try:
             if self.ground_plane_detector.curr_segmentation is not None and \
                     len(self.ground_plane_detector.curr_segmentation) > 0:

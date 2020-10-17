@@ -6,7 +6,7 @@ import numpy as np
 
 
 class FloodfillLaneDetector(Detector):
-    def run_step(self) -> Any:
+    def run_in_series(self) -> Any:
         if self.agent.front_rgb_camera.data is not None:
             curr_img = self.agent.front_rgb_camera.data.copy()
             seed_point = (self.agent.front_rgb_camera.image_size_x // 2, 350)
