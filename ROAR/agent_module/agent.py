@@ -189,6 +189,7 @@ class Agent(ABC):
         for module in self.threaded_modules:
             threading.Thread(target=module.run_in_threaded, daemon=True).start()
             self.logger.debug(f"{module.__class__.__name__} thread started")
+
     def shutdown_module_threads(self):
         for module in self.threaded_modules:
             module.shutdown()
