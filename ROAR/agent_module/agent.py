@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
 import logging
 from ROAR.utilities_module.vehicle_models import Vehicle
-from ROAR.utilities_module .data_structures_models import SensorsData, IMUData, Transform
+from ROAR.utilities_module.data_structures_models import SensorsData, IMUData, Transform
 from ROAR.utilities_module.vehicle_models import VehicleControl
 from typing import Optional, List
 from pathlib import Path
 import cv2
 import numpy as np
-
+from ROAR.utilities_module.module import Module
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.planning_module.local_planner.local_planner import LocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
+import threading
 
 
 class Agent(ABC):
@@ -22,10 +23,8 @@ class Agent(ABC):
 
     """
 
-    def __init__(self,
-                 vehicle: Vehicle,
-                 agent_settings: AgentConfig,
-                 imu: Optional[IMUData] = None, should_init_default_cam=True):
+    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, imu: Optional[IMUData] = None,
+                 should_init_default_cam=True):
         """
         Initialize cameras, output folder, and logging utilities
 
@@ -57,12 +56,21 @@ class Agent(ABC):
         self.behavior_planner: Optional[BehaviorPlanner] = None
         self.mission_planner: Optional[MissionPlanner] = None
 
+        self.threaded_modules: List[Module] = []
         self.time_counter = 0
 
         self.transform_history: List[Transform] = []
 
         if should_init_default_cam:
             self.init_cam()
+
+    def add_threaded_module(self, module: Module):
+        if module.threaded:
+            self.threaded_modules.append(module)
+        else:
+            msg = f"Module {module} is not registered as threaded, but is attempting to run threaded"
+            self.logger.error(msg)
+            raise threading.ThreadError(msg)
 
     def init_cam(self) -> None:
         """
@@ -176,3 +184,11 @@ class Agent(ABC):
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
+    def start_module_threads(self):
+        for module in self.threaded_modules:
+            threading.Thread(target=module.run_in_threaded, daemon=True).start()
+            self.logger.debug(f"{module.__class__.__name__} thread started")
+    def shutdown_module_threads(self):
+        for module in self.threaded_modules:
+            module.shutdown()

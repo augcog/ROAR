@@ -3,5 +3,8 @@ from typing import Any
 
 
 class BehaviorPlanner(AbstractPlanner):
-    def run_step(self) -> Any:
+    def __init__(self, agent, **kwargs):
+        super().__init__(agent, **kwargs)
+
+    def run_in_series(self) -> Any:
         pass

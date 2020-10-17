@@ -13,9 +13,9 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         self.knn = knn
         self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me()
 
-    def run_step(self) -> Any:
+    def run_in_series(self) -> Any:
         t1 = time.time()
-        points = super(GroundPlaneDetector, self).run_step()  # Nx3
+        points = super(GroundPlaneDetector, self).run_in_series()  # Nx3
         t2 = time.time()
 
         t3 = time.time()

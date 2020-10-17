@@ -15,7 +15,7 @@ class GPDAgent(Agent):
     def run_step(self, vehicle: Vehicle, sensors_data: SensorsData) -> VehicleControl:
         super(GPDAgent, self).run_step(vehicle=vehicle, sensors_data=sensors_data)
         try:
-            self.depth_to_pointcloud_detector.run_step()
+            self.depth_to_pointcloud_detector.run_in_series()
 
         except Exception as e:
             print(e)

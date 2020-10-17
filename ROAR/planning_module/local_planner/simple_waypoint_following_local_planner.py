@@ -66,7 +66,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         """
         return len(self.way_points_queue) == 0
 
-    def run_step(self) -> VehicleControl:
+    def run_in_series(self) -> VehicleControl:
         """
         Run step for the local planner
         Procedure:
@@ -125,7 +125,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         # target_waypoint = Transform.average(self.way_points_queue[0], self.way_points_queue[1])
         # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
 
-        control: VehicleControl = self.controller.run_step(next_waypoint=target_waypoint)
+        control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         # self.logger.debug(
         #     f"Target_Location {target_waypoint.location} "
         #     f"| Curr_Location {vehicle_transform.location} "
