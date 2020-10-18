@@ -11,8 +11,11 @@
 2. Create virtual environment with *python3.7*
     - `conda create -n ROAR python=3.7`
     - `conda activate ROAR`
+    
 
 3. Install Dependency
+    - General Dependency
+        - `pip install -r requirements.txt` in the ROAR folder
     - For simulator
         - `cd ROAR_Sim`
         - `pip install -r requirements.txt`
