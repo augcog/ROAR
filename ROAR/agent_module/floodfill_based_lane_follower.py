@@ -10,8 +10,8 @@ import numpy as np
 
 
 class FloodfillBasedLaneFollower(Agent):
-    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig):
-        super().__init__(vehicle, agent_settings)
+    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
+        super().__init__(vehicle, agent_settings, **kwargs)
         self.controller = VehiclePIDController(agent=self, args_lateral=PIDParam.default_lateral_param(),
                                                args_longitudinal=PIDParam.default_longitudinal_param())
         self.floodfill_lane_detector = FloodfillLaneDetector(agent=self)

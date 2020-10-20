@@ -3,7 +3,7 @@ from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.agent_module.ar_marker_agent import ARMarkerAgent
+from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
 from pathlib import Path
 import logging
 import warnings
@@ -24,7 +24,7 @@ def main():
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
 
-        agent = ARMarkerAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = FloodfillBasedLaneFollower(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
         jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
