@@ -22,10 +22,27 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         x = points[self.f3, :] - points[self.f4, :]
         y = points[self.f1, :] - points[self.f2, :]
         normals = self.normalize_v3(np.cross(x, y))
+
+        # OpenCV FloodFill
+        d1 = self.agent.front_depth_camera.image_size_y
+        d2 = self.agent.front_depth_camera.image_size_x
+        curr_img = normals.reshape((d1, d2, 3))
+        seed_point = (d1 - 1, int(d1 / 2))
+        _, retval, _, _ = cv2.floodFill(image=curr_img,
+                                        seedPoint=seed_point,
+                                        newVal=(0, 0, 0),
+                                        loDiff=(0.01, 0.01, 0.01),
+                                        upDiff=(0.01, 0.01, 0.01),
+                                        mask=None)
+        bool_matrix = np.mean(retval, axis=2) == 0
+
+        """
         norm_flat = normals @ self.reference_norm
         norm_matrix = norm_flat.reshape((self.agent.front_depth_camera.image_size_y,
                                          self.agent.front_depth_camera.image_size_x))
         bool_matrix = norm_matrix > 0.95
+        """
+
         color_image = self.agent.front_rgb_camera.data.copy()
         color_image[bool_matrix] = 255
         t4 = time.time()
