@@ -20,7 +20,7 @@ class GPDFloodFillAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
-        super(PurePursuitAgent, self).run_step(sensors_data=sensors_data,
+        super(GPDFloodFillAgent, self).run_step(sensors_data=sensors_data,
                                                vehicle=vehicle)
         self.gpd_detector.run_in_series()
         return VehicleControl()
