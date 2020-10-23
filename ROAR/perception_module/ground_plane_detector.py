@@ -17,7 +17,6 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         t1 = time.time()
         points = super(GroundPlaneDetector, self).run_in_series()  # Nx3
         t2 = time.time()
-
         t3 = time.time()
         x = points[self.f3, :] - points[self.f4, :]
         y = points[self.f1, :] - points[self.f2, :]
@@ -44,19 +43,15 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         bool_matrix = bool_zeros.reshape((d1, d2))
         t6 = time.time()
 
-        """
-        norm_flat = normals @ self.reference_norm
-        norm_matrix = norm_flat.reshape((self.agent.front_depth_camera.image_size_y,
-                                         self.agent.front_depth_camera.image_size_x))
-        bool_matrix = norm_matrix > 0.95
-        """
-
         color_image = self.agent.front_rgb_camera.data.copy()
-        print("got here")
-        print(bool_matrix, bool_matrix.shape)
+        # print("got here")
+        # print(bool_matrix, bool_matrix.shape)
         color_image[bool_matrix > 0] = 255
         t4 = time.time()
-        print(1 / (t2-t1), 1 / (t4-t3), 1 / (t6-t5))
+        print(f"FPS to convert Image to Points {1 / (t2 - t1)} | "
+              f"FPS to find normals {1/(t4 - t3)} | "
+              f"FPS to floodfill {1 / (t6 - t5)}")
+        print()
         cv2.imshow('Color', color_image)
         cv2.waitKey(1)
 
@@ -83,7 +78,6 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         arr[:, 1] /= lens
         arr[:, 2] /= lens
         return arr
-
 
     def compute_vectors_near_me(self):
         d1, d2 = self.agent.front_depth_camera.image_size_y, self.agent.front_depth_camera.image_size_x

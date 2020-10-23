@@ -1,4 +1,4 @@
-# (FORKED) Robot Open Autonomous Racing (ROAR)
+# Robot Open Autonomous Racing (ROAR)
 ### To Contribute
 - Please click the [Fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) button on the upper right corner and submit a pull request to master branch.
     - For a more in-depth tutorial on recommended setup [video](https://youtu.be/VA13dAZ9iAw)
