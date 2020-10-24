@@ -2,11 +2,12 @@ from typing import Any, Tuple
 
 from Bridges.bridge import Bridge
 from ROAR.utilities_module.data_structures_models import Vector3D, SensorsData, \
-    IMUData, DepthData, RGBData, Transform, Rotation, Location
+    IMUData, DepthData, RGBData, Transform, Rotation, Location, ViveTrackerData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import numpy as np
 import cv2
 from typing import Optional
+from ROAR_Jetson.vive.models import ViveTrackerMessage
 
 
 class JetsonBridge(Bridge):
@@ -62,7 +63,29 @@ class JetsonBridge(Bridge):
             imu_data=self.convert_imu_from_source_to_agent(
                 source=source.get("imu", None)
             ),
+            vive_tracker_data=self.convert_vive_tracker_data_from_source_to_agent(
+                source=source.get("vive_tracking", None))
         )
+
+    def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
+            Optional[ViveTrackerData]:
+        if source is not None:
+            vive_tracker_data = ViveTrackerData(
+                location=Location(
+                    x=-source.x,
+                    y=source.y,
+                    z=-source.z
+                ),
+                rotation=Rotation(
+                    pitch=source.pitch,
+                    roll=source.roll,
+                    yaw=source.yaw
+                )
+
+
+            )
+            return vive_tracker_data
+        return None
 
     def convert_vehicle_from_source_to_agent(self, source) -> Vehicle:
         return Vehicle()

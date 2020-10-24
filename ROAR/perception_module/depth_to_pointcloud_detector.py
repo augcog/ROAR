@@ -50,9 +50,9 @@ class DepthToPointCloudDetector(Detector):
                     cords_y_minus_z_x[0, :],
                     -cords_y_minus_z_x[1, :]])
                 t5 = time.time()
-                print(f"FPS to find all valid points = {self.find_fps(t1, t2)} | "
-                      f"FPS to convert image to 3D points = {self.find_fps(t2, t4)} | "
-                      f"FPS to transform to world/relative coords = {self.find_fps(t4, t5)}")
+                # print(f"FPS to find all valid points = {self.find_fps(t1, t2)} | "
+                #       f"FPS to convert image to 3D points = {self.find_fps(t2, t4)} | "
+                #       f"FPS to transform to world/relative coords = {self.find_fps(t4, t5)}")
                 return points.T
         return None
 

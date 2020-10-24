@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 import numpy as np
 from scipy.spatial import distance
-from typing import Union
+from typing import Union, Optional
 from typing import List
 
 
@@ -131,11 +131,18 @@ class IMUData(BaseModel):
     )
 
 
+class ViveTrackerData(BaseModel):
+    location: Location = Field(default=Location(x=0, y=0, z=0))
+    rotation: Rotation = Field(default=Rotation(roll=0, pitch=0, yaw=0))
+    tracker_name: str = Field(default="Tracker")
+
+
 class SensorsData(BaseModel):
     front_rgb: Union[RGBData, None] = Field(default=None)
     rear_rgb: Union[RGBData, None] = Field(default=None)
     front_depth: Union[DepthData, None] = Field(default=None)
     imu_data: Union[IMUData, None] = Field(default=None)
+    vive_tracker_data: Optional[ViveTrackerData] = Field(default=None)
 
 
 class MapEntry(BaseModel):

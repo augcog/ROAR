@@ -12,18 +12,19 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         self.reference_norm: Optional[np.ndarray] = np.array([-0.00000283, -0.00012446, 0.99999999])
         self.knn = knn
         self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me()
+        self.gpd_2d_imposed = None
 
     def run_in_series(self) -> Any:
-        t1 = time.time()
+        # t1 = time.time()
         points = super(GroundPlaneDetector, self).run_in_series()  # Nx3
-        t2 = time.time()
-        t3 = time.time()
+        # t2 = time.time()
+        # t3 = time.time()
         x = points[self.f3, :] - points[self.f4, :]
         y = points[self.f1, :] - points[self.f2, :]
         normals = self.normalize_v3(np.cross(x, y))
-        t4 = time.time()
-
-        t5 = time.time()
+        # t4 = time.time()
+        #
+        # t5 = time.time()
         # OpenCV FloodFill
         d1 = self.agent.front_depth_camera.image_size_y
         d2 = self.agent.front_depth_camera.image_size_x
@@ -41,19 +42,14 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         bool_indices = np.indices(bool_zeros.shape)[0][::16]
         bool_zeros[bool_indices] = bool_matrix.flatten()
         bool_matrix = bool_zeros.reshape((d1, d2))
-        t6 = time.time()
+        # t6 = time.time()
 
         color_image = self.agent.front_rgb_camera.data.copy()
-        # print("got here")
-        # print(bool_matrix, bool_matrix.shape)
         color_image[bool_matrix > 0] = 255
-        t4 = time.time()
-        print(f"FPS to convert Image to Points {1 / (t2 - t1)} | "
-              f"FPS to find normals {1/(t4 - t3)} | "
-              f"FPS to floodfill {1 / (t6 - t5)}")
-        print()
-        cv2.imshow('Color', color_image)
-        cv2.waitKey(1)
+        self.gpd_2d_imposed = color_image
+        # t4 = time.time()
+        # cv2.imshow('Color', color_image)
+        # cv2.waitKey(1)
 
     @staticmethod
     def construct_pointcloud(points) -> o3d.geometry.PointCloud:
