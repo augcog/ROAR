@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import numpy as np
 import warnings
-from ROAR.agent_module.point_cloud_map_recording_agent import PointCloudMapRecordingAgent
+from ROAR.agent_module.legacy_agents.point_cloud_map_recording_agent import PointCloudMapRecordingAgent
 from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig

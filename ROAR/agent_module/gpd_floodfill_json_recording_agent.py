@@ -40,6 +40,6 @@ class GPDFloodfillJsonRecordingAgent(GPDFloodFillAgent):
             # transpose white cords into world cooridnate
             left_depth = self.front_depth_camera.data[left_coord[1]][left_coord[0]] * 1000
             right_depth = self.front_depth_camera.data[right_coord[1]][right_coord[0]] * 1000
-            print(left_depth, right_depth, left_coord, right_coord)
+            # print(left_depth, right_depth, left_coord, right_coord)
 
         return control
