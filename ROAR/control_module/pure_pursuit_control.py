@@ -89,12 +89,12 @@ class LatitunalPurePursuitController:
         self.look_ahead_distance = look_ahead_distance
 
     def run_step(self, next_waypoint: Transform) -> float:
-        target_y = next_waypoint.location.y
+        target_z = next_waypoint.location.z
         target_x = next_waypoint.location.x
         angle_difference = math.atan2(
-            target_y - self.agent.vehicle.transform.location.y,
+            target_z - self.agent.vehicle.transform.location.z,
             target_x - self.agent.vehicle.transform.location.x,
-        ) - np.radians(self.agent.vehicle.transform.rotation.yaw)
+        ) - np.radians(self.agent.vehicle.transform.rotation.pitch)
         curr_look_forward = (
                 self.look_ahead_gain * Vehicle.get_speed(vehicle=self.agent.vehicle)
                 + self.look_ahead_distance

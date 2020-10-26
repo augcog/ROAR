@@ -126,6 +126,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
 
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
+        print(self.agent.vehicle.transform.location, control, target_waypoint.location)
         # self.logger.debug(
         #     f"Target_Location {target_waypoint.location} "
         #     f"| Curr_Location {vehicle_transform.location} "

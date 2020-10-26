@@ -95,6 +95,11 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         Returns:
             [x, y, z]
         """
-        x, y, z = line.split(",")
-        x, y, z = float(x), float(y), float(z)
-        return [x, y, z]
+        try:
+            x, y, z = line.split(",")
+            x, y, z = float(x), float(y), float(z)
+            return [x, y, z]
+        except:
+            x, y, z, roll, pitch, yaw = line.split(",")
+            x, y, z = float(x), float(y), float(z)
+            return [x,y, z]
