@@ -149,14 +149,14 @@ class VehiclePIDController(Controller):
     def update_lat_control_k_values(self):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         keys = list(OPTIMIZED_LATERAL_PID_VALUES.keys())
-        print(curr_speed)
+        # print(curr_speed)
         for speed_boundary in keys:
             if curr_speed <= speed_boundary:
                 pid = OPTIMIZED_LATERAL_PID_VALUES[speed_boundary]
                 self._lat_controller.k_p, self._lat_controller.k_d, self._lat_controller.k_i, \
                 self._lat_controller._dt = pid.K_P, pid.K_D, pid.K_I, pid.dt
                 break
-        print(self._lat_controller.k_p, self._lat_controller.k_d, self._lat_controller.k_i)
+        # print(self._lat_controller.k_p, self._lat_controller.k_d, self._lat_controller.k_i)
 
 # speed - LONGITUDINALPIDParam
 OPTIMIZED_LONGITUDINAL_PID_VALUES = {
@@ -309,7 +309,7 @@ class PIDLateralController:
         else:
             _de = 0.0
             _ie = 0.0
-        print(self.k_p, self.k_d, self.k_i, (self.k_p * _dot), (self.k_d * _de), (self.k_i * _ie))
+        # print(self.k_p, self.k_d, self.k_i, (self.k_p * _dot), (self.k_d * _de), (self.k_i * _ie))
         return float(
             np.clip((self.k_p * _dot) + (self.k_d * _de) + (self.k_i * _ie), -1.0, 1.0)
         )

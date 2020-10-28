@@ -124,9 +124,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                 # i have moved onto a waypoint, remove that waypoint from the queue
                 self.way_points_queue.popleft()
             else:
-                print(f"waypoint: {waypoint.location}")
-                print(f"vehicle: {vehicle_transform.location}")
-                print(f"curr_dist: {curr_dist} | curr_thresh: {self.closeness_threshold}")
+                # print(f"waypoint: {waypoint.location}")
+                # print(f"vehicle: {vehicle_transform.location}")
+                # print(f"curr_dist: {curr_dist} | curr_thresh: {self.closeness_threshold}")
                 break
 
         target_waypoint = self.way_points_queue[0]
@@ -134,10 +134,10 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
 
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        print("control", control)
+        # print("control", control)
         # self.logger.debug(
         #     f"Target_Location {target_waypoint.location}"
         #     f"|curr_transform {vehicle_transform}"
         #     f"|Distance {int(curr_closest_dist)}")
-        print()
+        # print()
         return control
