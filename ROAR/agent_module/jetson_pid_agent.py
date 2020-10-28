@@ -9,8 +9,6 @@ from ROAR.control_module.tmp_jetson_pid_controller import PIDParam
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
-from ROAR.visualization_module.visualizer import Visualizer
-from ROAR.utilities_module.occupancy_map import OccupancyGridMap
 import cv2
 
 
@@ -34,7 +32,6 @@ class PIDAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.visualizer = Visualizer(agent=self)
 
         self.logger.debug(
             f"Waypoint Following Agent Initiated. "
