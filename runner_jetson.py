@@ -3,7 +3,8 @@ from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
+# from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
+from ROAR.agent_module.jetson_pid_agent import PIDAgent
 from pathlib import Path
 import logging
 import warnings
@@ -24,9 +25,9 @@ def main():
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
 
-        agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=True)
+        jetson_runner.start_game_loop(use_manual_control=False)
     except Exception as e:
         print(f"Something bad happened {e}")
 

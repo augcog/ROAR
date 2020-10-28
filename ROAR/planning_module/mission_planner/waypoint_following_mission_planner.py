@@ -47,7 +47,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         for coord in raw_path:
             if len(coord) == 3 or len(coord) == 6:
                 mission_plan.append(self._raw_coord_to_transform(coord))
-        self.logger.debug(f"Computed Mission path of length {len(mission_plan)}")
+        self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
         return mission_plan
 
     def _read_data_file(self) -> List[List[float]]:

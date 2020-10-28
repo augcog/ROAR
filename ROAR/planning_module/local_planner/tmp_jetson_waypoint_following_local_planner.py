@@ -93,14 +93,17 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
         # redefine closeness level based on speed
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
-        if curr_speed < 60:
-            self.closeness_threshold = 5
-        elif curr_speed < 80:
-            self.closeness_threshold = 15
-        elif curr_speed < 120:
-            self.closeness_threshold = 20
+        if curr_speed < 1:
+            self.closeness_threshold = 0.2
+        elif curr_speed < 2:
+            self.closeness_threshold = 0.3
+        elif curr_speed < 3:
+            self.closeness_threshold = 0.3
+        elif curr_speed < 10:
+            self.closeness_threshold = 0.5
         else:
-            self.closeness_threshold = 50
+            # safety, you should not drive that fast
+            return VehicleControl()
         # print(f"Curr closeness threshold = {self.closeness_threshold}")
 
         # get current waypoint
@@ -110,7 +113,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                 self.logger.info("Destination reached")
                 return VehicleControl()
             waypoint: Transform = self.way_points_queue[0]
+
             curr_dist = vehicle_transform.location.distance(waypoint.location)
+
             if curr_dist < curr_closest_dist:
                 # if i find a waypoint that is closer to me than before
                 # note that i will always enter here to start the calculation for curr_closest_dist
@@ -119,6 +124,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                 # i have moved onto a waypoint, remove that waypoint from the queue
                 self.way_points_queue.popleft()
             else:
+                print(f"waypoint: {waypoint.location}")
+                print(f"vehicle: {vehicle_transform.location}")
+                print(f"curr_dist: {curr_dist} | curr_thresh: {self.closeness_threshold}")
                 break
 
         target_waypoint = self.way_points_queue[0]
@@ -126,9 +134,10 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
 
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        # print(self.agent.vehicle.transform.location, control, target_waypoint.location)
-        self.logger.debug(
-            f"Target_Location {target_waypoint.location}"
-            f"|curr_transform {vehicle_transform}"
-            f"|Distance {int(curr_closest_dist)}")
+        print("control", control)
+        # self.logger.debug(
+        #     f"Target_Location {target_waypoint.location}"
+        #     f"|curr_transform {vehicle_transform}"
+        #     f"|Distance {int(curr_closest_dist)}")
+        print()
         return control

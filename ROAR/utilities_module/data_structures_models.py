@@ -34,7 +34,7 @@ class Location(BaseModel):
         return Location(x=self.x + other.x, y=self.y + other.y, z=self.z + other.z)
 
     def __str__(self):
-        return f"{self.x:.3},{self.y:.3},{self.z:.3}"
+        return f"x: {self.x:.3}, y: {self.y:.3}, z: {self.z:.3}"
 
     def to_array(self) -> np.array:
         return np.array([self.x, self.y, self.z])
@@ -46,7 +46,7 @@ class Rotation(BaseModel):
     roll: float = Field(..., title="Roll", description="Degree around the X-axis")
 
     def __str__(self):
-        return f"{self.pitch},{self.yaw},{self.roll}"
+        return f"Pitch: {round(self.pitch, 2)}, Yaw: {round(self.yaw, 2)}, Roll: {round(self.roll,2)}"
 
     def to_array(self) -> np.array:
         return np.array([self.pitch, self.yaw, self.roll])
@@ -90,8 +90,7 @@ class Transform(BaseModel):
         return matrix
 
     def __str__(self):
-        return f"{self.location.x},{self.location.y},{self.location.z}," \
-               f"{self.rotation.pitch},{self.rotation.yaw},{self.rotation.roll}"
+        return f"Location: {self.location.__str__()} | Rotation: {self.rotation.__str__()}"
 
 
 class Vector3D(BaseModel):
@@ -99,6 +98,8 @@ class Vector3D(BaseModel):
     y: float = Field(default=0)
     z: float = Field(default=0)
 
+    def to_array(self):
+        return np.array([self.x, self.y, self.z])
 
 class RGBData(BaseModel):
     data: np.ndarray = Field(
@@ -134,6 +135,7 @@ class IMUData(BaseModel):
 class ViveTrackerData(BaseModel):
     location: Location = Field(default=Location(x=0, y=0, z=0))
     rotation: Rotation = Field(default=Rotation(roll=0, pitch=0, yaw=0))
+    velocity: Vector3D = Field()
     tracker_name: str = Field(default="Tracker")
 
 

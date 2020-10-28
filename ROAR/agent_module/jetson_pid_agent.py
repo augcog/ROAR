@@ -1,21 +1,23 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
-from ROAR.control_module.pid_controller import VehiclePIDController
-from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import  SimpleWaypointFollowingLocalPlanner
-from ROAR.planning_module.behavior_planner .behavior_planner import BehaviorPlanner
+from ROAR.control_module.tmp_jetson_pid_controller import VehiclePIDController
+from ROAR.planning_module.local_planner.tmp_jetson_waypoint_following_local_planner import \
+    SimpleWaypointFollowingLocalPlanner
+from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
-from ROAR.control_module.pid_controller import PIDParam
+from ROAR.control_module.tmp_jetson_pid_controller import PIDParam
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
-from ROAR.visualization_module.visualizer import  Visualizer
+from ROAR.visualization_module.visualizer import Visualizer
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
+import cv2
 
 
 class PIDAgent(Agent):
-    def __init__(self, target_speed=40, **kwargs):
+    def __init__(self, target_speed=3, **kwargs):
         super().__init__(**kwargs)
-        self.logger = logging.getLogger("PID Agent")
+        self.logger = logging.getLogger("Jetson PID Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         self.pid_controller = VehiclePIDController(
             agent=self,
@@ -34,11 +36,9 @@ class PIDAgent(Agent):
             closeness_threshold=1)
         self.visualizer = Visualizer(agent=self)
 
-        self.occupancy_grid_map = OccupancyGridMap(absolute_maximum_map_size=800)
-
         self.logger.debug(
-            f"Waypoint Following Agent Initiated. Reading f"
-            f"rom {self.route_file_path.as_posix()}")
+            f"Waypoint Following Agent Initiated. "
+            f"Reading from {self.route_file_path.as_posix()}")
         self.curr_max_err = 0
         self.counter = 0
         self.total_err = 0
@@ -48,7 +48,7 @@ class PIDAgent(Agent):
         super(PIDAgent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
-        # print(self.vehicle.transform.location)
+
         if self.local_planner.is_done():
             control = VehicleControl()
             self.logger.debug("Path Following Agent is Done. Idling.")
