@@ -24,7 +24,7 @@ def main():
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
 
-        agent = FloodfillBasedLaneFollower(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
         jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
