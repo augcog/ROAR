@@ -256,18 +256,18 @@ class PIDLateralController:
         # calculate a vector that represent where you are going
         v_begin = vehicle_transform.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(vehicle_transform.rotation.yaw)),
-            y=math.sin(math.radians(vehicle_transform.rotation.yaw)),
-            z=0,
+            x=math.cos(math.radians(0)),
+            y=0,
+            z=math.sin(math.radians(0)),
         )
-        v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, 0.0])
+        v_vec = np.array([v_end.x - v_begin.x, 0.0, v_end.z - v_begin.z])
 
         # calculate error projection
         w_vec = np.array(
             [
                 target_waypoint.location.x - v_begin.x,
-                target_waypoint.location.y - v_begin.y,
                 0.0,
+                target_waypoint.location.z - v_begin.z,
             ]
         )
         _dot = math.acos(
