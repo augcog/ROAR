@@ -32,16 +32,9 @@ class PIDAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.visualizer = Visualizer(agent=self)
-
-        self.occupancy_grid_map = OccupancyGridMap(absolute_maximum_map_size=800)
-
         self.logger.debug(
             f"Waypoint Following Agent Initiated. Reading f"
             f"rom {self.route_file_path.as_posix()}")
-        self.curr_max_err = 0
-        self.counter = 0
-        self.total_err = 0
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:

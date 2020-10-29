@@ -256,9 +256,9 @@ class PIDLateralController:
         # calculate a vector that represent where you are going
         v_begin = vehicle_transform.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(0)),
+            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
             y=0,
-            z=math.sin(math.radians(0)),
+            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
         )
         v_vec = np.array([v_end.x - v_begin.x, 0.0, v_end.z - v_begin.z])
 
@@ -279,10 +279,10 @@ class PIDLateralController:
         )
 
         _cross = np.cross(v_vec, w_vec)
-
-        if _cross[2] < 0:
+        print(_cross)
+        if _cross[1] > 0:
             _dot *= -1.0
-
+        print(_dot)
         self._e_buffer.append(_dot)
         if len(self._e_buffer) >= 2:
             _de = (self._e_buffer[-1] - self._e_buffer[-2]) / self.dt

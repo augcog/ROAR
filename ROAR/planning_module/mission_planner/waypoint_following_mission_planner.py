@@ -80,7 +80,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         elif len(raw) == 6:
             return Transform(
                 location=Location(x=raw[0], y=raw[1], z=raw[2]),
-                rotation=Rotation(pitch=raw[4], yaw=raw[5], roll=raw[6]),
+                rotation=Rotation(roll=raw[3], pitch=raw[4], yaw=raw[5]),
             )
         else:
             self.logger.error(f"Point {raw} is invalid, skipping")
@@ -101,5 +101,4 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
             return [x, y, z]
         except:
             x, y, z, roll, pitch, yaw = line.split(",")
-            x, y, z = float(x), float(y), float(z)
-            return [x,y, z]
+            return [float(x), float(y), float(z), float(roll), float(pitch), float(yaw)]

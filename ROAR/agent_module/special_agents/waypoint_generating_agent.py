@@ -8,7 +8,7 @@ from pathlib import Path
 class WaypointGeneratigAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle=vehicle, agent_settings=agent_settings, **kwargs)
-        self.output_file_path: Path = self.output_folder_path / "RFS_Track.txt"
+        self.output_file_path: Path = self.output_folder_path / "easy_map_waypoints.txt"
         self.output_file = self.output_file_path.open('w')
 
     def run_step(self, sensors_data: SensorsData,
