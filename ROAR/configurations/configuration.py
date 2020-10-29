@@ -75,3 +75,4 @@ class Configuration(BaseModel):
                     "The bigger it is, the more impact it is going to have on the runtime computation"
                     "However, if it is smaller than the actual map, some weird things can happen")
     target_speed: int = 80
+    pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
