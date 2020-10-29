@@ -93,17 +93,14 @@ class LatitunalPurePursuitController:
         target_x = next_waypoint.location.x
         angle_difference = math.atan2(
             target_z - self.agent.vehicle.transform.location.z,
-            target_x - self.agent.vehicle.transform.location.x,
+            target_x - self.agent.vehicle.transform.location.x
         ) - np.radians(self.agent.vehicle.transform.rotation.pitch)
         curr_look_forward = (
                 self.look_ahead_gain * Vehicle.get_speed(vehicle=self.agent.vehicle)
                 + self.look_ahead_distance
         )
         lateral_difference = math.atan2(
-            2.0
-            * self.agent.vehicle.wheel_base
-            * math.sin(angle_difference)
-            / curr_look_forward,
+            2.0 * self.agent.vehicle.wheel_base * math.sin(angle_difference) / curr_look_forward,
             1.0,
         )
         return VehicleControl.clamp(lateral_difference, -1, 1)

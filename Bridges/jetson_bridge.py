@@ -90,10 +90,10 @@ class JetsonBridge(Bridge):
 
     def convert_vehicle_from_source_to_agent(self, source: JetsonVehicle) -> Vehicle:
         return Vehicle(transform=Transform(
-            location=Location(x=source.location[0], y=source.location[1], z=source.location[2]),
-            rotation=Rotation(pitch=source.rotation[0], yaw=source.rotation[1], roll=source.rotation[2]),
+            location=Location(x=-source.location[0], y=source.location[1], z=-source.location[2]),
+            rotation=Rotation(roll=-source.rotation[2], pitch=source.rotation[0], yaw=-source.rotation[1]),
         ),
-            velocity=Vector3D(x=source.velocity[0], y=source.velocity[1], z=source.velocity[2]),
+            velocity=Vector3D(x=-source.velocity[0], y=source.velocity[1], z=-source.velocity[2]),
             wheel_base=0.26,
             control=self.convert_control_from_source_to_agent(source=source)
         )

@@ -279,7 +279,7 @@ class PIDLateralController:
             y=math.sin(math.radians(vehicle_transform.rotation.yaw)),
             z=0,
         )
-        v_vec = np.array([v_end.x - v_begin.x, v_end.z - v_begin.z, 0.0])
+        v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, 0.0])
 
         # calculate error projection
         w_vec = np.array(
@@ -309,7 +309,7 @@ class PIDLateralController:
         else:
             _de = 0.0
             _ie = 0.0
-        # print(self.k_p, self.k_d, self.k_i, (self.k_p * _dot), (self.k_d * _de), (self.k_i * _ie))
+
         return float(
             np.clip((self.k_p * _dot) + (self.k_d * _de) + (self.k_i * _ie), -1.0, 1.0)
         )

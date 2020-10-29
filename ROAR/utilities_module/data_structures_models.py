@@ -46,7 +46,7 @@ class Rotation(BaseModel):
     roll: float = Field(..., title="Roll", description="Degree around the X-axis")
 
     def __str__(self):
-        return f"Pitch: {round(self.pitch, 2)}, Yaw: {round(self.yaw, 2)}, Roll: {round(self.roll,2)}"
+        return f"Roll: {round(self.roll, 2)}, Pitch: {round(self.pitch, 2)}, Yaw: {round(self.yaw, 2)}"
 
     def to_array(self) -> np.array:
         return np.array([self.pitch, self.yaw, self.roll])
@@ -92,6 +92,9 @@ class Transform(BaseModel):
     def __str__(self):
         return f"Location: {self.location.__str__()} | Rotation: {self.rotation.__str__()}"
 
+    def record(self):
+        return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
+
 
 class Vector3D(BaseModel):
     x: float = Field(default=0)
@@ -100,6 +103,7 @@ class Vector3D(BaseModel):
 
     def to_array(self):
         return np.array([self.x, self.y, self.z])
+
 
 class RGBData(BaseModel):
     data: np.ndarray = Field(

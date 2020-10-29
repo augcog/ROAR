@@ -140,4 +140,5 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         #     f"|curr_transform {vehicle_transform}"
         #     f"|Distance {int(curr_closest_dist)}")
         # print()
+        # print(vehicle_transform)
         return control
