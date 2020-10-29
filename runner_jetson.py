@@ -1,5 +1,4 @@
 from ROAR_Jetson.jetson_runner import JetsonRunner
-from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
@@ -13,6 +12,7 @@ import os
 import json
 import sys
 import serial
+
 
 
 def main():
@@ -61,4 +61,5 @@ if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
+
     main()
