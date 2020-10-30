@@ -117,11 +117,6 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                 break
 
         target_waypoint = self.way_points_queue[0]
-        # target_waypoint = Transform.average(self.way_points_queue[0], self.way_points_queue[1])
-        # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
-        # self.agent.vehicle.transform.rotation.pitch = -90
-        # self.agent.vehicle.transform.rotation.roll = 0
-        # self.agent.vehicle.transform.rotation.yaw = 0
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         print(f"Curr Trans: {self.agent.vehicle.transform}\n"
               f"Target loc: {target_waypoint}\n"
