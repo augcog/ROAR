@@ -15,15 +15,15 @@ from pathlib import Path
 
 class PIDController(Controller):
     def __init__(self, agent, steering_boundary: Tuple[float, float],
-                 throttle_boundary: Tuple[float, float], max_speed: float, **kwargs):
+                 throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
-        self.max_speed = max_speed
+        self.max_speed = self.agent.agent_settings.max_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
-                                                     max_speed=max_speed, config=self.config["longitudinal_controller"])
+                                                     max_speed=self.max_speed, config=self.config["longitudinal_controller"])
         self.lat_pid_controller = LatPIDController(
             agent=agent,
             config=self.config["latitudinal_controller"],
@@ -112,7 +112,6 @@ class LatPIDController(Controller):
                 1.0,
             )
         )
-        print(v_vec, w_vec)
         _cross = np.cross(v_vec, w_vec)
         if _cross[1] > 0:
             _dot *= -1.0
