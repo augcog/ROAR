@@ -1,7 +1,8 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
 from ROAR.control_module.pid_controller import PIDController
-from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import  SimpleWaypointFollowingLocalPlanner
+from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
+    SimpleWaypointFollowingLocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from ROAR.utilities_module.data_structures_models import SensorsData
@@ -15,7 +16,7 @@ class PIDAgent(Agent):
         self.target_speed = target_speed
         self.logger = logging.getLogger("PID Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1,1), throttle_boundary=(-1, 1))
+        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
 

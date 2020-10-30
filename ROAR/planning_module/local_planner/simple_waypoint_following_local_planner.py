@@ -112,6 +112,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             elif curr_dist < self.closeness_threshold:
                 # i have moved onto a waypoint, remove that waypoint from the queue
                 self.way_points_queue.popleft()
+                print("popping")
             else:
                 break
 
