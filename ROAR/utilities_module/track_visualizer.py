@@ -34,5 +34,5 @@ def visualize_track_data(track_data: List[List[float]]):
 
 
 if __name__ == "__main__":
-    track_data: List[List[float]] = read_txt(Path("./ROAR_Jetson/vive/data/RFS_Track.txt"))
+    track_data: List[List[float]] = read_txt(Path("./ROAR_Jetson/data/RFS_Track.txt"))
     visualize_track_data(track_data=track_data)
