@@ -2,7 +2,7 @@ from ROAR.planning_module.local_planner.local_planner import LocalPlanner
 from ROAR.utilities_module.data_structures_models import Transform
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 from ROAR.control_module.controller import Controller
-from ROAR.planning_module.mission_planner.mission_planner import  MissionPlanner
+from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 
 import logging
@@ -13,6 +13,7 @@ from ROAR.utilities_module.errors import (
 from ROAR.agent_module.agent import Agent
 import json
 from pathlib import Path
+
 
 class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
     def __init__(
@@ -118,10 +119,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
         target_waypoint = self.way_points_queue[0]
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        print(f"Curr Trans: {self.agent.vehicle.transform}\n"
-              f"Target loc: {target_waypoint}\n"
-              f"control:    {control}")
-        print()
+        # self.logger.debug(f"\nCurr Trans: {self.agent.vehicle.transform}\n"
+        #                   f"Target loc: {target_waypoint}\n"
+        #                   f"control:    {control}")
         return control
 
     def set_closeness_threhold(self, config: dict):

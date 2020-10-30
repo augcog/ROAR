@@ -9,6 +9,7 @@ class Controller(Module):
     def __init__(self, agent, **kwargs):
         super().__init__(**kwargs)
         self.agent = agent
+        self.logger = logging.getLogger("Controller")
 
     @abstractmethod
     def run_in_series(self, next_waypoint: Transform, **kwargs) \

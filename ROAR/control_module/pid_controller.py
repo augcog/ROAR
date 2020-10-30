@@ -57,6 +57,7 @@ class LongPIDController(Controller):
         self.max_speed = max_speed
         self.throttle_boundary = throttle_boundary
         self._error_buffer = deque(maxlen=10)
+
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
@@ -77,8 +78,8 @@ class LongPIDController(Controller):
             _ie = 0.0
         output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
                                self.throttle_boundary[1]))
-        print(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
-              f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
+        # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
+        #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
               #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
 
