@@ -74,7 +74,7 @@ class LongPIDController(Controller):
         else:
             _de = 0.0
             _ie = 0.0
-        output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), -1.0, 1.0))
+        output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0], self.throttle_boundary[1]))
         return output
 
 
@@ -126,5 +126,5 @@ class LatPIDController(Controller):
 
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
         return float(
-            np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), -1.0, 1.0)
+            np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )

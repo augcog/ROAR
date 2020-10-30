@@ -124,7 +124,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         print(f"Curr Trans: {self.agent.vehicle.transform}\n"
               f"Target loc: {target_waypoint}\n"
-              f"control    :{control}")
+              f"control:    {control}")
         print()
         return control
 

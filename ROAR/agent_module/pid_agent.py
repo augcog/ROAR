@@ -15,7 +15,7 @@ class PIDAgent(Agent):
         self.target_speed = target_speed
         self.logger = logging.getLogger("PID Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1,1), throttle_boundary=(-1,1),
+        self.pid_controller = PIDController(agent=self, steering_boundary=(-1,1), throttle_boundary=(-0.3, 0.3),
                                             max_speed=60)
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
