@@ -11,7 +11,8 @@ from ROAR.utilities_module.errors import (
     AgentException,
 )
 from ROAR.agent_module.agent import Agent
-
+import json
+from pathlib import Path
 
 class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
     def __init__(
@@ -40,6 +41,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         self.set_mission_plan()
         self.logger.debug("Simple Path Following Local Planner Initiated")
         self.closeness_threshold = closeness_threshold
+        self.closeness_threshold_config = json.load(Path(
+            agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
 
     def set_mission_plan(self) -> None:
         """
@@ -92,16 +95,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             raise AgentException("I do not know where I am, I cannot proceed forward")
 
         # redefine closeness level based on speed
-        curr_speed = Vehicle.get_speed(self.agent.vehicle)
-        if curr_speed < 60:
-            self.closeness_threshold = 5
-        elif curr_speed < 80:
-            self.closeness_threshold = 15
-        elif curr_speed < 120:
-            self.closeness_threshold = 20
-        else:
-            self.closeness_threshold = 50
-        # print(f"Curr closeness threshold = {self.closeness_threshold}")
+        self.set_closeness_threhold(self.closeness_threshold_config)
 
         # get current waypoint
         curr_closest_dist = float("inf")
@@ -124,10 +118,20 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         target_waypoint = self.way_points_queue[0]
         # target_waypoint = Transform.average(self.way_points_queue[0], self.way_points_queue[1])
         # target_waypoint = Transform.average(self.way_points_queue[2], target_waypoint)
-
+        # self.agent.vehicle.transform.rotation.pitch = -90
+        # self.agent.vehicle.transform.rotation.roll = 0
+        # self.agent.vehicle.transform.rotation.yaw = 0
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        # print(f"Curr Trans: {self.agent.vehicle.transform}\n"
-        #       f"Target loc: {target_waypoint}\n"
-        #       f"control    :{control}")
-        # print()
+        print(f"Curr Trans: {self.agent.vehicle.transform}\n"
+              f"Target loc: {target_waypoint}\n"
+              f"control    :{control}")
+        print()
         return control
+
+    def set_closeness_threhold(self, config: dict):
+        curr_speed = Vehicle.get_speed(self.agent.vehicle)
+        for speed_upper_bound, closeness_threshold in config.items():
+            speed_upper_bound = float(speed_upper_bound)
+            if curr_speed < speed_upper_bound:
+                self.closeness_threshold = closeness_threshold
+                break

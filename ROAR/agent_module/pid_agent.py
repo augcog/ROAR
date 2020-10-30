@@ -2,7 +2,7 @@ from ROAR.agent_module.agent import Agent
 from pathlib import Path
 from ROAR.control_module.pid_controller import PIDController
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import  SimpleWaypointFollowingLocalPlanner
-from ROAR.planning_module.behavior_planner .behavior_planner import BehaviorPlanner
+from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
@@ -36,7 +36,6 @@ class PIDAgent(Agent):
         super(PIDAgent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
-        # print(self.vehicle.transform.location)
         if self.local_planner.is_done():
             control = VehicleControl()
             self.logger.debug("Path Following Agent is Done. Idling.")

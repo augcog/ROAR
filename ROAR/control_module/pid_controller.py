@@ -91,9 +91,9 @@ class LatPIDController(Controller):
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch + 60)),
             y=0,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch + 60)),
         )
         v_vec = np.array([v_end.x - v_begin.x, 0.0, v_end.z - v_begin.z])
 
@@ -112,7 +112,7 @@ class LatPIDController(Controller):
                 1.0,
             )
         )
-
+        print(v_vec, w_vec)
         _cross = np.cross(v_vec, w_vec)
         if _cross[1] > 0:
             _dot *= -1.0

@@ -3,7 +3,7 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 # from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
-from ROAR.agent_module.jetson_pid_agent import PIDAgent
+from ROAR.agent_module.pid_agent import PIDAgent
 # from ROAR.agent_module.jetson_pure_pursuit_agent import PurePursuitAgent
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from pathlib import Path

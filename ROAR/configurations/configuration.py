@@ -76,3 +76,5 @@ class Configuration(BaseModel):
                     "However, if it is smaller than the actual map, some weird things can happen")
     target_speed: int = 80
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
+    simple_waypoint_local_planner_config_file_path: str = \
+        Field(default="./ROAR/ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
