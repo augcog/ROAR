@@ -7,20 +7,20 @@ from ROAR.planning_module.mission_planner.waypoint_following_mission_planner imp
     WaypointFollowingMissionPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import \
     BehaviorPlanner
-from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
+from ROAR.planning_module.local_planner.tmp_jetson_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 
 
 class PurePursuitAgent(Agent):
-    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, target_speed=50):
-        super().__init__(vehicle=vehicle, agent_settings=agent_settings)
+    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, target_speed=3, **kwargs):
+        super().__init__(vehicle=vehicle, agent_settings=agent_settings, **kwargs)
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         self.pure_pursuit_controller = \
             PurePursuitController(agent=self,
                                   target_speed=target_speed,
                                   look_ahead_gain=0.1,
-                                  look_ahead_distance=3)
+                                  look_ahead_distance=0.1)
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
 
         # initiated right after mission plan
@@ -30,7 +30,7 @@ class PurePursuitAgent(Agent):
             controller=self.pure_pursuit_controller,
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
-            closeness_threshold=3)
+            closeness_threshold=0.1)
 
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:

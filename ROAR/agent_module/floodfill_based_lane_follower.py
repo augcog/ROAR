@@ -10,8 +10,8 @@ import numpy as np
 
 
 class FloodfillBasedLaneFollower(Agent):
-    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig):
-        super().__init__(vehicle, agent_settings)
+    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
+        super().__init__(vehicle, agent_settings, **kwargs)
         self.controller = VehiclePIDController(agent=self, args_lateral=PIDParam.default_lateral_param(),
                                                args_longitudinal=PIDParam.default_longitudinal_param())
         self.floodfill_lane_detector = FloodfillLaneDetector(agent=self)
@@ -21,7 +21,7 @@ class FloodfillBasedLaneFollower(Agent):
         try:
             img = self.floodfill_lane_detector.run_in_series()
 
-            # left, front, right dot img location
+            # left, front, right_steering dot img location
             left_dot_coord = (self.front_rgb_camera.image_size_x // 4, 350)
             center_dot_coord = (self.front_rgb_camera.image_size_x // 2, 350)
             right_dot_coord = (self.front_rgb_camera.image_size_x - (self.front_rgb_camera.image_size_x // 4), 350)
@@ -39,17 +39,18 @@ class FloodfillBasedLaneFollower(Agent):
                                 color=(0, 0, 255), thickness=-1)
             cv2.imshow("rgb image", result)
             cv2.waitKey(1)
+            straight_throttle, turning_throttle, left_steering, right_steering = 0.18, 0.15, -0.4, 0.4
             throttle, steering = 0, 0
             if bool(left_ok) is False:
-                print("GO RIGHT!")
-                throttle = 0.3
-                steering = 0.5
+                # print("GO RIGHT!")
+                throttle = turning_throttle
+                steering = left_steering
             elif bool(right_ok) is False:
-                print("GO LEFT!")
-                throttle = 0.3
-                steering = -0.5
+                # print("GO LEFT!")
+                throttle = turning_throttle
+                steering = right_steering
             elif center_ok:
-                throttle, steering = 0.3, 0
+                throttle, steering = straight_throttle, 0
             # if center_ok:
             #     throttle, steering = 0.5, 0
             # elif left_ok:
@@ -59,7 +60,7 @@ class FloodfillBasedLaneFollower(Agent):
             #     throttle = 0.3
             #     steering = 0.5
 
-            self.logger.info(f"Throttle = {throttle}, steering = {steering}")
+            # self.logger.info(f"Throttle = {throttle}, steering = {steering}")
             return VehicleControl(throttle=throttle, steering=steering)
         except:
             return VehicleControl()
