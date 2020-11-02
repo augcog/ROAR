@@ -1,9 +1,11 @@
 from ROAR_Jetson.jetson_runner import JetsonRunner
-from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.agent_module.ar_marker_agent import ARMarkerAgent
+# from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
+from ROAR.agent_module.pid_agent import PIDAgent
+# from ROAR.agent_module.jetson_pure_pursuit_agent import PurePursuitAgent
+from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from pathlib import Path
 import logging
 import warnings
@@ -12,6 +14,7 @@ import os
 import json
 import sys
 import serial
+
 
 
 def main():
@@ -23,10 +26,9 @@ def main():
             prepare(jetson_config=jetson_config)
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
-
-        agent = ARMarkerAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=True)
+        jetson_runner.start_game_loop(use_manual_control=False)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -60,4 +62,5 @@ if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
+
     main()

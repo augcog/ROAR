@@ -2,16 +2,21 @@ from ROAR.agent_module.agent import Agent
 from ROAR.perception_module.detector import Detector
 import numpy as np
 from typing import Optional
+import time
 
 
 class DepthToPointCloudDetector(Detector):
     def __init__(self,
                  agent: Agent,
-                 compute_global_pointcloud: bool = False,
-                 max_detectable_distance: float = 0.05,
+                 should_compute_global_pointcloud: bool = False,
+                 should_sample_points: bool = False,
+                 should_filter_by_distance: float = False,
+                 max_detectable_distance: float = 1,
                  max_points_to_convert=10000):
         super().__init__(agent)
-        self.compute_global_pointcloud = compute_global_pointcloud
+        self.should_compute_global_pointcloud = should_compute_global_pointcloud
+        self.should_sample_points = should_sample_points
+        self.should_filter_by_distance = should_filter_by_distance
         self.max_detectable_distance = max_detectable_distance
         self.max_points_to_convert = max_points_to_convert
 
@@ -22,44 +27,25 @@ class DepthToPointCloudDetector(Detector):
         """
         if self.agent.front_depth_camera.data is not None:
             depth_img = self.agent.front_depth_camera.data.copy()
-            coords = np.where(depth_img < 2)
-            # indices_to_select = np.random.choice(np.shape(coords)[1],
-            #                                      size=min([self.max_points_to_convert, np.shape(coords)[1]]),
-            #                                      replace=False)
-            #
-            # coords = (
-            #     coords[0][indices_to_select],
-            #     coords[1][indices_to_select]
-            # )
-            raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=coords[0], j=coords[1]),
-                                 (3, np.shape(coords)[1])).T
-
-            cords_y_minus_z_x = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
-            if self.compute_global_pointcloud:
-                cords_xyz_1 = np.vstack([
-                    cords_y_minus_z_x[2, :],
-                    cords_y_minus_z_x[0, :],
-                    -cords_y_minus_z_x[1, :],
-                    np.ones((1, np.shape(cords_y_minus_z_x)[1]))
-                ])
-                points: np.ndarray = self.agent.vehicle.transform.get_matrix() @ self.agent.front_depth_camera.transform.get_matrix() @ cords_xyz_1
-                points = points.T[:, :3]
-                return points
+            if self.should_filter_by_distance:
+                coords = np.where(depth_img < self.max_detectable_distance)
             else:
-                cords_xyz_1 = np.vstack([
-                    cords_y_minus_z_x[2, :],
-                    cords_y_minus_z_x[0, :],
-                    -cords_y_minus_z_x[1, :],
-                    np.ones((1, np.shape(cords_y_minus_z_x)[1]))
-                ])
-                points = self.agent.vehicle.transform.get_matrix() @ self.agent.front_depth_camera.transform.get_matrix() @ cords_xyz_1
-                return points.T[:, :3]
+                coords = np.where(depth_img < 2)
+            if self.should_sample_points and np.shape(coords)[1] > self.max_points_to_convert:
+                coords = np.random.choice(a=coords, size=self.max_points_to_convert, replace=False)
+
+            depths = depth_img[coords][:, np.newaxis] * 1000
+            result = np.multiply(np.array(coords).T, depths)
+            raw_p2d = np.hstack((result, depths))
+            cords_xyz = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
+            if self.should_compute_global_pointcloud:
+                cords_xyz_1 = np.vstack([cords_xyz, np.ones((1, np.shape(cords_xyz)[1]))])
+                return (self.agent.vehicle.transform.get_matrix() @ self.agent.front_depth_camera.transform.get_matrix() @ cords_xyz_1)[:3, :].T
+            else:
+                return cords_xyz.T
         return None
 
     @staticmethod
-    def _pix2xyz(depth_img, i, j):
-        return [
-            depth_img[i, j] * j * 1000,
-            depth_img[i, j] * i * 1000,
-            depth_img[i, j] * 1000
-        ]
+    def find_fps(t1, t2):
+        return 1 / (t2 - t1)
+

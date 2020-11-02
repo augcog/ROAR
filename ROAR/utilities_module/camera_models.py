@@ -46,7 +46,7 @@ class Camera(BaseModel):
         intrinsics_matrix[0, 0] = self.image_size_x / (
             2.0 * np.tan(self.fov * np.pi / 360.0)
         )
-        intrinsics_matrix[1, 1] = self.image_size_x / (
+        intrinsics_matrix[1, 1] = self.image_size_y / (
             2.0 * np.tan(self.fov * np.pi / 360.0)
         )
         self.intrinsics_matrix = intrinsics_matrix

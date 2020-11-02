@@ -35,12 +35,12 @@ class CarlaBridge(Bridge):
         Returns:
 
         """
-        return Location(x=source.x, y=source.y, z=source.z)
+        return Location(x=source.x, y=source.z, z=source.y)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
 
-        return Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
+        return Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform
@@ -83,6 +83,7 @@ class CarlaBridge(Bridge):
             array = array[:, :, ::-1]  # RGB
             # array = array.swapaxes(0, 1)
             array = png_to_depth(array)
+            # print(array[350][160], array[350][688])
             return DepthData(data=array)
         except:
             return None
@@ -150,10 +151,10 @@ class CarlaBridge(Bridge):
         return carla.Vector3D(x=vector3d.x, y=vector3d.y, z=vector3d.z)
 
     def convert_location_from_agent_to_source(self, source: Location) -> carla.Location:
-        return carla.Location(x=source.x, y=source.y, z=source.z)
+        return carla.Location(x=source.x, y=source.z, z=source.y)
 
     def convert_rotation_from_agent_to_source(self, source: Rotation) -> carla.Rotation:
-        return carla.Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
+        return carla.Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
 
     def convert_transform_from_agent_to_source(
             self, source: Transform

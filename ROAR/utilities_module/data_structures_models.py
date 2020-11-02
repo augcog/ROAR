@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 import numpy as np
 from scipy.spatial import distance
-from typing import Union
+from typing import Union, Optional
 from typing import List
 
 
@@ -34,7 +34,7 @@ class Location(BaseModel):
         return Location(x=self.x + other.x, y=self.y + other.y, z=self.z + other.z)
 
     def __str__(self):
-        return f"{self.x:.3},{self.y:.3},{self.z:.3}"
+        return f"x: {self.x:.3}, y: {self.y:.3}, z: {self.z:.3}"
 
     def to_array(self) -> np.array:
         return np.array([self.x, self.y, self.z])
@@ -46,7 +46,7 @@ class Rotation(BaseModel):
     roll: float = Field(..., title="Roll", description="Degree around the X-axis")
 
     def __str__(self):
-        return f"{self.pitch},{self.yaw},{self.roll}"
+        return f"Roll: {round(self.roll, 2)}, Pitch: {round(self.pitch, 2)}, Yaw: {round(self.yaw, 2)}"
 
     def to_array(self) -> np.array:
         return np.array([self.pitch, self.yaw, self.roll])
@@ -90,14 +90,19 @@ class Transform(BaseModel):
         return matrix
 
     def __str__(self):
-        return f"{self.location.x},{self.location.y},{self.location.z}," \
-               f"{self.rotation.pitch},{self.rotation.yaw},{self.rotation.roll}"
+        return f"Location: {self.location.__str__()} | Rotation: {self.rotation.__str__()}"
+
+    def record(self):
+        return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
 
 
 class Vector3D(BaseModel):
     x: float = Field(default=0)
     y: float = Field(default=0)
     z: float = Field(default=0)
+
+    def to_array(self):
+        return np.array([self.x, self.y, self.z])
 
 
 class RGBData(BaseModel):
@@ -131,11 +136,19 @@ class IMUData(BaseModel):
     )
 
 
+class ViveTrackerData(BaseModel):
+    location: Location = Field(default=Location(x=0, y=0, z=0))
+    rotation: Rotation = Field(default=Rotation(roll=0, pitch=0, yaw=0))
+    velocity: Vector3D = Field()
+    tracker_name: str = Field(default="Tracker")
+
+
 class SensorsData(BaseModel):
     front_rgb: Union[RGBData, None] = Field(default=None)
     rear_rgb: Union[RGBData, None] = Field(default=None)
     front_depth: Union[DepthData, None] = Field(default=None)
     imu_data: Union[IMUData, None] = Field(default=None)
+    vive_tracker_data: Optional[ViveTrackerData] = Field(default=None)
 
 
 class MapEntry(BaseModel):

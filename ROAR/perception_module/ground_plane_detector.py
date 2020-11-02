@@ -7,30 +7,22 @@ import time, cv2
 
 
 class GroundPlaneDetector(DepthToPointCloudDetector):
-    def __init__(self, agent: Agent, knn: int = 200, *args):
-        super().__init__(agent, *args)
+    def __init__(self, agent: Agent, knn: int = 200, **kwargs):
+        super().__init__(agent, **kwargs)
         self.reference_norm: Optional[np.ndarray] = np.array([-0.00000283, -0.00012446, 0.99999999])
         self.knn = knn
         self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me()
 
     def run_in_series(self) -> Any:
-        t1 = time.time()
         points = super(GroundPlaneDetector, self).run_in_series()  # Nx3
-        t2 = time.time()
-
-        t3 = time.time()
         x = points[self.f3, :] - points[self.f4, :]
         y = points[self.f1, :] - points[self.f2, :]
         normals = self.normalize_v3(np.cross(x, y))
-        t4 = time.time()
-
-        t5 = time.time()
         # OpenCV FloodFill
         d1 = self.agent.front_depth_camera.image_size_y
         d2 = self.agent.front_depth_camera.image_size_x
         curr_img = normals.reshape((int(d1/4), int(d2/4), 3)).astype(np.float32)
         seed_point = (int(d1/4) - 1, int(int(d2/4) / 2))
-        # print(curr_img.dtype)
         _, retval, _, _ = cv2.floodFill(image=curr_img,
                                         seedPoint=seed_point,
                                         newVal=(0, 0, 0),
@@ -42,21 +34,9 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         bool_indices = np.indices(bool_zeros.shape)[0][::16]
         bool_zeros[bool_indices] = bool_matrix.flatten()
         bool_matrix = bool_zeros.reshape((d1, d2))
-        t6 = time.time()
-
-        """
-        norm_flat = normals @ self.reference_norm
-        norm_matrix = norm_flat.reshape((self.agent.front_depth_camera.image_size_y,
-                                         self.agent.front_depth_camera.image_size_x))
-        bool_matrix = norm_matrix > 0.95
-        """
 
         color_image = self.agent.front_rgb_camera.data.copy()
-        print("got here")
-        print(bool_matrix, bool_matrix.shape)
         color_image[bool_matrix > 0] = 255
-        t4 = time.time()
-        print(1 / (t2-t1), 1 / (t4-t3), 1 / (t6-t5))
         cv2.imshow('Color', color_image)
         cv2.waitKey(1)
 

@@ -29,8 +29,8 @@ class PurePursuitController(Controller):
         """
 
         super(PurePursuitController, self).__init__(agent=agent)
-        self.target_speed = self.agent.agent_settings.target_speed \
-            if self.agent.agent_settings.target_speed else target_speed
+        self.target_speed = self.agent.agent_settings.max_speed \
+            if self.agent.agent_settings.max_speed else target_speed
         self.look_ahead_gain = look_ahead_gain
         self.look_ahead_distance = look_ahead_distance
         self.latitunal_controller = LatitunalPurePursuitController(
@@ -89,21 +89,18 @@ class LatitunalPurePursuitController:
         self.look_ahead_distance = look_ahead_distance
 
     def run_step(self, next_waypoint: Transform) -> float:
-        target_y = next_waypoint.location.y
+        target_z = next_waypoint.location.z
         target_x = next_waypoint.location.x
         angle_difference = math.atan2(
-            target_y - self.agent.vehicle.transform.location.y,
-            target_x - self.agent.vehicle.transform.location.x,
-        ) - np.radians(self.agent.vehicle.transform.rotation.yaw)
+            target_z - self.agent.vehicle.transform.location.z,
+            target_x - self.agent.vehicle.transform.location.x
+        ) - np.radians(self.agent.vehicle.transform.rotation.pitch)
         curr_look_forward = (
                 self.look_ahead_gain * Vehicle.get_speed(vehicle=self.agent.vehicle)
                 + self.look_ahead_distance
         )
         lateral_difference = math.atan2(
-            2.0
-            * self.agent.vehicle.wheel_base
-            * math.sin(angle_difference)
-            / curr_look_forward,
+            2.0 * self.agent.vehicle.wheel_base * math.sin(angle_difference) / curr_look_forward,
             1.0,
         )
         return VehicleControl.clamp(lateral_difference, -1, 1)

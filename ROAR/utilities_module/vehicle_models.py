@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 import math
-from ROAR.utilities_module.data_structures_models import Transform,Vector3D
+from ROAR.utilities_module.data_structures_models import Transform, Vector3D
 
 
 class VehicleControl(BaseModel):
@@ -28,7 +28,7 @@ class Vehicle(BaseModel):
     Encodes the Vehicle's state at the last tick
     """
 
-    velocity: Optional[Vector3D] = Field(default=Vector3D(x=0,y=0,z=0))
+    velocity: Optional[Vector3D] = Field(default=Vector3D(x=0, y=0, z=0))
     transform: Optional[Transform] = Field(default=Transform())
     control: VehicleControl = Field(default=VehicleControl())  # ?
     wheel_base: float = Field(
@@ -39,6 +39,7 @@ class Vehicle(BaseModel):
 
     @staticmethod
     def get_speed(vehicle):
+        # TODO consider the jetson case
         """
         Compute speed of a vehicle in Km/h.
 
@@ -47,3 +48,4 @@ class Vehicle(BaseModel):
         """
         vel = vehicle.velocity
         return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
+
