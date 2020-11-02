@@ -97,17 +97,17 @@ class LatPIDController(Controller):
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch + 60)),
-            y=0,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch + 60)),
+            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            y=v_begin.y,
+            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
         )
-        v_vec = np.array([v_end.x - v_begin.x, 0.0, v_end.z - v_begin.z])
+        v_vec = np.array([v_end.x - v_begin.x,v_end.y - v_begin.y, v_end.z - v_begin.z])
 
         # calculate error projection
         w_vec = np.array(
             [
                 next_waypoint.location.x - v_begin.x,
-                0.0,
+                next_waypoint.location.y - v_begin.y,
                 next_waypoint.location.z - v_begin.z,
             ]
         )
@@ -130,6 +130,8 @@ class LatPIDController(Controller):
             _ie = 0.0
 
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        return float(
+
+        lat_control = float(
             np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
+        return lat_control
