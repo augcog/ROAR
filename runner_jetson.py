@@ -16,7 +16,6 @@ import sys
 import serial
 
 
-
 def main():
     try:
         agent_config = AgentConfig.parse_file(Path("./ROAR_Jetson/configurations/agent_configuration.json"))
