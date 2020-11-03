@@ -1,7 +1,7 @@
 from ROAR.agent_module.agent import Agent
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
-from ROAR.perception_module.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
+from ROAR.perception_module.legacy.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
 from ROAR.visualization_module.visualizer import Visualizer
 import numpy as np
 import cv2
