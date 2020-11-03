@@ -7,10 +7,10 @@ import numpy as np
 import cv2
 from ROAR.agent_module.agent import Agent
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
-from typing import Optional, List
-from ROAR.perception_module.semantic_segmentation_detector import SemanticSegmentationDetector
+from typing import Optional
+from ROAR.perception_module.legacy.semantic_segmentation_detector import SemanticSegmentationDetector
 from deprecated import deprecated
-from ROAR.perception_module.point_cloud_detector import PointCloudDetector
+from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
 
 
 class Visualizer:

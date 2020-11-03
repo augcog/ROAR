@@ -2,17 +2,14 @@ from ROAR.agent_module.agent import Agent
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 
-from ROAR.perception_module.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
+from ROAR.perception_module.legacy.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from ROAR.control_module.pure_pursuit_control import PurePursuitController
 from pathlib import Path
-from ROAR.visualization_module.visualizer import Visualizer
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
-import numpy as np
-import open3d as o3d
 
 
 class PointCloudAgent(Agent):

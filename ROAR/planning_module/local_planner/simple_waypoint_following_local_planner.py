@@ -118,9 +118,6 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
         target_waypoint = self.way_points_queue[0]
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        # self.logger.debug(f"\nCurr Trans: {self.agent.vehicle.transform}\n"
-        #                   f"Target loc: {target_waypoint}\n"
-        #                   f"control:    {control} | curr_speed: {Vehicle.get_speed(self.agent.vehicle)}")
         return control
 
     def set_closeness_threhold(self, config: dict):

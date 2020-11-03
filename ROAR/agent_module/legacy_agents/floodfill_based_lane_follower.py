@@ -3,7 +3,7 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 from ROAR.control_module.pid_controller import VehiclePIDController
-from ROAR.perception_module.flood_fill_lane_detector import FloodfillLaneDetector
+from ROAR.perception_module.legacy.flood_fill_lane_detector import FloodfillLaneDetector
 from ROAR.control_module.pid_controller import PIDParam
 import cv2
 import numpy as np

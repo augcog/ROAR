@@ -1,7 +1,7 @@
 from ROAR.agent_module.agent import Agent
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
-from ROAR.perception_module.semantic_segmentation_detector import GroundPlaneDetector
+from ROAR.perception_module.legacy.semantic_segmentation_detector import GroundPlaneDetector
 import cv2
 import numpy as np
 from ROAR.planning_module.local_planner .simple_waypoint_following_local_planner import SimpleWaypointFollowingLocalPlanner

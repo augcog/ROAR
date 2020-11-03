@@ -1,5 +1,5 @@
 from typing import Any
-from ROAR.perception_module.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
+from ROAR.perception_module.legacy.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
 import cv2
 import numpy as np
 import open3d as o3d
