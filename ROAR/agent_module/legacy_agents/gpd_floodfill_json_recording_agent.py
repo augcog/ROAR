@@ -1,4 +1,4 @@
-from ROAR.agent_module.gpd_floodfill_agent import GPDFloodFillAgent
+from ROAR.agent_module.legacy_agents.gpd_floodfill_agent import GPDFloodFillAgent
 import cv2
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 from ROAR.configurations.configuration import Configuration as AgentConfig

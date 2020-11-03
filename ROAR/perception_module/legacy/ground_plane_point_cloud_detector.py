@@ -1,12 +1,7 @@
-from ROAR.perception_module.detector import Detector
 import logging
 import open3d as o3d
 import numpy as np
-import cv2
-import time
-from typing import Optional
-from ROAR.perception_module.point_cloud_detector import PointCloudDetector
-from ROAR.utilities_module.data_structures_models import Transform, Location, Rotation
+from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
 
 
 class GroundPlanePointCloudDetector(PointCloudDetector):

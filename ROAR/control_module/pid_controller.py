@@ -71,7 +71,7 @@ class LongPIDController(Controller):
 
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
-            _de = abs((self._error_buffer[-2] - self._error_buffer[-1])) / self._dt
+            _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
             _ie = sum(self._error_buffer) * self._dt
         else:
             _de = 0.0

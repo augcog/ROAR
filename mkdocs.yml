@@ -1,0 +1,14 @@
+site_name: ROAR Documentation
+site_description: Robot Open Autonomous Racing is a platform/competition dedicated to teaching students to gain a holistic view and hands-on(virtual) experiences about building a high-performance fully-autonomous 1/10 scale RC car from scratch.
+nav:
+    - About:
+      - Introduction: introduction.md
+      - Architecture: architecture.md
+    - Quick Start: quickstart.md
+
+
+theme:
+  name: material
+
+plugins:
+  - search
