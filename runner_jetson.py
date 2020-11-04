@@ -55,7 +55,7 @@ def allow_dev_access(pwd):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='%(levelname)s - %(asctime)s - %(name)s '
+    logging.basicConfig(format='[%(levelname)s] - [%(asctime)s] - [%(name)s] '
                                '- %(message)s',
                         level=logging.DEBUG)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
