@@ -76,7 +76,7 @@ class JetsonBridge(Bridge):
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
-                    pitch=source.pitch,
+                    pitch=source.pitch + 70,
                     yaw=-source.yaw
                 ),
                 velocity=Vector3D(
