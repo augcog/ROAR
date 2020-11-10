@@ -119,7 +119,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         target_waypoint = self.way_points_queue[0]
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         self.logger.debug(f"\n"
-                          f"Curr Location: {self.agent.vehicle.transform.location}\n"
+                          f"Curr Transform: {self.agent.vehicle.transform}\n"
                           f"Target Location: {target_waypoint.location}\n"
                           f"Control: {control} | Speed: {Vehicle.get_speed(self.agent.vehicle)}\n")
         return control
