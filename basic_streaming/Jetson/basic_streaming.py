@@ -42,7 +42,7 @@ def send_csi():
                 framerate=30,
                 flip_method=0),
             cv2.CAP_GSTREAMER)
-    # initialize GStreamer Sender pipeline for CSI
+    # initialize GStreamer Sender pipeline for CSI, using port 5000
     out_send = cv2.VideoWriter(
                     "appsrc ! "
                     "videoconvert ! "
@@ -92,7 +92,7 @@ def send_rs():
     cfg = rs.config()
     cfg.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30) # color camera
     pipe.start(cfg)
-    # initialize GStreamer Sender pipeline for RealSense
+    # initialize GStreamer Sender pipeline for RealSense, using port 5001
     out_send = cv2.VideoWriter(
                     "appsrc ! "
                     "videoconvert ! "
