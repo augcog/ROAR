@@ -74,12 +74,14 @@ def send_csi():
             break
         out_send.write(frame)
 
-        # Optional: displaying what is beint sent
-        cv2.imshow("CSI Camera Streaming", frame)
-        keyCode = cv2.waitKey(30) & 0xFF
-        # Stop the program on the ESC key
-        if keyCode == 27:
-            break
+        ##### Optional: displaying what is beint sent
+        ##### Note: it will cause the streaming to be laggy!
+        # cv2.imshow("CSI Camera Streaming", frame)
+        # keyCode = cv2.waitKey(30) & 0xFF
+        # # Stop the program on the ESC key
+        # if keyCode == 27:
+        #     break
+        ##### Optional End
     # cleaning at end
     cap_send.release()
     out_send.release()
@@ -117,18 +119,18 @@ def send_rs():
         img = np.asanyarray(color_frame.get_data())
         out_send.write(img)
 
-        # Optional: displaying what is beint sent
-        cv2.imshow("RealSense Camera Streaming", img)
-        keyCode = cv2.waitKey(30) & 0xFF
-        # Stop the program on the ESC key
-        if keyCode == 27:
-            break
+        ##### Optional: displaying what is beint sent
+        ##### Note: it will cause the streaming to be laggy!
+        # cv2.imshow("RealSense Camera Streaming", img)
+        # keyCode = cv2.waitKey(30) & 0xFF
+        # # Stop the program on the ESC key
+        # if keyCode == 27:
+        #     break
+        ##### Optional End
     # cleaning at end
     out_send.release()
 
 if __name__ == '__main__':
-    #send()
-    #sendrs()
     csi_cam = Process(target=send_csi)
     realsense_cam = Process(target=send_rs)
     csi_cam.start()
