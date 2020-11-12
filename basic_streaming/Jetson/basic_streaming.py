@@ -31,7 +31,7 @@ def gstreamer_pipeline(
             )
         )
 
-def send():
+def send_csi():
     # initialize CSI camera
     cap_send =cv2.VideoCapture(
             gstreamer_pipeline(
@@ -68,16 +68,23 @@ def send():
         exit(0)
     # actual streaming data
     while True:
-        ret,frame = cap_send.read()
+        ret, frame = cap_send.read()
         if not ret:
             print('empty frame')
             break
         out_send.write(frame)
+
+        # Optional: displaying what is beint sent
+        cv2.imshow("CSI Camera Streaming", frame)
+        keyCode = cv2.waitKey(30) & 0xFF
+        # Stop the program on the ESC key
+        if keyCode == 27:
+            break
     # cleaning at end
     cap_send.release()
     out_send.release()
 
-def sendrs():
+def send_rs():
     # initialize RealSense camera
     pipe = rs.pipeline()
     cfg = rs.config()
@@ -109,15 +116,22 @@ def sendrs():
         color_frame = frames.get_color_frame()
         img = np.asanyarray(color_frame.get_data())
         out_send.write(img)
+
+        # Optional: displaying what is beint sent
+        cv2.imshow("RealSense Camera Streaming", img)
+        keyCode = cv2.waitKey(30) & 0xFF
+        # Stop the program on the ESC key
+        if keyCode == 27:
+            break
     # cleaning at end
     out_send.release()
 
 if __name__ == '__main__':
     #send()
     #sendrs()
-    s = Process(target=send)
-    r = Process(target=sendrs)
-    s.start()
-    r.start()
-    s.join()
-    r.join()
+    csi = Process(target=send_csi)
+    rs = Process(target=send_rs)
+    csi.start()
+    rs.start()
+    csi.join()
+    rs.join()
