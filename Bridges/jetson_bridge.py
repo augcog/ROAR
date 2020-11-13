@@ -70,9 +70,9 @@ class JetsonBridge(Bridge):
         if source is not None:
             vive_tracker_data = ViveTrackerData(
                 location=Location(
-                    x=source.x,
+                    x=-source.x,
                     y=source.y,
-                    z=source.z
+                    z=-source.z
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
