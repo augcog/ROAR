@@ -49,8 +49,8 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path)
 
 
 def suppress_warnings():
-    logging.basicConfig(format='%(asctime)s - %(name)s '
-                               '- %(levelname)s - %(message)s',
+    logging.basicConfig(format='%(levelname)s - %(asctime)s - %(name)s '
+                               '- %(message)s',
                         level=logging.INFO)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")

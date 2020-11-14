@@ -16,7 +16,6 @@ import sys
 import serial
 
 
-
 def main():
     try:
         agent_config = AgentConfig.parse_file(Path("./ROAR_Jetson/configurations/agent_configuration.json"))
@@ -28,7 +27,7 @@ def main():
             logging.error(f"Ignoring Error during setup: {e}")
         agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=True)
+        jetson_runner.start_game_loop(use_manual_control=False)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -56,8 +55,8 @@ def allow_dev_access(pwd):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s - %(name)s '
-                               '- %(levelname)s - %(message)s',
+    logging.basicConfig(format='[%(levelname)s] - [%(asctime)s] - [%(name)s] '
+                               '- %(message)s',
                         level=logging.DEBUG)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")

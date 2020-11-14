@@ -4,3 +4,6 @@
 [submodule "ROAR_Sim"]
 	path = ROAR_Sim
 	url = https://github.com/augcog/ROAR_Sim.git
+[submodule "ROAR_Desktop"]
+	path = ROAR_Desktop
+	url = https://github.com/wuxiaohua1011/ROAR_Desktop.git
