@@ -35,7 +35,7 @@ def main():
 def prepare(jetson_config: JetsonConfig):
     if 'win' in sys.platform:
         # windows, just detect whether arduino exist on COM4
-        s = serial.Serial("COM4")
+        s = serial.Serial("COM3")
         status = s.isOpen()
     else:
         # assume that this is going to be a unix based system

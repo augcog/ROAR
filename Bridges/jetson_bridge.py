@@ -68,11 +68,12 @@ class JetsonBridge(Bridge):
     def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
             Optional[ViveTrackerData]:
         if source is not None:
+            scale_factor = 10000000  # 1000 from models, 10000 from m to mm
             vive_tracker_data = ViveTrackerData(
                 location=Location(
-                    x=-source.x,
-                    y=source.y,
-                    z=-source.z
+                    x=-source.x/scale_factor,
+                    y=source.y/scale_factor,
+                    z=-source.z/scale_factor
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
@@ -80,9 +81,9 @@ class JetsonBridge(Bridge):
                     yaw=-source.yaw
                 ),
                 velocity=Vector3D(
-                    x=source.vel_x,
-                    y=source.vel_y,
-                    z=source.vel_z
+                    x=source.vel_x/scale_factor,
+                    y=source.vel_y/scale_factor,
+                    z=source.vel_z/scale_factor
                 )
             )
             return vive_tracker_data
