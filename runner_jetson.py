@@ -14,6 +14,7 @@ import os
 import json
 import sys
 import serial
+import argparse
 
 
 def main():
@@ -54,12 +55,24 @@ def allow_dev_access(pwd):
     return True if p == 0 else False
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 if __name__ == "__main__":
-    logging.basicConfig(format='[%(levelname)s] - [%(asctime)s] - [%(name)s] '
-                               '- %(message)s',
-                        level=logging.DEBUG)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", default=False, help="debug flag", type=str2bool)
+    args = parser.parse_args()
+    logging.basicConfig(format='%(asctime)s|%(name)s|%(levelname)s|%(message)s',
+                        datefmt="%H:%M:%S", level=logging.DEBUG if args.debug is True else logging.INFO)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
-
     main()
