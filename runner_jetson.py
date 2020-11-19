@@ -3,9 +3,10 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 # from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
-from ROAR.agent_module.pid_agent import PIDAgent
+# from ROAR.agent_module.pid_agent import PIDAgent
 # from ROAR.agent_module.jetson_pure_pursuit_agent import PurePursuitAgent
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
+from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from pathlib import Path
 import logging
 import warnings
@@ -26,9 +27,9 @@ def main():
             prepare(jetson_config=jetson_config)
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
-        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=False)
+        jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -70,8 +71,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", default=False, help="debug flag", type=str2bool)
     args = parser.parse_args()
-    logging.basicConfig(format='%(asctime)s|%(name)s|%(levelname)s|%(message)s',
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         datefmt="%H:%M:%S", level=logging.DEBUG if args.debug is True else logging.INFO)
+    logging.getLogger("Vive Tracker Client [tracker_1]").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
