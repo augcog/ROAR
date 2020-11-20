@@ -76,7 +76,7 @@ class JetsonBridge(Bridge):
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
-                    pitch=source.pitch,
+                    pitch=source.pitch-60,  # 不知道为什么有80度的误差
                     yaw=-source.yaw
                 ),
                 velocity=Vector3D(
