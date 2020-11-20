@@ -67,7 +67,6 @@ class Configuration(BaseModel):
     spawn_point_id: int = Field(default=1, title="Spaning Location ID",
                                 description="Spanning Location ID")
     show_sensors_data: bool = Field(default=False)
-    graph_post_modem_data: bool = Field(default=False)
     save_sensor_data: bool = Field(default=False)
     absolute_maximum_map_size: int = Field(
         default=1000, title="Absolute Maximum size of the map",
