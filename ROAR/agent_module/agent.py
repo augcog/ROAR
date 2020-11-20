@@ -51,6 +51,7 @@ class Agent(ABC):
         self.rear_rgb_camera_output_folder_path = \
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
+        self.transform_output_folder_path = self.output_folder_path / "transform"
 
         self.local_planner: Optional[LocalPlanner] = None
         self.behavior_planner: Optional[BehaviorPlanner] = None
@@ -63,6 +64,16 @@ class Agent(ABC):
 
         if should_init_default_cam:
             self.init_cam()
+
+        if self.should_save_sensor_data:
+            self.front_depth_camera_output_folder_path.mkdir(parents=True,
+                                                             exist_ok=True)
+            self.front_rgb_camera_output_folder_path.mkdir(parents=True,
+                                                           exist_ok=True)
+            self.rear_rgb_camera_output_folder_path.mkdir(parents=True,
+                                                          exist_ok=True)
+            self.transform_output_folder_path.mkdir(parents=True,
+                                                    exist_ok=True)
 
     def add_threaded_module(self, module: Module):
         if module.threaded:
@@ -93,14 +104,6 @@ class Agent(ABC):
             self.rear_rgb_camera.intrinsics_matrix = (
                 self.rear_rgb_camera.calculate_default_intrinsics_matrix()
             )
-
-        if self.should_save_sensor_data:
-            self.front_depth_camera_output_folder_path.mkdir(parents=True,
-                                                             exist_ok=True)
-            self.front_rgb_camera_output_folder_path.mkdir(parents=True,
-                                                           exist_ok=True)
-            self.rear_rgb_camera_output_folder_path.mkdir(parents=True,
-                                                          exist_ok=True)
 
     @abstractmethod
     def run_step(self, sensors_data: SensorsData,
@@ -170,20 +173,38 @@ class Agent(ABC):
             None
         """
         try:
-            cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                         f"frame_{self.time_counter}.png").as_posix(),
-                        self.front_rgb_camera.data)
-
-            np.save((self.front_depth_camera_output_folder_path /
-                     f"frame_{self.time_counter}").as_posix(),
-                    self.front_depth_camera.data)
-
-            cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                         f"frame_{self.time_counter}.png").as_posix(),
-                        self.rear_rgb_camera.data)
+            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+                cv2.imwrite((self.front_rgb_camera_output_folder_path /
+                             f"frame_{self.time_counter}.png").as_posix(),
+                            self.front_rgb_camera.data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
+        try:
+            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+                np.save((self.front_depth_camera_output_folder_path /
+                         f"frame_{self.time_counter}").as_posix(),
+                        self.front_depth_camera.data)
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        try:
+            if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
+                cv2.imwrite((self.rear_rgb_camera_output_folder_path /
+                             f"frame_{self.time_counter}.png").as_posix(),
+                            self.rear_rgb_camera.data)
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        try:
+            transform_file = (Path(self.transform_output_folder_path) / f"frame_{self.time_counter}.txt").open('w')
+            transform_file.write(self.vehicle.transform.record())
+            transform_file.close()
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
 
     def start_module_threads(self):
         for module in self.threaded_modules:
