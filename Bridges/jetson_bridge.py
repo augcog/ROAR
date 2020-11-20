@@ -76,13 +76,13 @@ class JetsonBridge(Bridge):
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
-                    pitch=source.pitch + 60,
+                    pitch=source.pitch,
                     yaw=-source.yaw
                 ),
                 velocity=Vector3D(
-                    x=-source.vel_x,
+                    x=source.vel_x,
                     y=source.vel_y,
-                    z=-source.vel_z
+                    z=source.vel_z
                 )
             )
             return vive_tracker_data
