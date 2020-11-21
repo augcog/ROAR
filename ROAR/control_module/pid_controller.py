@@ -62,6 +62,7 @@ class LongPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+        self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
