@@ -101,7 +101,6 @@ class LatPIDController(Controller):
             y=0,
             z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
         )
-        print(v_end)
         v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
         v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
         # calculate error projection
