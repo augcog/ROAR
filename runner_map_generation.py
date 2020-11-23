@@ -10,8 +10,8 @@ from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 
 
 def main():
-    agent_config = AgentConfig.parse_file(Path("../ROAR/configurations/configuration.json"))
-    carla_config = CarlaConfig.parse_file(Path("../ROAR_Sim/configurations/configuration.json"))
+    agent_config = AgentConfig.parse_file(Path("../ROAR/configurations/carla_configuration.json"))
+    carla_config = CarlaConfig.parse_file(Path("../ROAR_Sim/configurations/carla_configuration.json"))
 
     carla_runner = CarlaRunner(carla_settings=carla_config, agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent)

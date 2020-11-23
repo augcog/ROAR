@@ -41,7 +41,7 @@ class Agent(ABC):
         self.front_depth_camera = agent_settings.front_depth_cam
         self.rear_rgb_camera = agent_settings.rear_rgb_cam
         self.imu = imu
-
+        self.is_done = False
         self.output_folder_path = \
             Path(self.agent_settings.output_data_folder_path)
         self.front_depth_camera_output_folder_path = \
@@ -124,6 +124,8 @@ class Agent(ABC):
         self.sync_data(sensors_data=sensors_data, vehicle=vehicle)
         if self.should_save_sensor_data:
             self.save_sensor_data()
+        if self.local_planner is not None and self.local_planner.is_done():
+            self.is_done = True
         return VehicleControl()
 
     def sync_data(self, sensors_data: SensorsData, vehicle: Vehicle) -> None:

@@ -7,3 +7,6 @@
 [submodule "ROAR_Desktop"]
 	path = ROAR_Desktop
 	url = https://github.com/wuxiaohua1011/ROAR_Desktop.git
+[submodule "ROAR_Gym"]
+	path = ROAR_Gym
+	url = https://github.com/wuxiaohua1011/ROAR_Gym.git
