@@ -10,8 +10,8 @@ from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
 
 
-class PIDAgent(Agent):
-    def __init__(self, target_speed=160, **kwargs):
+class JAM1Agent(Agent):
+    def __init__(self, target_speed=120, **kwargs):
         super().__init__(**kwargs)
         self.target_speed = target_speed
         self.logger = logging.getLogger("PID Agent")
@@ -33,7 +33,7 @@ class PIDAgent(Agent):
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:
-        super(PIDAgent, self).run_step(vehicle=vehicle,
+        super(JAM1Agent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         if self.local_planner.is_done():

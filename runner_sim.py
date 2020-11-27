@@ -7,7 +7,9 @@ from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 # from ROAR.agent_module.point_cloud_agent import PointCloudAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
+from ROAR.agent_module.jAM1Agent import JAM1Agent
+
+from ROAR.agent_module.special_agents.json_waypoint_generating_agent import JSONWaypointGeneratingAgent
 from ROAR.agent_module.pid_agent import PIDAgent
 
 def main():
@@ -20,7 +22,14 @@ def main():
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
+        #agent = JSONWaypointGeneratingAgent(vehicle=my_vehicle, agent_settings=agent_config)
+
+        #agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        #agent = JAM1Agent(vehicle=my_vehicle, agent_settings=agent_config)
+
+
+        carla_runner.start_game_loop(agent=agent, use_manual_control=False)#*******True for manual control, False auto
+
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()

@@ -9,17 +9,17 @@ import numpy as np
 import open3d as o3d
 
 
-class JSONWaypointGeneratigAgent(Agent):
+class JSONWaypointGeneratingAgent(Agent):  #added n to "GeneratigAgent".  below in line 22 also 201125
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig):
         super().__init__(vehicle=vehicle, agent_settings=agent_settings)
-        self.output_file_path: Path = self.output_folder_path / "easy_map_waypoint_t.txt"
+        self.output_file_path: Path = self.output_folder_path / "Users\James Cheney\git\ROAR\ROAR_Sim\data\easy_map_waypointsJAM1.txt"
         self.output_file = self.output_file_path.open('w')
         # self.depth_to_pointcloud_detector = DepthToPointCloudDetector(self)
         self.gpd = GroundPlaneDetector(self, should_compute_global_pointcloud=False)
 
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
-        super(JSONWaypointGeneratigAgent, self).run_step(sensors_data=sensors_data,
+        super(JSONWaypointGeneratingAgent, self).run_step(sensors_data=sensors_data,
                                                          vehicle=vehicle)
         try:
             self.gpd.run_in_series()

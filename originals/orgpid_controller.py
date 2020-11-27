@@ -41,7 +41,7 @@ class PIDController(Controller):
     @staticmethod
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
-        k_p, k_d, k_i = .03, 0.9, 0
+        k_p, k_d, k_i = 1, 0, 0
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
@@ -80,18 +80,14 @@ class LongPIDController(Controller):
         output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
                                self.throttle_boundary[1]))
         print(self.agent.vehicle.transform.rotation.roll)
-        if abs(self.agent.vehicle.transform.rotation.roll) <= .55:
+        if abs(self.agent.vehicle.transform.rotation.roll) <= .12:
             output = 1
-            if abs(self.agent.vehicle.transform.rotation.roll) > .55:
-                output = 0
-                if abs(self.agent.vehicle.transform.rotation.roll) > .6:
-                    output = .8
-                    if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
-                        output = .7
-                        if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
-                            output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
-                            if abs(self.agent.vehicle.transform.rotation.roll) > 7:
-                                output = 0
+            if abs(self.agent.vehicle.transform.rotation.roll) > .12:
+                output = .8
+                if abs(self.agent.vehicle.transform.rotation.roll) > .5:
+                    output = 1/(1.7**(self.agent.vehicle.transform.rotation.roll))
+                    # if abs(self.agent.vehicle.transform.rotation.roll) > .2:
+                    #     output = .8
                     #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
                     #         output = .7
                     #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
@@ -112,9 +108,7 @@ class LatPIDController(Controller):
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
         self.config = config
-        #self.steering_boundary = steering_boundary
-        self.steering_boundary = (-.1, .1)
-
+        self.steering_boundary = steering_boundary
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
 
