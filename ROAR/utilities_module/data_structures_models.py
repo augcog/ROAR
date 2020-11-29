@@ -95,6 +95,8 @@ class Transform(BaseModel):
     def record(self):
         return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
 
+    def to_array(self) -> np.ndarray:
+        return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch, self.rotation.yaw])
 
 class Vector3D(BaseModel):
     x: float = Field(default=0)

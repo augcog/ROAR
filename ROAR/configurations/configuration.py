@@ -77,4 +77,4 @@ class Configuration(BaseModel):
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
-    max_speed: float = Field(default=60, description="maximum speed in which the vehicle can drive at")
+    max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at")

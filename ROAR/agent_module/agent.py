@@ -13,7 +13,7 @@ from ROAR.planning_module.local_planner.local_planner import LocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 import threading
-
+from typing import Dict, Any
 
 class Agent(ABC):
     """
@@ -74,6 +74,7 @@ class Agent(ABC):
                                                           exist_ok=True)
             self.transform_output_folder_path.mkdir(parents=True,
                                                     exist_ok=True)
+        self.kwargs: Dict[str, Any] = dict()  # additional info
 
     def add_threaded_module(self, module: Module):
         if module.threaded:
