@@ -21,8 +21,9 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         # OpenCV FloodFill
         d1 = self.agent.front_depth_camera.image_size_y
         d2 = self.agent.front_depth_camera.image_size_x
-        curr_img = normals.reshape((int(d1/4), int(d2/4), 3)).astype(np.float32)
-        seed_point = (int(d1/4) - 1, int(int(d2/4) / 2))
+        new_d1, new_d2 = int(d1/4), int(d2/4)
+        curr_img = normals.reshape((new_d1, new_d2, 3)).astype(np.float32)
+        seed_point = (new_d1 * 2 // 3, new_d2 // 2)
         _, retval, _, _ = cv2.floodFill(image=curr_img,
                                         seedPoint=seed_point,
                                         newVal=(0, 0, 0),
@@ -39,13 +40,6 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         color_image[bool_matrix > 0] = 255
         cv2.imshow('Color', color_image)
         cv2.waitKey(1)
-
-    @staticmethod
-    def construct_pointcloud(points) -> o3d.geometry.PointCloud:
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(points)
-        pcd.estimate_normals()
-        return pcd
 
     def compute_reference_norm(self, pcd: o3d.geometry.PointCloud):
         pcd_tree = o3d.geometry.KDTreeFlann(pcd)  # build KD tree for fast computation

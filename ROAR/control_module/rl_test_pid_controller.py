@@ -26,7 +26,11 @@ class PIDController(Controller):
             steering_boundary=steering_boundary
         )
         self.logger = logging.getLogger(__name__)
-        self.pid_rl_model = DDPG.load(Path("./ROAR_Sim/data/weights/rl_pid_model.zip"))
+        try:
+            self.pid_rl_model = DDPG.load(Path("./ROAR_Sim/data/weights/rl_pid_model.zip"))
+        except:
+            path = Path(self.agent.kwargs['kwargs']["rl_pid_model_file_path"])
+            self.pid_rl_model = DDPG.load(load_path=path)
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         action, _ = self.pid_rl_model.predict(self._get_obs())

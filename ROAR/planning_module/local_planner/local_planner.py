@@ -35,7 +35,7 @@ class LocalPlanner(AbstractPlanner):
 
     @abstractmethod
     def is_done(self):
-        pass
+        return False
 
     @abstractmethod
     def run_in_series(self) -> VehicleControl:

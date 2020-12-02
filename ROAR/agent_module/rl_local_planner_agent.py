@@ -1,8 +1,7 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
 from ROAR.control_module.rl_test_pid_controller import PIDController
-from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
-    SimpleWaypointFollowingLocalPlanner
+from ROAR.planning_module.local_planner.rl_local_planner import RLLocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from ROAR.utilities_module.data_structures_models import SensorsData
@@ -12,7 +11,8 @@ import logging
 import numpy as np
 from typing import Any
 
-class RLPIDAgent(Agent):
+
+class RLLocalPlannerAgent(Agent):
     def __init__(self, target_speed=40, **kwargs):
         super().__init__(**kwargs)
         self.target_speed = target_speed
@@ -23,14 +23,9 @@ class RLPIDAgent(Agent):
         # initiated right after mission plan
 
         self.behavior_planner = BehaviorPlanner(agent=self)
-        self.local_planner = SimpleWaypointFollowingLocalPlanner(
+        self.local_planner = RLLocalPlanner(
             agent=self,
-            controller=self.pid_controller,
-            mission_planner=self.mission_planner,
-            behavior_planner=self.behavior_planner,
-            closeness_threshold=1)
-
-
+            controller=self.pid_controller)
 
         self.logger.debug(
             f"Waypoint Following Agent Initiated. Reading f"
@@ -38,8 +33,8 @@ class RLPIDAgent(Agent):
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:
-        super(RLPIDAgent, self).run_step(vehicle=vehicle,
-                                         sensors_data=sensors_data)
+        super(RLLocalPlannerAgent, self).run_step(vehicle=vehicle,
+                                                  sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         if self.is_done:
             control = VehicleControl()
@@ -47,4 +42,3 @@ class RLPIDAgent(Agent):
         else:
             control = self.local_planner.run_in_series()
         return control
-
