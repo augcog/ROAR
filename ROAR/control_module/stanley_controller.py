@@ -110,7 +110,7 @@ class LatStanley_controller(Controller):
         '''
 
         vel = self.agent.vehicle.velocity
-        # veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
+        veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
 
 
         k = 0.5 #control gain
@@ -125,7 +125,7 @@ class LatStanley_controller(Controller):
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
 
         lat_control = float(
-                    np.clip((head_err + k * pos_err)/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip((head_err + k * pos_err/(veh_spd+1))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
 
         return lat_control
