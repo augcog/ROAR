@@ -26,7 +26,7 @@ class Stanley_controller(Controller):
                                                      throttle_boundary=throttle_boundary,
                                                      max_speed=self.max_speed,
                                                      config=self.config["longitudinal_controller"])
-        self.lat_pid_controller = LatStanley_controller(
+        self.lat_stanley_controller = LatStanley_controller(
             agent=agent,
             config=self.config["latitudinal_controller"],
             steering_boundary=steering_boundary
@@ -36,7 +36,7 @@ class Stanley_controller(Controller):
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
                                                           target_speed=kwargs.get("target_speed", self.max_speed))
-        steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
+        steering = self.lat_stanley_controller.run_in_series(next_waypoint=next_waypoint)
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
@@ -109,29 +109,28 @@ class LatStanley_controller(Controller):
         *** output lat_control:  steering angle delta = heading error + inv tan (gain * cross track error/veh speed)
         '''
 
+
+
         vel = self.agent.vehicle.velocity
         veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
-
 
         k = 0.5 #control gain
 
         # veh_loc = self.agent.vehicle.transform.location
-        veh_x = self.agent.vehicle.transform.location.x
-        veh_y = self.agent.vehicle.transform.location.y
-        veh_yaw = self.agent.vehicle.transform.rotation.yaw  #***** is this in radians or angle?  guessing angle
+   #***** is this in radians or angle?  guessing angle
 
-        pos_err, head_err = self.stan_calcs(veh_x, veh_y, veh_yaw)
+        pos_err, head_err = self.stan_calcs(next_waypoint)
 
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
 
         lat_control = float(
-                    np.clip((head_err + k * pos_err/(veh_spd+1))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip((head_err + k * pos_err/(veh_spd+3))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
 
         return lat_control
 
 
-    def stan_calcs(self, veh_x, veh_y, veh_yaw, next_waypoint: Transform, **kwargs):
+    def stan_calcs(self, next_waypoint: Transform, **kwargs):
 
         '''
         calculate target
@@ -148,15 +147,19 @@ class LatStanley_controller(Controller):
 
         wb = 2.96  # assumed vehicle wheelbase (tesla)
 
+        veh_x = self.agent.vehicle.transform.location.x
+        veh_y = self.agent.vehicle.transform.location.y
+        veh_yaw = self.agent.vehicle.transform.rotation.yaw
+
         frontx = veh_x + wb*np.cos(veh_yaw)/2
         fronty = veh_y + wb*np.sin(veh_yaw)/2
 
         path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
         path_y = next_waypoint.location.y  #** how get
 
-        next_pathpoint = self.way_points_queue[1]
-        nx = next_pathpoint.x
-        ny = next_pathpoint.y
+        next_pathpoint = self.agent.local_planner.way_points_queue[1]
+        nx = next_pathpoint.location.x
+        ny = next_pathpoint.location.y
 
 
         #*** calculate distance to next waypoint ***
@@ -171,7 +174,7 @@ class LatStanley_controller(Controller):
         # e_front_axle_pos = np.dot([nx, ny], front_axle_vec)
 
 
-        path_yaw = np.arctan((ny - path_y) / (nx - path_x))
+        path_yaw = np.arctan((ny - path_y) / (nx - path_x))  # ************** This becomes division y zero ******************
         #path_yaw = math.atan2((ny - path_y) / (nx - path_x))
 
         head_err = path_yaw - veh_yaw

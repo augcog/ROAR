@@ -96,7 +96,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             raise AgentException("I do not know where I am, I cannot proceed forward")
 
         # redefine closeness level based on speed
-        self.set_closeness_threhold(self.closeness_threshold_config)
+        self.set_closeness_threshold(self.closeness_threshold_config)
 
         # get current waypoint
         curr_closest_dist = float("inf")
@@ -123,7 +123,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         #                   f"control:    {control} | curr_speed: {Vehicle.get_speed(self.agent.vehicle)}")
         return control
 
-    def set_closeness_threhold(self, config: dict):
+    def set_closeness_threshold(self, config: dict):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         for speed_upper_bound, closeness_threshold in config.items():
             speed_upper_bound = float(speed_upper_bound)
