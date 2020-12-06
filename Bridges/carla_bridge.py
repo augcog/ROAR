@@ -35,12 +35,15 @@ class CarlaBridge(Bridge):
         Returns:
 
         """
-        return Location(x=source.x, y=source.z, z=source.y)
+        # return Location(x=source.x, y=source.z, z=source.y)
+        # return Location(x=-source.y, y=-source.z, z=source.x)
+        return Location(x=source.x, y=source.y, z=source.z)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
 
-        return Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
+        return Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
+        # return Rotation(pitch=source.yaw, roll=source.roll, yaw=source.pitch)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform
@@ -68,7 +71,8 @@ class CarlaBridge(Bridge):
 
         try:
             source.convert(cc.Raw)
-            return RGBData(data=self._to_rgb_array(source))
+            rgb_image =self._to_rgb_array(source)
+            return RGBData(data=rgb_image)
         except:
             return None
 
@@ -179,4 +183,3 @@ class CarlaBridge(Bridge):
         array = array[:, :, :3]
         # array = array[:, :, ::-1]
         return array
-

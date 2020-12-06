@@ -42,10 +42,10 @@ class GroundPlaneDetector(Detector):
             bool_indices = np.indices(bool_zeros.shape)[0]  # [::16]
             bool_zeros[bool_indices] = bool_matrix.flatten()
             bool_matrix = bool_zeros.reshape((d1, d2))
-            color_image = self.agent.front_rgb_camera.data.copy()
-            color_image[bool_matrix > 0] = 255
-            cv2.imshow('Color', color_image)
-            cv2.waitKey(1)
+            # color_image = self.agent.front_rgb_camera.data.copy()
+            # color_image[bool_matrix > 0] = 255
+            # cv2.imshow('Color', color_image)
+            # cv2.waitKey(1)
             ground_coords = np.where(bool_matrix > 0)
             self.agent.kwargs["ground_coords"] = self.to_world_coords(img_ground_coords=ground_coords)
         # time1 = time.time()
@@ -104,7 +104,7 @@ class GroundPlaneDetector(Detector):
             # ])
             cords_xyz_1 = np.vstack([cords_xyz, np.ones((1, np.shape(cords_xyz)[1]))])
             result = (self.agent.vehicle.transform.get_matrix() @ cords_xyz_1)[:3, :].T
-            print(np.min(result, axis=0), np.max(result, axis=0))
+            # print(np.min(result, axis=0), np.max(result, axis=0))
             return result
 
     def compute_reference_norm(self, pcd: o3d.geometry.PointCloud):

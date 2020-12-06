@@ -30,13 +30,11 @@ class Camera(BaseModel):
         Will set the attribute intrinsic matrix so that re-calculation is not
         necessary.
         https://github.com/carla-simulator/carla/issues/56
-
         [
                 ax, 0, cx,
                 0, ay, cy,
                 0 , 0, 1
         ]
-
         Returns:
             Intrinsics_matrix
         """
@@ -46,7 +44,7 @@ class Camera(BaseModel):
         intrinsics_matrix[0, 0] = self.image_size_x / (
             2.0 * np.tan(self.fov * np.pi / 360.0)
         )
-        intrinsics_matrix[1, 1] = self.image_size_y / (
+        intrinsics_matrix[1, 1] = self.image_size_x / (
             2.0 * np.tan(self.fov * np.pi / 360.0)
         )
         self.intrinsics_matrix = intrinsics_matrix

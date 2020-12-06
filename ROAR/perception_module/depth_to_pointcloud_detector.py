@@ -24,6 +24,7 @@ class DepthToPointCloudDetector(Detector):
         while True:
             self.agent.kwargs["point_cloud"] = self.run_in_series()
 
+
     def run_in_series(self) -> Optional[np.ndarray]:
         """
 

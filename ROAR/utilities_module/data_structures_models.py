@@ -63,11 +63,15 @@ class Transform(BaseModel):
 
         Returns:
             Extrinsics matrix
+
+        [R, T]
+        [0 1]
         """
         location = self.location
         rotation = self.rotation
-        yaw, pitch, roll = rotation.yaw, rotation.pitch, rotation.roll
-
+        # x, y, z
+        roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
+        # print(roll, pitch, yaw)
         c_y = np.cos(np.radians(yaw))
         s_y = np.sin(np.radians(yaw))
         c_r = np.cos(np.radians(roll))
@@ -87,7 +91,7 @@ class Transform(BaseModel):
         ])
         Rz = np.array([
             [c_y, -s_y, 0],
-            [s_y, -c_y, 0],
+            [s_y, c_y, 0],
             [0, 0, 1]
         ])
 
@@ -105,7 +109,9 @@ class Transform(BaseModel):
         return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
 
     def to_array(self) -> np.ndarray:
-        return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch, self.rotation.yaw])
+        return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch,
+                         self.rotation.yaw])
+
 
 class Vector3D(BaseModel):
     x: float = Field(default=0)
