@@ -71,7 +71,6 @@ class Transform(BaseModel):
         rotation = self.rotation
         # x, y, z
         roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
-        # print(roll, pitch, yaw)
         c_y = np.cos(np.radians(yaw))
         s_y = np.sin(np.radians(yaw))
         c_r = np.cos(np.radians(roll))
@@ -99,7 +98,7 @@ class Transform(BaseModel):
         matrix[0, 3] = location.x
         matrix[1, 3] = location.y
         matrix[2, 3] = location.z
-        matrix[0:3, 0:3] = Rx @ Ry @ Rz
+        matrix[0:3, 0:3] = Ry @ Rz @ Rx
         return matrix
 
     def __str__(self):

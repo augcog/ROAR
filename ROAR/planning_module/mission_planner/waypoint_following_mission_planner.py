@@ -79,7 +79,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
             )
         elif len(raw) == 6:
             return Transform(
-                location=Location(x=raw[0], y=raw[1], z=raw[2]),
+                location=Location(x=raw[0], y=-raw[1], z=raw[2]),
                 rotation=Rotation(roll=raw[3], pitch=raw[4], yaw=raw[5]),
             )
         else:

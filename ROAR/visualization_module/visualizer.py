@@ -122,17 +122,26 @@ class Visualizer:
             Array if integers [u, v, f]
         """
         xyz1 = np.append(xyz, np.ones(shape=(len(xyz), 1)), axis=1)
-        veh_cam_matrix = self.agent.front_depth_camera.transform.get_matrix()  # 4 x 4
-        world_veh_matrix = self.agent.vehicle.transform.get_matrix()  # 4 x 4
-
-        world_cam_matrix = np.linalg.inv(np.dot(world_veh_matrix, veh_cam_matrix))
-        cords_xyz1 = world_cam_matrix @ xyz1.T
-        cords_y_minus_z_x = np.array([cords_xyz1[1, :], -cords_xyz1[2, :], cords_xyz1[0, :]])
-        raw_p2d = self.agent.front_depth_camera.intrinsics_matrix @ cords_y_minus_z_x
-        cam_cords = np.array(
-            [raw_p2d[0, :] / raw_p2d[2, :], raw_p2d[1, :] / raw_p2d[2, :], raw_p2d[2, :]]
-        ).T
-        return np.round(cam_cords, 0).astype(np.int64)
+        UVD = self.agent.front_depth_camera.intrinsics_matrix @ \
+              self.agent.front_depth_camera.transform.get_matrix()[:3] @ \
+              self.agent.vehicle.transform.get_matrix() @ xyz1.T
+        uvd = np.array([
+            UVD[0, :] / UVD[2, :], UVD[1, :] / UVD[2, :], UVD[2, :]
+        ]).T
+        result = np.round(uvd, 0).astype(np.int64)
+        print(f"waypoint: {xyz} | Agent = {self.agent.vehicle.transform} | Pixel = {result} ")
+        return result
+        # xyz1 = np.append(xyz, np.ones(shape=(len(xyz), 1)), axis=1)
+        # veh_cam_matrix = self.agent.front_depth_camera.transform.get_matrix()  # 4 x 4
+        # world_veh_matrix = self.agent.vehicle.transform.get_matrix()  # 4 x 4
+        # world_cam_matrix = np.linalg.inv(world_veh_matrix) @ np.linalg.inv(veh_cam_matrix)
+        # cords_xyz1 = world_cam_matrix @ xyz1.T
+        # raw_p2d = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ cords_xyz1[:3]
+        # cam_cords = np.array(
+        #     [raw_p2d[0, :] / raw_p2d[2, :], raw_p2d[1, :] / raw_p2d[2, :], raw_p2d[2, :]]
+        # ).T
+        # result = np.round(cam_cords, 0).astype(np.int64)
+        # return result
 
     def show_first_person_visualization(self,
                                         show_num_waypoints: int = 0,
