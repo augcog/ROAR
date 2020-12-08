@@ -149,35 +149,68 @@ class LatStanley_controller(Controller):
 
         veh_x = self.agent.vehicle.transform.location.x
         veh_y = self.agent.vehicle.transform.location.y
-        veh_yaw = self.agent.vehicle.transform.rotation.yaw
+        veh_z = self.agent.vehicle.transform.location.z
 
-        frontx = veh_x + wb*np.cos(veh_yaw)/2
-        fronty = veh_y + wb*np.sin(veh_yaw)/2
+        veh_yaw = self.agent.vehicle.transform.rotation.yaw
+        veh_roll = self.agent.vehicle.transform.rotation.roll
+        veh_pitch = self.agent.vehicle.transform.rotation.pitch
+
+
+
+        frontx = veh_x + wb*np.cos(veh_pitch)/2
+        frontz = veh_z + wb*np.sin(veh_pitch)/2
 
         path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
-        path_y = next_waypoint.location.y  #** how get
+        path_z = next_waypoint.location.z  #** how get
 
-        next_pathpoint = self.agent.local_planner.way_points_queue[1]
+        next_pathpoint = self.agent.local_planner.way_points_queue[30]
         nx = next_pathpoint.location.x
-        ny = next_pathpoint.location.y
+        nz = next_pathpoint.location.z
+
 
 
         #*** calculate distance to next waypoint ***
         # *** calculate front axle position error from path
 
         dx = [frontx - nx]
-        dy = [fronty - ny]
-        dpath = np.hypot(dx, dy)
+        dz = [frontz - nz]
+        dpath = np.hypot(dx, dz)-8
 
 
         # front_axle_vec = [-np.cos(veh_yaw + np.pi / 2), -np.sin(veh_yaw + np.pi / 2)]   # RMS error?
         # e_front_axle_pos = np.dot([nx, ny], front_axle_vec)
 
+        # if nx - path_x ==0:
+        #     path_yaw = .01
+        # else:
+        #     path_yaw = np.arctan((nz - path_z) / (.00000000000001+(nx - path_x)))  # ************** This starts as division by zero ******************
+        #     #path_yaw = math.atan2((ny - path_y) / (nx - path_x))
 
-        path_yaw = np.arctan((ny - path_y) / (nx - path_x))  # ************** This becomes division y zero ******************
-        #path_yaw = math.atan2((ny - path_y) / (nx - path_x))
+        path_pitch_rad = (-np.arctan((nz - path_z) / (.00000000000001 + (nx - path_x))))
+        path_pitch = path_pitch_rad*180/np.pi
 
-        head_err = path_yaw - veh_yaw
+        head_err = path_pitch - veh_pitch
+
+        # print('veh yaw = ', veh_yaw)
+        # print('veh roll = ', veh_roll)
+        print('veh pitch = ', veh_pitch)
+
+        #
+        print('veh x = ', veh_x)
+        # print('veh y = ', veh_y)
+        print('veh z = ', veh_z)
+        # print('front x = ', frontx)
+        # print('front z = ', frontz)
+        print('path x = ', path_x)
+        print('path z = ', path_z)
+        print('next path x = ', nx)
+        print('next path z = ', nz)
+        print('distance to path = ', dpath)
+        print('path pitch = ', path_pitch)
+        print('path_pitch_rad = ', path_pitch_rad)
+        print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
+        print('path queue 4 = ', self.agent.local_planner.way_points_queue[4])
+        print('path queue 20 = ', self.agent.local_planner.way_points_queue[20])
 
         return dpath, head_err
 
