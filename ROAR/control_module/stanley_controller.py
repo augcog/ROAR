@@ -97,7 +97,7 @@ class LatStanley_controller(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float: #*********** aka stanley_control(state, cx, cy, cyaw, last_target_idx)
         '''
-        TODO:  get nearest path yaw; confirm axis car and world;
+        TODO:  tune
 
         *** inputs needed: vehicle yaw, x, y; nearest path yaw, x, y
 
@@ -126,6 +126,8 @@ class LatStanley_controller(Controller):
         lat_control = float(
                     np.clip((head_err + k * pos_err/(veh_spd+3))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
+
+        print('lat_control = ', lat_control)
 
         return lat_control
 
@@ -163,9 +165,13 @@ class LatStanley_controller(Controller):
         path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
         path_z = next_waypoint.location.z  #** how get
 
-        next_pathpoint = self.agent.local_planner.way_points_queue[30]
-        nx = next_pathpoint.location.x
-        nz = next_pathpoint.location.z
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[11]) #+self.agent.local_planner.way_points_queue[26]+self.agent.local_planner.way_points_queue[27])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[13])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[15])
+        nx = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x)/3
+        nz = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) / 3
+        # nz = next_pathpoint1.location.z #/3
+
 
 
 
@@ -186,7 +192,8 @@ class LatStanley_controller(Controller):
         #     path_yaw = np.arctan((nz - path_z) / (.00000000000001+(nx - path_x)))  # ************** This starts as division by zero ******************
         #     #path_yaw = math.atan2((ny - path_y) / (nx - path_x))
 
-        path_pitch_rad = (-np.arctan((nz - path_z) / (.00000000000001 + (nx - path_x))))
+        # path_pitch_rad = (-np.arctan((nz - path_z) / (.00000000000001 + (nx - path_x))))
+        path_pitch_rad = (math.atan2((nz - path_z), (nx - path_x)))
         path_pitch = path_pitch_rad*180/np.pi
 
         head_err = path_pitch - veh_pitch
