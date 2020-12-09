@@ -5,7 +5,7 @@ from ROAR.utilities_module.data_structures_models import (
     Rotation,
     Transform,
 )
-from typing import Optional, Any
+from typing import Optional
 import cv2
 
 
@@ -21,8 +21,8 @@ class Camera(BaseModel):
     image_size_y: int = Field(default=600, title="Image size width")
     distortion_coefficient: Optional[np.ndarray] = Field(default=np.array([0, 0, 0, 0, 0]),
                                                          title="Distortion Coefficient from Intel Realsense")
-    data: Optional[Any] = Field(default=None)
-    intrinsics_matrix: Optional[Any] = Field(default=None)
+    data: Optional[np.ndarray] = Field(default=None)
+    intrinsics_matrix: Optional[np.ndarray] = Field(default=None)
 
     def calculate_default_intrinsics_matrix(self) -> np.ndarray:
         """
