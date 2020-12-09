@@ -4,9 +4,6 @@
 [submodule "ROAR_Sim"]
 	path = ROAR_Sim
 	url = https://github.com/augcog/ROAR_Sim.git
-[submodule "ROAR_Desktop"]
-	path = ROAR_Desktop
-	url = https://github.com/wuxiaohua1011/ROAR_Desktop.git
-[submodule "Official Version 1.0"]
-	path = Official Version 1.0
-	url = https://github.com/closest-num-2-0/barc_hardware/tree/master/Official%20Version%201.0
+[submodule "BARC_Hardware_Release"]
+	path = BARC_Hardware_Release
+	url = https://github.com/closest-num-2-0/BARC_Hardware_Release
