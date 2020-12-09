@@ -162,8 +162,8 @@ class LatStanley_controller(Controller):
 
 
         # *** getting front axle coordinates ***
-        frontx = veh_x + wb*np.cos(veh_pitch)/2
-        frontz = veh_z + wb*np.sin(veh_pitch)/2
+        frontx = veh_x + wb*np.cos(veh_pitch*180/np.pi)/2
+        frontz = veh_z + wb*np.sin(veh_pitch*180/np.pi)/2
 
         # *** referencing next waypoint coordinates ***
         path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
@@ -178,7 +178,7 @@ class LatStanley_controller(Controller):
         next_pathpoint6 = (self.agent.local_planner.way_points_queue[19])
         nx = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x + next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x)/6
         nz = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z + next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 6
-        nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x)/3
+        nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x) /3
         nz1 = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) /3
 
 
@@ -187,12 +187,16 @@ class LatStanley_controller(Controller):
 
         dx = [frontx - nx1]
         dz = [frontz - nz1]
-        dpathhead_rad = (math.atan2((nz1-frontz), (nx1-frontx)))
-        # dpathhead_rad = (math.atan2((path_z - frontz), (path_x - frontx)))
-        # dpathhead_rad = (math.atan2((nz), (nx)))
+        # dx = [frontx - path_x]
+        # dz = [frontz - path_z]
+        # dx = [veh_x - path_x]
+        # dz = [veh_z - path_z]
+        dpathhead_rad = (math.atan2((nz1-frontz), (nx1-frontx))) # *** need some lead to get sign correct (with sin)?
+        #dpathhead_rad = (math.atan2((path_z - frontz), (path_x - frontx)))
+        #dpathhead_rad = (math.atan2((path_z - veh_z), (path_x - veh_x)))
         dpathhead_ang = dpathhead_rad * 180 / np.pi
         pitch_to_path = dpathhead_ang - veh_pitch
-        dpath = np.sin(pitch_to_path)*np.hypot(dx, dz) # *** pitch goes from + to - as crosses x axis
+        dpath = np.sin(pitch_to_path*np.pi/180)*np.hypot(dx, dz) # *** pitch goes from + to - as crosses x axis
 
         # dpath = np.hypot(dx, dz)-8  #  really should take this value * sign of pitch_to_path
 
@@ -206,6 +210,43 @@ class LatStanley_controller(Controller):
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
         head_err = path_pitch - veh_pitch
+
+        #*************************************
+
+        # calculate a vector that represent where you are going
+        v_begin = self.agent.vehicle.transform.location
+        v_end = v_begin + Location(
+            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            y=v_begin.y,
+            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+        )
+        v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, v_end.z - v_begin.z])
+
+        ksc = 0.5
+        kpsc =1.0
+
+
+
+        # calculate error projection
+        w_vec = np.array(
+            [
+                next_waypoint.location.x - v_begin.x,
+                next_waypoint.location.y - v_begin.y,
+                next_waypoint.location.z - v_begin.z,
+            ]
+        )
+        _dot = math.acos(
+            np.clip(
+                np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
+                -1.0,
+                1.0,
+            )
+        )
+        _cross = np.cross(v_vec, w_vec)
+        if _cross[1] > 0:
+            _dot *= -1.0
+        self._error_buffer.append(_dot)
+        #***************************************
 
         print('--------------------------------------')
         # print('veh yaw = ', veh_yaw)
@@ -224,13 +265,13 @@ class LatStanley_controller(Controller):
         print('**distance to path = ', dpath)
         print('path pitch = ', path_pitch)
         print('path_pitch_rad = ', path_pitch_rad)
-        print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
-        print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
-        print('path queue 20 = ', self.agent.local_planner.way_points_queue[17])
+        # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
+        # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
+        # print('path queue 20 = ', self.agent.local_planner.way_points_queue[17])
         print('** heading error **', head_err)
+        print('_dot err', _dot)
 
-
-        return dpath, head_err
+        return _dot, head_err
 
         '''
         *** end my code ***
