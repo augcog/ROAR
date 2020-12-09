@@ -36,6 +36,7 @@ class PIDController(Controller):
                                                           target_speed=kwargs.get("target_speed", self.max_speed))
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
        # print(        self.agent.vehicle.transform.rotation.roll)
+        print('steering', steering)
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
@@ -154,6 +155,7 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
+        print('_dot PIDcontroller = ', _dot)
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
         lat_control = float(

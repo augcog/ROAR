@@ -117,14 +117,13 @@ class LatStanley_controller(Controller):
         k = 0.5 #control gain
 
         # veh_loc = self.agent.vehicle.transform.location
-   #***** is this in radians or angle?  guessing angle
 
         pos_err, head_err = self.stan_calcs(next_waypoint)
 
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
 
         lat_control = float(
-                    np.clip((head_err + k * pos_err/(veh_spd+.3))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip((head_err + np.arctan(k * _dot/(veh_spd+.3)))/90, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
 
         print('lat_control = ', lat_control)
@@ -211,42 +210,6 @@ class LatStanley_controller(Controller):
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
         head_err = path_pitch - veh_pitch
 
-        #*************************************
-
-        # calculate a vector that represent where you are going
-        v_begin = self.agent.vehicle.transform.location
-        v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-            y=v_begin.y,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-        )
-        v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, v_end.z - v_begin.z])
-
-        ksc = 0.5
-        kpsc =1.0
-
-
-
-        # calculate error projection
-        w_vec = np.array(
-            [
-                next_waypoint.location.x - v_begin.x,
-                next_waypoint.location.y - v_begin.y,
-                next_waypoint.location.z - v_begin.z,
-            ]
-        )
-        _dot = math.acos(
-            np.clip(
-                np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
-                -1.0,
-                1.0,
-            )
-        )
-        _cross = np.cross(v_vec, w_vec)
-        if _cross[1] > 0:
-            _dot *= -1.0
-        self._error_buffer.append(_dot)
-        #***************************************
 
         print('--------------------------------------')
         # print('veh yaw = ', veh_yaw)
@@ -278,103 +241,3 @@ class LatStanley_controller(Controller):
         '''
 
 
-        # # calculate a vector that represent where you are going
-        # v_begin = self.agent.vehicle.transform.location
-        # v_end = v_begin + Location(
-        #     x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-        #     y=v_begin.y,
-        #     z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-        # )
-        # v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, v_end.z - v_begin.z])
-        #
-        # ksc = 0.5
-        # kpsc =1.0
-        #
-        #
-        #
-        # # calculate error projection
-        # w_vec = np.array(
-        #     [
-        #         next_waypoint.location.x - v_begin.x,
-        #         next_waypoint.location.y - v_begin.y,
-        #         next_waypoint.location.z - v_begin.z,
-        #     ]
-        # )
-        # _dot = math.acos(
-        #     np.clip(
-        #         np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
-        #         -1.0,
-        #         1.0,
-        #     )
-        # )
-        # _cross = np.cross(v_vec, w_vec)
-        # if _cross[1] > 0:
-        #     _dot *= -1.0
-        # self._error_buffer.append(_dot)
-        # if len(self._error_buffer) >= 2:
-        #     _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
-        #     _ie = sum(self._error_buffer) * self._dt
-        # else:
-        #     _de = 0.0
-        #     _ie = 0.0
-        #
-        # k_p, k_d, k_i = Stanley_controller.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        #
-        # lat_control = float(
-        #     np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
-        # )
-        # return lat_control
-
-#
-# class LatPIDController(Controller):
-#     def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
-#                  dt: float = 0.03, **kwargs):
-#         super().__init__(agent, **kwargs)
-#         self.config = config
-#         self.steering_boundary = steering_boundary
-#         self._error_buffer = deque(maxlen=10)
-#         self._dt = dt
-#
-#     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
-#         # calculate a vector that represent where you are going
-#         v_begin = self.agent.vehicle.transform.location
-#         v_end = v_begin + Location(
-#             x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-#             y=v_begin.y,
-#             z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-#         )
-#         v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, v_end.z - v_begin.z])
-#
-#         # calculate error projection
-#         w_vec = np.array(
-#             [
-#                 next_waypoint.location.x - v_begin.x,
-#                 next_waypoint.location.y - v_begin.y,
-#                 next_waypoint.location.z - v_begin.z,
-#             ]
-#         )
-#         _dot = math.acos(
-#             np.clip(
-#                 np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
-#                 -1.0,
-#                 1.0,
-#             )
-#         )
-#         _cross = np.cross(v_vec, w_vec)
-#         if _cross[1] > 0:
-#             _dot *= -1.0
-#         self._error_buffer.append(_dot)
-#         if len(self._error_buffer) >= 2:
-#             _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
-#             _ie = sum(self._error_buffer) * self._dt
-#         else:
-#             _de = 0.0
-#             _ie = 0.0
-#
-#         k_p, k_d, k_i = Stanley_controller.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-#
-#         lat_control = float(
-#             np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
-#         )
-#         return lat_control
-#

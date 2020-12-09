@@ -1,6 +1,6 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
-from ROAR.control_module.stanley_controller import Stanley_controller
+from ROAR.control_module.astanley_controller import Stanley_controller
 from ROAR.control_module.pid_controller import PIDController
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
