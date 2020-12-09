@@ -29,7 +29,7 @@ def main():
             logging.error(f"Ignoring Error during setup: {e}")
         agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=False)
+        jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -37,7 +37,7 @@ def main():
 def prepare(jetson_config: JetsonConfig):
     if 'win' in sys.platform:
         # windows, just detect whether arduino exist on COM4
-        s = serial.Serial("COM5")
+        s = serial.Serial(jetson_config.win_serial_port)
         status = s.isOpen()
     else:
         # assume that this is going to be a unix based system
