@@ -7,3 +7,6 @@
 [submodule "ROAR_Desktop"]
 	path = ROAR_Desktop
 	url = https://github.com/wuxiaohua1011/ROAR_Desktop.git
+[submodule "Official Version 1.0"]
+	path = Official Version 1.0
+	url = https://github.com/closest-num-2-0/barc_hardware/tree/master/Official%20Version%201.0
