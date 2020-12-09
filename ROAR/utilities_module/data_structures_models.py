@@ -98,7 +98,7 @@ class Transform(BaseModel):
         matrix[0, 3] = location.x
         matrix[1, 3] = location.y
         matrix[2, 3] = location.z
-        matrix[0:3, 0:3] = Ry @ Rz @ Rx
+        matrix[0:3, 0:3] = Rx @ Ry @ Rz
         return matrix
 
     def __str__(self):
