@@ -161,4 +161,5 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
+        print('lat_control = steering?', lat_control)
         return lat_control

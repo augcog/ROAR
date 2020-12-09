@@ -1,6 +1,8 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
 from ROAR.control_module.stanley_controller import Stanley_controller
+from ROAR.control_module.bstanley_controller import BStanley_controller
+
 from ROAR.control_module.pid_controller import PIDController
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
@@ -11,14 +13,14 @@ from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
 
 
-class JAM2Agent(Agent):
+class JAM3Agent(Agent):
     def __init__(self, target_speed=120, **kwargs):
         super().__init__(**kwargs)
         self.target_speed = target_speed
         self.logger = logging.getLogger("Stanley Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         #self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
-        self.stanley_controller = Stanley_controller(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
+        self.bstanley_controller = BStanley_controller(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
 
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
@@ -26,7 +28,7 @@ class JAM2Agent(Agent):
         self.behavior_planner = BehaviorPlanner(agent=self)
         self.local_planner = SimpleWaypointFollowingLocalPlanner(
             agent=self,
-            controller=self.stanley_controller,
+            controller=self.bstanley_controller,
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
@@ -36,7 +38,7 @@ class JAM2Agent(Agent):
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:
-        super(JAM2Agent, self).run_step(vehicle=vehicle,
+        super(JAM3Agent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         if self.local_planner.is_done():
