@@ -3,6 +3,7 @@ from ROAR.perception_module.detector import Detector
 import numpy as np
 from typing import Optional
 import time
+from ROAR.utilities_module.utilities import img_to_world
 
 
 class DepthToPointCloudDetector(Detector):
@@ -24,7 +25,6 @@ class DepthToPointCloudDetector(Detector):
         while True:
             self.agent.kwargs["point_cloud"] = self.run_in_series()
 
-
     def run_in_series(self) -> Optional[np.ndarray]:
         """
 
@@ -35,21 +35,21 @@ class DepthToPointCloudDetector(Detector):
             if self.should_filter_by_distance:
                 coords = np.where(depth_img < self.max_detectable_distance)
             else:
-                coords = np.where(depth_img < 2)
+                coords = np.where(depth_img < 2)  # it will just return all coordinate pairs
             if self.should_sample_points and np.shape(coords)[1] > self.max_points_to_convert:
                 coords = np.random.choice(a=coords, size=self.max_points_to_convert, replace=False)
-
             depths = depth_img[coords][:, np.newaxis] * 1000
             result = np.multiply(np.array(coords).T, depths)
-            raw_p2d = np.hstack((result, depths))
-            cords_xyz = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
-
+            S_uv1 = np.hstack((result, depths)).T
             if self.should_compute_global_pointcloud:
-                cords_xyz_1 = np.vstack([cords_xyz, np.ones((1, np.shape(cords_xyz)[1]))])
-                return (self.agent.vehicle.transform.get_matrix() @ self.agent.front_depth_camera.transform.get_matrix()
-                        @ cords_xyz_1)[:3, :].T
+                return img_to_world(scaled_depth_image=S_uv1,
+                                    intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
+                                    veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
+                                    cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
+
             else:
-                return cords_xyz.T
+                K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
+                return (K_inv @ S_uv1).T
         return None
 
     @staticmethod

@@ -25,7 +25,6 @@ import cv2
 
 class CarlaBridge(Bridge):
     def convert_location_from_source_to_agent(self, source: carla.Location) -> Location:
-
         """
         Convert Location data from Carla.location to Agent's lcoation data type
         invert the Z axis to make it into right hand coordinate system
@@ -35,13 +34,13 @@ class CarlaBridge(Bridge):
         Returns:
 
         """
-        return Location(x=source.x, y=-source.z, z=source.y)
+        # return Location(x=source.x, y=source.y, z=source.z)
+        return Location(x=source.x, y=-source.z, z=-source.y)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
-
-        # return Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
-        return Rotation(roll=source.pitch, pitch=source.yaw, yaw=source.roll)
+        return Rotation(roll=source.roll, pitch=source.yaw, yaw=source.pitch)
+        # return Rotation(roll=source.roll, pitch=source.pitch, yaw=source.yaw)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform
@@ -69,7 +68,7 @@ class CarlaBridge(Bridge):
 
         try:
             source.convert(cc.Raw)
-            rgb_image =self._to_rgb_array(source)
+            rgb_image = self._to_rgb_array(source)
             return RGBData(data=rgb_image)
         except:
             return None
