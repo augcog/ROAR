@@ -5,14 +5,27 @@ import cv2
 
 class CascadeObjDetector(Detector):
     def __init__(self, agent: Agent, scaleFactor=1.1, minNeighbors=3, minSize=(60, 60), **kwargs):
+        """
+
+        @param agent:
+        @param scaleFactor:
+        @param minNeighbors:
+        @param minSize:
+        @param kwargs:
+        """
         super().__init__(agent)
         self.scaleFactor = scaleFactor
         self.minNeighbors = minNeighbors
         self.minSize = minSize
         # use the trained cascade classifier to classify cars
-        self.cascade_car = cv2.CascadeClassifier('cascade.xml')
+        self.cascade_car = cv2.CascadeClassifier('ROAR_Sim/Cascade/cascade_train/cascade.xml')
 
     def run_in_series(self, **kwargs) -> Any:
+        """
+
+        @param kwargs:
+        @return:
+        """
         if self.agent.front_rgb_camera.data is not None:
             rgb_img = self.agent.front_rgb_camera.data.copy()
             # generate grayed images
@@ -26,9 +39,19 @@ class CascadeObjDetector(Detector):
         return rectangles
 
     def run_in_threaded(self, **kwargs):
+        """
+
+        @param kwargs:
+        """
         pass
 
     def draw_rectangles(self, img, rectangles):
+        """
+
+        @param img:
+        @param rectangles:
+        @return:
+        """
         # these colors are actually BGR
         line_color = (255, 255, 0)
         line_type = cv2.LINE_4
@@ -41,6 +64,5 @@ class CascadeObjDetector(Detector):
             cv2.rectangle(img, top_left, bottom_right, line_color, lineType=line_type)
 
         return img
-
 
 
