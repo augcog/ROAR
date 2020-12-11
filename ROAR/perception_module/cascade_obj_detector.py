@@ -10,7 +10,7 @@ class CascadeObjDetector(Detector):
         self.minNeighbors = minNeighbors
         self.minSize = minSize
         # use the trained cascade classifier to classify cars
-        self.cascade_car = cv2.CascadeClassifier('ROAR_Sim/Cascade/cascade_train/cascade.xml')
+        self.cascade_car = cv2.CascadeClassifier('cascade.xml')
 
     def run_in_series(self, **kwargs) -> Any:
         if self.agent.front_rgb_camera.data is not None:
