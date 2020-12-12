@@ -33,7 +33,7 @@ def img_to_world(scaled_depth_image: np.ndarray,
         cam_veh_matrix: 4 x 4 camera to vehicle transformation matrix
 
     Returns:
-
+        n x 3 array of n points
     """
     assert scaled_depth_image.shape[0] == 3, f"scaled depth image has incorrect shape [{scaled_depth_image.shape}]"
     assert intrinsics_matrix.shape == (3, 3), f"Intrinsics matrix has incorrect shape [{intrinsics_matrix.shape}]"
@@ -82,3 +82,44 @@ def img_to_world2(depth_img,
     # multiply by cam_world_matrix
     points = extrinsics_matrix @ cords_xyz_1  # i have all points now
     return points
+
+
+def rotation_matrix_from_euler(roll: float, pitch: float, yaw: float) -> np.ndarray:
+    """
+    Takes in roll pitch yaw and compute rotation matrix using the order of
+
+    R = R_yaw @ R_pitch @ R_roll
+
+    http://planning.cs.uiuc.edu/node104.html
+
+    Args:
+        roll: float of roll in degree
+        pitch: float of pitch in degree
+        yaw: float of yaw in degree
+
+    Returns:
+        3 x 3 array rotation matrix
+    """
+    c_y = np.cos(np.radians(yaw))
+    s_y = np.sin(np.radians(yaw))
+    c_r = np.cos(np.radians(roll))
+    s_r = np.sin(np.radians(roll))
+    c_p = np.cos(np.radians(pitch))
+    s_p = np.sin(np.radians(pitch))
+
+    R_roll = np.array([
+        [1, 0, 0],
+        [0, c_r, -s_r],
+        [0, s_r, c_r]
+    ])
+    R_pitch = np.array([
+        [c_p, 0, s_p],
+        [0, 1, 0],
+        [-s_p, 0, c_p]
+    ])
+    R_yaw = np.array([
+        [c_y, -s_y, 0],
+        [s_y, c_y, 0],
+        [0, 0, 1]
+    ])
+    return R_yaw @ R_pitch @ R_roll

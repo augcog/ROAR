@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial import distance
 from typing import Union, Optional
 from typing import List
-
+from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
 class Location(BaseModel):
     x: float = Field(
@@ -69,36 +69,15 @@ class Transform(BaseModel):
         """
         location = self.location
         rotation = self.rotation
-        # x, y, z
-        roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
-        c_y = np.cos(np.radians(yaw))
-        s_y = np.sin(np.radians(yaw))
-        c_r = np.cos(np.radians(roll))
-        s_r = np.sin(np.radians(roll))
-        c_p = np.cos(np.radians(pitch))
-        s_p = np.sin(np.radians(pitch))
 
-        Rx = np.array([
-            [1, 0, 0],
-            [0, c_r, -s_r],
-            [0, s_r, c_r]
-        ])
-        Ry = np.array([
-            [c_p, 0, s_p],
-            [0, 1, 0],
-            [-s_p, 0, c_p]
-        ])
-        Rz = np.array([
-            [c_y, -s_y, 0],
-            [s_y, c_y, 0],
-            [0, 0, 1]
-        ])
+        roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
+        rotation_matrix = rotation_matrix_from_euler(roll=roll, pitch=pitch, yaw=yaw)
 
         matrix = np.identity(4)
         matrix[0, 3] = location.x
         matrix[1, 3] = location.y
         matrix[2, 3] = location.z
-        matrix[0:3, 0:3] = Rx @ Ry @ Rz
+        matrix[0:3, 0:3] = rotation_matrix
         return matrix
 
     def __str__(self):

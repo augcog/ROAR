@@ -21,12 +21,13 @@ from ROAR.utilities_module.data_structures_models import (
 from ROAR.utilities_module.utilities import png_to_depth
 import numpy as np
 import cv2
+from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
 
 class CarlaBridge(Bridge):
     def convert_location_from_source_to_agent(self, source: carla.Location) -> Location:
         """
-        Convert Location data from Carla.location to Agent's lcoation data type
+        Convert Location data from Carla.location to Agent's location data type
         invert the Z axis to make it into right hand coordinate system
         Args:
             source: carla.location
@@ -35,12 +36,24 @@ class CarlaBridge(Bridge):
 
         """
         # return Location(x=source.x, y=source.y, z=source.z)
-        return Location(x=source.x, y=-source.z, z=source.y)
+        return Location(x=source.x, y=-source.z, z=-source.y)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
-        return Rotation(roll=source.roll, pitch=source.yaw, yaw=source.pitch)
-        # return Rotation(roll=source.roll, pitch=source.pitch, yaw=source.yaw)
+        roll, pitch, yaw = source.roll, source.pitch, source.yaw
+        reflective_matrix = np.array([
+            [1, 0, 0],
+            [0, 0, -1],
+            [0, -1, 0]
+        ])
+        R_Carla = rotation_matrix_from_euler(roll=roll, pitch=pitch, yaw=yaw)
+        # R_ROAR = P * R_carla * P
+        R_ROAR = reflective_matrix @ R_Carla @ reflective_matrix
+        r11, r21, r31, r32, r33 = R_ROAR[0][0], R_ROAR[1][0], R_ROAR[2][0], R_ROAR[2][1], R_ROAR[2][2]
+        yaw = alpha = np.arctan2(r21, r11)
+        pitch = beta = np.arctan2(-r31, np.sqrt(r32 ** 2 + r33 ** 2))
+        roll = gamma = np.arctan2(r32, r33)
+        return Rotation(roll=roll, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform

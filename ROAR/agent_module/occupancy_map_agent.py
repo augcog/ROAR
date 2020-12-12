@@ -38,8 +38,8 @@ class OccupancyMapAgent(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
-        if self.kwargs.get("point_cloud") is not None:
-            point_cloud = self.kwargs.get("point_cloud")
-            print(self.vehicle.transform, np.min(point_cloud, axis=0),
-                  np.max(point_cloud, axis=0))
+        if self.kwargs.get("ground_coords") is not None:
+            point_cloud = self.kwargs.get("ground_coords")
+            # print(self.vehicle.transform, np.min(point_cloud, axis=0),
+            #       np.max(point_cloud, axis=0))
         return control

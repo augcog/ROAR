@@ -4,6 +4,7 @@ import numpy as np
 from typing import Optional
 import time
 from ROAR.utilities_module.utilities import img_to_world
+import cv2
 
 
 class DepthToPointCloudDetector(Detector):
@@ -42,10 +43,11 @@ class DepthToPointCloudDetector(Detector):
             result = np.multiply(np.array(coords).T, depths)
             S_uv1 = np.hstack((result, depths)).T
             if self.should_compute_global_pointcloud:
-                return img_to_world(scaled_depth_image=S_uv1,
-                                    intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
-                                    veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
-                                    cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
+                result = img_to_world(scaled_depth_image=S_uv1,
+                                      intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
+                                      veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
+                                      cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
+                return result
 
             else:
                 K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)

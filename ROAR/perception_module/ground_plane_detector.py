@@ -16,7 +16,7 @@ class GroundPlaneDetector(Detector):
 
     def run_in_threaded(self, **kwargs):
         while True:
-            self.run_in_series()
+            self.agent.kwargs["ground_coords"] = self.run_in_series()
 
     def run_in_series(self) -> Any:
         if self.agent.kwargs.get("point_cloud", None) is not None:
@@ -48,7 +48,7 @@ class GroundPlaneDetector(Detector):
             # cv2.imshow('Color', color_image)
             # cv2.waitKey(1)
             ground_coords = np.where(bool_matrix > 0)
-            self.agent.kwargs["ground_coords"] = self.to_world_coords(img_ground_coords=ground_coords)
+            return self.to_world_coords(img_ground_coords=ground_coords)
 
     def to_world_coords(self, img_ground_coords):
         if self.agent.front_depth_camera.data is not None:
