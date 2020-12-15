@@ -114,7 +114,7 @@ class BLatStanley_controller(Controller):
         vel = self.agent.vehicle.velocity
         veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
 
-        k = 0.5 #control gain
+        k = 1.9 #control gain
 
         # veh_loc = self.agent.vehicle.transform.location
 
@@ -147,6 +147,7 @@ class BLatStanley_controller(Controller):
           error_front_axle = np.dot([dx[target_idx], dy[target_idx]], front_axle_vec)
         '''
 
+
         # *** vehicle data ***
 
         wb = 2.96  # assumed vehicle wheelbase (tesla)
@@ -160,14 +161,28 @@ class BLatStanley_controller(Controller):
         veh_pitch = self.agent.vehicle.transform.rotation.pitch
 
 
-        # *** getting front axle coordinates ***
-        frontx = veh_x + wb*np.cos(veh_pitch*180/np.pi)/2
-        frontz = veh_z + wb*np.sin(veh_pitch*180/np.pi)/2
+        # ************* convert points to vehicle reference *****************
 
-        # *** referencing next waypoint coordinates ***
-        path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
-        path_z = next_waypoint.location.z  #** how get
+        theta_deg = veh_pitch+90
+        theta_rad = np.radians(theta_deg)
+        gvw3d=np.array([[np.cos (theta_rad), 0, np.sin (theta_rad)],
+                     [0,          1,        0 ],
+                     [-np.sin (theta_rad), 0, np.cos (theta_rad)]])
+        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
+                        [np.sin(theta_rad), np.cos(theta_rad), veh_z],
+                        [0, 0, 1]])
+        gvw = np.linalg.inv(gwv)
+        # *** define points in vehicle reference frame ***
 
+        # *** vehicle front axle ***
+        fx = 0
+        fz = -.5 * wb
+
+        # *** next waypoint ***
+        nextwp = np.transpose(np.array([next_waypoint.location.x, next_waypoint.location.z, 1]))
+        vf_nextwp = np.matmul(gvw, nextwp)
+
+        # *** next points on path
         #*** averaging path points for smooth path vector ***
         next_pathpoint1 = (self.agent.local_planner.way_points_queue[1])
         next_pathpoint2 = (self.agent.local_planner.way_points_queue[2])
@@ -179,65 +194,149 @@ class BLatStanley_controller(Controller):
         nz = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z + next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 6
         nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x) /3
         nz1 = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) /3
+        nx2 = (next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x)/3
+        nz2 = (next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) /3
+        npath = np.transpose(np.array([nx, nz, 1]))
+        npath1 = np.transpose(np.array([nx1, nz1, 1]))
+        npath2 = np.transpose(np.array([nx2, nz2, 1]))
+
+        vf_npath = np.matmul(gvw, npath)
+        vf_npath1 = np.matmul(gvw, npath1)
+        vf_npath2 = np.matmul(gvw, npath2)
+
+        # ***
+        print ('theta_deg = ',theta_deg)
+        print ('vf_npath = ',vf_npath)
+        print('vf_npath1 = ', vf_npath1)
+        print('vf_npath2 = ', vf_npath2)
+        print ('Gvw = ', gvw)
+        # print ('Gvw inv = ', gwv)
+        print('vehicle frame next waypoint = ', vf_nextwp)
+        print('next waypoint = ', nextwp)
+        # print ('next waypoint = ', next_waypoint.location)
+        '''
+        # *** get in vehicle reference ***
+        
+        path coordinates
+        next_wp
+  
+        vehicle coordinates
+     
+        '''
+
+        # # *** getting front axle coordinates ***
+        # frontx = veh_x + wb*np.cos(veh_pitch*180/np.pi)/2
+        # frontz = veh_z + wb*np.sin(veh_pitch*180/np.pi)/2
+
+        # # *** referencing next waypoint coordinates ***
+        # path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
+        # path_z = next_waypoint.location.z  #** how get
+
+
 
 
         # *** calculate crosstrack error ***
         # *** calculate front axle position error from path with positive error = turn to right, negative = turn to left
+        vf_cte = vf_npath1[0]
 
-        dx = [frontx - nx1]
-        dz = [frontz - nz1]
-        # dx = [frontx - path_x]
-        # dz = [frontz - path_z]
-        # dx = [veh_x - path_x]
-        # dz = [veh_z - path_z]
-        dpathhead_rad = (math.atan2((nz1-frontz), (nx1-frontx))) # *** need some lead to get sign correct (with sin)?
-        #dpathhead_rad = (math.atan2((path_z - frontz), (path_x - frontx)))
-        #dpathhead_rad = (math.atan2((path_z - veh_z), (path_x - veh_x)))
-        dpathhead_ang = dpathhead_rad * 180 / np.pi
-        pitch_to_path = dpathhead_ang - veh_pitch
-        dpath = np.sin(pitch_to_path*np.pi/180)*np.hypot(dx, dz) # *** pitch goes from + to - as crosses x axis
 
-        # dpath = np.hypot(dx, dz)-8  #  really should take this value * sign of pitch_to_path
+        # dx = nx1-frontx
+        # dz = nz1-frontz
 
+        # dx = veh_x - path_x
+        # dz = veh_z - path_z
+#         dpathhead_rad = (math.atan2(dz, dx)) # *** need some lead to get sign correct (with sin)?
+#         #dpathhead_rad = (math.atan2((path_z - frontz), (path_x - frontx)))
+#         #dpathhead_rad = (math.atan2((path_z - veh_z), (path_x - veh_x)))
+#         dpathhead_ang = dpathhead_rad * 180 / np.pi
+#         pitch_to_path = dpathhead_ang - veh_pitch
+#         #dpath = np.cos(pitch_to_path*np.pi/180)*np.hypot(dx, dz) # *** pitch goes from + to - as crosses x axis
+#
+#         #dpath = np.hypot(dx, dz)-8  #  really should take this value * sign of pitch_to_path
+# #*************************
+#
+#         #dpath = (((nx2-path_x)*(path_z-veh_z)-(path_x-veh_x)*(nz2-path_z)))/(((nx2-path_x)**2+(nz2-path_z)**2)**.5)
+#         dpath = (((nx2-nx1)*(nz1-veh_z)-(nx1-veh_x)*(nz2-nz1)))/(((nx2-nx1)**2+(nz2-nz1)**2)**.5)
+
+#*************************
 
         # front_axle_vec = [-np.cos(veh_yaw + np.pi / 2), -np.sin(veh_yaw + np.pi / 2)]   # RMS error?
         # e_front_axle_pos = np.dot([nx, ny], front_axle_vec)
 
         #***get heading if vehicle was at the correct spot on path**
-        path_pitch_rad = (math.atan2((nz - path_z), (nx - path_x)))
+        # vf_path_pitch = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
+
+        path_pitch_rad = (math.atan2((nz2 - next_waypoint.location.z), (nx2 - next_waypoint.location.x)))
         path_pitch = path_pitch_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
         head_err = path_pitch - veh_pitch
-
+        # head_err = vf_path_pitch - theta_deg
 
         print('--------------------------------------')
-        # print('veh yaw = ', veh_yaw)
-        # print('veh roll = ', veh_roll)
+        # # print('veh yaw = ', veh_yaw)
+        # # print('veh roll = ', veh_roll)
         print('veh pitch = ', veh_pitch)
-        print('**pitch to path** = ', pitch_to_path)
-        #
+        # print('**pitch to path** = ', pitch_to_path)
+        # print('**dpathhead_ang**',dpathhead_ang)
         print('veh x = ', veh_x)
         print('veh z = ', veh_z)
-        # print('front x = ', frontx)
-        # print('front z = ', frontz)
-        print('path x = ', path_x)
-        print('path z = ', path_z)
-        print('next path x = ', nx)
-        print('next path z = ', nz)
-        print('**distance to path = ', dpath)
-        print('path pitch = ', path_pitch)
-        print('path_pitch_rad = ', path_pitch_rad)
-        # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
-        # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
-        # print('path queue 20 = ', self.agent.local_planner.way_points_queue[17])
+        # # print('front x = ', frontx)
+        # # print('front z = ', frontz)
+        # print('path x = ', path_x)
+        # print('path z = ', path_z)
+        # print('next path x1 = ', nx1)
+        # print('next path z1 = ', nz1)
+        # print('next path x = ', nx)
+        # print('next path z = ', nz)
+        # print('next path x2 = ', nx2)
+        # print('next path z2 = ', nz2)
+        #
+        # print('**distance to path = ', dpath)
+        # print('path pitch = ', path_pitch)
+        # print('path_pitch_rad = ', path_pitch_rad)
+        # # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
+        # # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
+        # # print('path queue 20 = ', self.agent.local_planner.way_points_queue[17])
         print('** heading error **', head_err)
-        # print('_dot err', _dot)
+        print('vf cross track error',vf_cte)
+        # # print('_dot err', _dot)
 
-        return dpath, head_err
+        return vf_cte, head_err
 
         '''
         *** end my code ***
         '''
 
-
+        # def calc_curr_heading_err(self, next_waypoint: Transform) -> float:
+        #     return next_waypoint.rotation.pitch - self.agent.vehicle.transform.rotation.pitch
+        #
+        # def calc_cross_track_error(self, next_waypoint: Transform) -> float:
+        #     # calculate a vector that represent where you are going
+        #     v_begin = self.agent.vehicle.transform.location
+        #     v_end = v_begin + Location(
+        #         x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+        #         y=v_begin.y,
+        #         z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+        #     )
+        #     v_vec = np.array([v_end.x - v_begin.x, v_end.y - v_begin.y, v_end.z - v_begin.z])
+        #
+        #     # calculate error projection
+        #     w_vec = np.array(
+        #         [
+        #             next_waypoint.location.x - v_begin.x,
+        #             next_waypoint.location.y - v_begin.y,
+        #             next_waypoint.location.z - v_begin.z,
+        #         ]
+        #     )
+        #     _dot = math.acos(
+        #         np.clip(
+        #             np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
+        #             -1.0,
+        #             1.0,
+        #         )
+        #     )
+        #     _cross = np.cross(v_vec, w_vec)
+        #     if _cross[1] > 0:
+        #         _dot *= -1.0
+        #     return _dot

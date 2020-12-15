@@ -2,6 +2,7 @@ from ROAR.agent_module.agent import Agent
 from pathlib import Path
 from ROAR.control_module.stanley_controller import Stanley_controller
 from ROAR.control_module.bstanley_controller import BStanley_controller
+from ROAR.control_module.cstanley_controller import CStanley_controller
 
 from ROAR.control_module.pid_controller import PIDController
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
@@ -21,6 +22,7 @@ class JAM3Agent(Agent):
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         #self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
         self.bstanley_controller = BStanley_controller(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
+        #self.cstanley_controller = CStanley_controller(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
 
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
@@ -29,6 +31,8 @@ class JAM3Agent(Agent):
         self.local_planner = SimpleWaypointFollowingLocalPlanner(
             agent=self,
             controller=self.bstanley_controller,
+            #controller=self.cstanley_controller,
+
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
