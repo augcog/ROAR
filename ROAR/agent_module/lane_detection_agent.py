@@ -12,5 +12,9 @@ class LaneDetectionAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        self.lane_detector.run_in_series()
+        try:
+            self.lane_detector.run_in_series()
+        except Exception as e:
+            self.logger.error(e)
+
         return VehicleControl()

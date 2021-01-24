@@ -44,9 +44,9 @@ class GroundPlaneDetector(Detector):
             bool_zeros[bool_indices] = bool_matrix.flatten()
             bool_matrix = bool_zeros.reshape((d1, d2))
             color_image = self.agent.front_rgb_camera.data.copy()
-            # color_image[bool_matrix > 0] = 255
-            # cv2.imshow('Color', color_image)
-            # cv2.waitKey(1)
+            color_image[bool_matrix > 0] = 255
+            cv2.imshow('Color', color_image)
+            cv2.waitKey(1)
             ground_coords = np.where(bool_matrix > 0)
             return self.to_world_coords(img_ground_coords=ground_coords)
 
