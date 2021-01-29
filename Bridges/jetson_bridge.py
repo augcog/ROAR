@@ -2,13 +2,14 @@ from typing import Any, Tuple
 
 from Bridges.bridge import Bridge
 from ROAR.utilities_module.data_structures_models import Vector3D, SensorsData, \
-    IMUData, DepthData, RGBData, Transform, Rotation, Location, ViveTrackerData
+    IMUData, DepthData, RGBData, Transform, Rotation, Location, ViveTrackerData, TrackingData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import numpy as np
 import cv2
 from typing import Optional
 from ROAR_Jetson.vive.models import ViveTrackerMessage
 from ROAR_Jetson.jetson_vehicle import Vehicle as JetsonVehicle
+from ROAR_Jetson.camera import RS_T265
 
 
 class JetsonBridge(Bridge):
@@ -61,8 +62,21 @@ class JetsonBridge(Bridge):
             imu_data=self.convert_imu_from_source_to_agent(
                 source=source.get("imu", None)
             ),
+            tracking_data=self.convert_t265_to_agent(t265=source.get("t265_tracking")),
             vive_tracker_data=self.convert_vive_tracker_data_from_source_to_agent(
                 source=source.get("vive_tracking", None))
+        )
+
+    def convert_t265_to_agent(self, t265: RS_T265) -> TrackingData:
+        location = t265.location
+        rotation = t265.rotation  # pitch yaw roll
+        velocity = t265.velocity
+        return TrackingData(
+            transform=Transform(
+                location=Location(x=location[0], y=-location[1], z=-location[2]),
+                rotation=Rotation(pitch=rotation[0], yaw=rotation[1], roll=rotation[2])
+            ),
+            velocity=Vector3D(x=velocity[0], y=velocity[1], z=velocity[2])
         )
 
     def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
@@ -76,7 +90,7 @@ class JetsonBridge(Bridge):
                 ),
                 rotation=Rotation(
                     roll=-source.roll,
-                    pitch=source.pitch-90,  # 不知道为什么有60度的误差
+                    pitch=source.pitch - 90,  # 不知道为什么有60度的误差
                     yaw=-source.yaw
                 ),
                 velocity=Vector3D(

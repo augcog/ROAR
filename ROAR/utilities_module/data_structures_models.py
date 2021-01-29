@@ -137,6 +137,9 @@ class ViveTrackerData(BaseModel):
     velocity: Vector3D = Field()
     tracker_name: str = Field(default="Tracker")
 
+class TrackingData(BaseModel):
+    transform: Transform = Field(default=Transform())
+    velocity: Vector3D = Field()
 
 class SensorsData(BaseModel):
     front_rgb: Union[RGBData, None] = Field(default=None)

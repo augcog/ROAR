@@ -5,8 +5,8 @@ from typing import Optional, Any
 import open3d as o3d
 import time, cv2
 from ROAR.utilities_module.utilities import img_to_world
-
-
+import open3d as o3d
+import pyransac3d as pyrsc
 class GroundPlaneDetector(Detector):
     def __init__(self, agent: Agent, knn: int = 200, **kwargs):
         super().__init__(agent, **kwargs)
@@ -21,34 +21,44 @@ class GroundPlaneDetector(Detector):
     def run_in_series(self) -> Any:
         if self.agent.kwargs.get("point_cloud", None) is not None:
             points: np.ndarray = self.agent.kwargs.get("point_cloud")
-            x = points[self.f3, :] - points[self.f4, :]
-            y = points[self.f1, :] - points[self.f2, :]
-            normals = self.normalize_v3(np.cross(x, y))
-            # OpenCV FloodFill
-            d1 = self.agent.front_depth_camera.image_size_y
-            d2 = self.agent.front_depth_camera.image_size_x
-            new_d1, new_d2 = d1, d2
-            curr_img = normals.reshape((new_d1, new_d2, 3)).astype(np.float32)
-            seed_point = (new_d1 * 2 // 3, new_d2 // 2)
-            diff = 0.01
-            diffs = (diff, diff, diff)
-            _, retval, _, _ = cv2.floodFill(image=curr_img,
-                                            seedPoint=seed_point,
-                                            newVal=(0, 0, 0),
-                                            loDiff=diffs,
-                                            upDiff=diffs,
-                                            mask=None)
-            bool_matrix = np.mean(retval, axis=2) == 0
-            bool_zeros = np.zeros(d1 * d2).flatten()
-            bool_indices = np.indices(bool_zeros.shape)[0]  # [::16]
-            bool_zeros[bool_indices] = bool_matrix.flatten()
-            bool_matrix = bool_zeros.reshape((d1, d2))
-            color_image = self.agent.front_rgb_camera.data.copy()
-            color_image[bool_matrix > 0] = 255
-            cv2.imshow('Color', color_image)
-            cv2.waitKey(1)
-            ground_coords = np.where(bool_matrix > 0)
-            return self.to_world_coords(img_ground_coords=ground_coords)
+            start = time.time()
+
+            plane1 = pyrsc.Plane()
+            best_eq, best_inliers = plane1.fit(points, 0.01, maxIteration=10)
+
+            # print(best_inliers)
+            # normals = np.array(pcd.normals)
+            end = time.time()
+            # print(f"FPS: {1/(end - start)}")
+            # x = points[self.f3, :] - points[self.f4, :]
+            # y = points[self.f1, :] - points[self.f2, :]
+            # normals = self.normalize_v3(np.cross(x, y))
+            # # OpenCV FloodFill
+            # d1 = self.agent.front_depth_camera.image_size_y
+            # d2 = self.agent.front_depth_camera.image_size_x
+            # new_d1, new_d2 = d1, d2
+            # curr_img = normals.reshape((new_d1, new_d2, 3)).astype(np.float32)
+            # seed_point = (new_d1 * 2 // 3, new_d2 // 2)
+            # print(seed_point)
+            # diff = 0.01
+            # diffs = (diff, diff, diff)
+            # _, retval, _, _ = cv2.floodFill(image=np.array(pcd.normals),
+            #                                 seedPoint=seed_point,
+            #                                 newVal=(0, 0, 0),
+            #                                 loDiff=diffs,
+            #                                 upDiff=diffs,
+            #                                 mask=None)
+            # bool_matrix = np.mean(retval, axis=2) == 0
+            # bool_zeros = np.zeros(d1 * d2).flatten()
+            # bool_indices = np.indices(bool_zeros.shape)[0]  # [::16]
+            # bool_zeros[bool_indices] = bool_matrix.flatten()
+            # bool_matrix = bool_zeros.reshape((d1, d2))
+            # color_image = self.agent.front_rgb_camera.data.copy()
+            # color_image[bool_matrix > 0] = 255
+            # cv2.imshow('Color', color_image)
+            # cv2.waitKey(1)
+            # ground_coords = np.where(bool_matrix > 0)
+            # return self.to_world_coords(img_ground_coords=ground_coords)
 
     def to_world_coords(self, img_ground_coords):
         if self.agent.front_depth_camera.data is not None:

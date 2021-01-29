@@ -10,5 +10,6 @@ class ForwardOnlyAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
+        print(self.vehicle.transform)
         control = VehicleControl(throttle=0.4, steering=0)
         return control
