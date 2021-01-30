@@ -67,17 +67,20 @@ class JetsonBridge(Bridge):
                 source=source.get("vive_tracking", None))
         )
 
-    def convert_t265_to_agent(self, t265: RS_T265) -> TrackingData:
-        location = t265.location
-        rotation = t265.rotation  # pitch yaw roll
-        velocity = t265.velocity
-        return TrackingData(
-            transform=Transform(
-                location=Location(x=location[0], y=-location[1], z=-location[2]),
-                rotation=Rotation(pitch=rotation[0], yaw=rotation[1], roll=rotation[2])
-            ),
-            velocity=Vector3D(x=velocity[0], y=velocity[1], z=velocity[2])
-        )
+    def convert_t265_to_agent(self, t265: Optional[RS_T265]) -> Optional[TrackingData]:
+        if t265 is not None:
+
+            location = t265.location
+            rotation = t265.rotation  # pitch yaw roll
+            velocity = t265.velocity
+            return TrackingData(
+                transform=Transform(
+                    location=Location(x=location[0], y=-location[1], z=-location[2]),
+                    rotation=Rotation(pitch=rotation[0], yaw=rotation[1], roll=rotation[2])
+                ),
+                velocity=Vector3D(x=velocity[0], y=velocity[1], z=velocity[2])
+            )
+        return None
 
     def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
             Optional[ViveTrackerData]:
