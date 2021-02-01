@@ -92,6 +92,16 @@ class PointCloudMapRecordingAgent(Agent):
         return control
 
     def img_cords_to_world_cords(self, left_img_cord, right_img_cord):
+        """
+        Converts depth data from the Front Depth Camera to World coordinates.
+
+        Args:
+            left_img_cord ():
+            right_img_cord ():
+
+        Returns:
+            points: World coordinates in map
+        """
         depth = self.front_depth_camera.data
         # depth_center = depth[img_pos_center[1]][img_pos_center[0]] * 1000
         depth_left = depth[left_img_cord[1]][left_img_cord[0]] * 1000

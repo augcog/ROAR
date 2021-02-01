@@ -66,6 +66,7 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
 
 
     def compute_vectors_near_me(self):
+        """Computes vectors near Agent from Front Depth Camera."""
         d1, d2 = self.agent.front_depth_camera.image_size_y, self.agent.front_depth_camera.image_size_x
         idx, jdx = np.indices((d1, d2))
         idx_back = np.clip(idx - 1, 0, idx.max()).flatten()
