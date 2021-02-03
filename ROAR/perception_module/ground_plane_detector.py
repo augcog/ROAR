@@ -45,12 +45,14 @@ class GroundPlaneDetector(Detector):
             cv2.floodFill(image=xyz_norm, mask=mask, seedPoint=(seed_w, seed_h), newVal=fillvalue,
                           loDiff=(threshold, threshold, threshold), upDiff=(threshold, threshold, threshold),
                           flags=8 | (fillvalue << 8) | cv2.FLOODFILL_MASK_ONLY)
-            depths = xyz_norm[:, :, 2]
-            idx = (depths > depths.flatten().min())
+            normalized_depth = self.agent.front_depth_camera.data / np.max(self.agent.front_depth_camera.data)
+            idx = (normalized_depth >= 0.01)
+
             mask = mask[:-2, :-2]
-            print(np.shape(idx), np.shape(mask))
+            # print(np.shape(idx), np.shape(mask))
             mask[idx] = 0
-            # mask[xyz_norm > xyz_norm[:, :, 2].flatten().mean()] = 0
+            # mask[xyz_norm > xyz_norm[:, :, 2]:wq
+            # .flatten().mean()] = 0
             # mask[xyz_norm[xyz_norm > xyz_norm[:,:,2].flatten().mean()]] = 0
             cv2.imshow("Ground Plane Mask", mask)
             cv2.waitKey(1)
