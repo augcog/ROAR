@@ -19,8 +19,9 @@ class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.add_threaded_module(DepthToPointCloudDetector(agent=self,
-                                                           should_compute_global_pointcloud=True,
-                                                           threaded=True))
+                                                           should_compute_global_pointcloud=False,
+                                                           threaded=True,
+                                                           scale_factor=1))
         self.add_threaded_module(GroundPlaneDetector(agent=self, threaded=True))
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))

@@ -14,6 +14,7 @@ class DepthToPointCloudDetector(Detector):
                  should_sample_points: bool = False,
                  should_filter_by_distance: float = False,
                  max_detectable_distance: float = 1,
+                 scale_factor: int = 1000,
                  max_points_to_convert=10000, **kwargs):
         super().__init__(agent, **kwargs)
         self.should_compute_global_pointcloud = should_compute_global_pointcloud
@@ -21,6 +22,7 @@ class DepthToPointCloudDetector(Detector):
         self.should_filter_by_distance = should_filter_by_distance
         self.max_detectable_distance = max_detectable_distance
         self.max_points_to_convert = max_points_to_convert
+        self.scale_factor = scale_factor
 
     def run_in_threaded(self, **kwargs):
         while True:
@@ -36,12 +38,13 @@ class DepthToPointCloudDetector(Detector):
             if self.should_filter_by_distance:
                 coords = np.where(depth_img < self.max_detectable_distance)
             else:
-                coords = np.where(depth_img < 2)  # it will just return all coordinate pairs
+                coords = np.where(depth_img <= np.amax(depth_img))  # it will just return all coordinate pairs
             if self.should_sample_points and np.shape(coords)[1] > self.max_points_to_convert:
                 coords = np.random.choice(a=coords, size=self.max_points_to_convert, replace=False)
-            depths = depth_img[coords][:, np.newaxis] * 1000
+            depths = depth_img[coords][:, np.newaxis] * self.scale_factor
             result = np.multiply(np.array(coords).T, depths)
             S_uv1 = np.hstack((result, depths)).T
+
             if self.should_compute_global_pointcloud:
                 result = img_to_world(scaled_depth_image=S_uv1,
                                       intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
@@ -51,7 +54,7 @@ class DepthToPointCloudDetector(Detector):
 
             else:
                 K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
-                return (K_inv @ S_uv1).T
+                return (self.agent.front_depth_camera.intrinsics_matrix @ S_uv1).T
         return None
 
     @staticmethod

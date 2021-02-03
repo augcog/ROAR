@@ -7,10 +7,12 @@ import time, cv2
 from ROAR.utilities_module.utilities import img_to_world
 import open3d as o3d
 import pyransac3d as pyrsc
+from scipy import stats
+
 class GroundPlaneDetector(Detector):
-    def __init__(self, agent: Agent, knn: int = 200, **kwargs):
+    def __init__(self, agent: Agent, knn: int = 200, horizon_row=400, **kwargs):
         super().__init__(agent, **kwargs)
-        self.reference_norm: Optional[np.ndarray] = np.array([-0.00000283, -0.00012446, 0.99999999])
+        self.horizon_row = horizon_row
         self.knn = knn
         self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me()
 
@@ -21,63 +23,102 @@ class GroundPlaneDetector(Detector):
     def run_in_series(self) -> Any:
         if self.agent.kwargs.get("point_cloud", None) is not None:
             points: np.ndarray = self.agent.kwargs.get("point_cloud")
-            start = time.time()
 
-            plane1 = pyrsc.Plane()
-            best_eq, best_inliers = plane1.fit(points, 0.01, maxIteration=10)
+            h = self.agent.front_depth_camera.image_size_y
+            w = self.agent.front_depth_camera.image_size_x
 
-            # print(best_inliers)
-            # normals = np.array(pcd.normals)
-            end = time.time()
-            # print(f"FPS: {1/(end - start)}")
-            # x = points[self.f3, :] - points[self.f4, :]
-            # y = points[self.f1, :] - points[self.f2, :]
-            # normals = self.normalize_v3(np.cross(x, y))
-            # # OpenCV FloodFill
-            # d1 = self.agent.front_depth_camera.image_size_y
-            # d2 = self.agent.front_depth_camera.image_size_x
-            # new_d1, new_d2 = d1, d2
-            # curr_img = normals.reshape((new_d1, new_d2, 3)).astype(np.float32)
-            # seed_point = (new_d1 * 2 // 3, new_d2 // 2)
+            # cv2.imshow("depth", self.agent.front_depth_camera.data / np.amax(self.agent.front_depth_camera.data))
+            x = points[self.f1, :] - points[self.f2, :]
+            y = points[self.f3, :] - points[self.f4, :]
+            xyz_norm = self.normalize_v3(np.cross(x, y))
+            xyz_norm = np.abs(xyz_norm)
+            xyz_norm = xyz_norm.reshape((h, w, 3)).astype(np.float32)
+            # print(stats.describe(xyz_norm[:,:, 2].flatten()))
+            Y_array = xyz_norm[-10, :, 1]
+            seed_w = np.argsort(Y_array)[len(Y_array) // 2]
+            seed_h = xyz_norm.shape[0] - 25
+            # seed_point = (xyz_norm.shape[1] // 2, xyz_norm.shape[0] - 25)  # (d1 - 2, int(d2 / 2))
             # print(seed_point)
-            # diff = 0.01
-            # diffs = (diff, diff, diff)
-            # _, retval, _, _ = cv2.floodFill(image=np.array(pcd.normals),
+            threshold = 0.01
+            mask = np.zeros((xyz_norm.shape[0] + 2, xyz_norm.shape[1] + 2), np.uint8)
+            fillvalue = 255
+            cv2.floodFill(image=xyz_norm, mask=mask, seedPoint=(seed_w, seed_h), newVal=fillvalue,
+                          loDiff=(threshold, threshold, threshold), upDiff=(threshold, threshold, threshold),
+                          flags=8 | (fillvalue << 8) | cv2.FLOODFILL_MASK_ONLY)
+            depths = xyz_norm[:, :, 2]
+            idx = (depths > depths.flatten().min())
+            mask = mask[:-2, :-2]
+            print(np.shape(idx), np.shape(mask))
+            mask[idx] = 0
+            # mask[xyz_norm > xyz_norm[:, :, 2].flatten().mean()] = 0
+            # mask[xyz_norm[xyz_norm > xyz_norm[:,:,2].flatten().mean()]] = 0
+            cv2.imshow("Ground Plane Mask", mask)
+            cv2.waitKey(1)
+
+            # # print(np.amin(points, 0), np.amax(points, 0))
+            # horizon_row = 200
+            # d1, d2 = int(480 / 1), int(640 / 1)
+            # idx, jdx = np.indices((d1, d2))
+            # idx, jdx = idx[horizon_row:, :], jdx[horizon_row:, :]
+            # idx_back = np.clip(idx - 1, 0, idx.max()).flatten()
+            # idx_front = np.clip(idx + 1, 0, idx.max()).flatten()
+            # jdx_back = np.clip(jdx - 1, 0, jdx.max()).flatten()
+            # jdx_front = np.clip(jdx + 1, 0, jdx.max()).flatten()
+            # idx = idx.flatten()
+            # jdx = jdx.flatten()
+            #
+            # f1 = (idx_front * d2 + jdx)
+            # f2 = (idx_back * d2 + jdx)
+            # f3 = (idx * d2 + jdx_front)
+            # f4 = (idx * d2 + jdx_back)
+            #
+            # x = points[f1, :] - points[f2, :]
+            # y = points[f3, :] - points[f4, :]
+            # xyz_norm = self.normalize_v3(np.cross(x, y))
+            #
+            # # OpenCV FloodFill
+            # curr_img = xyz_norm.reshape((d1 - horizon_row, d2, 3)).astype(np.float32)
+            # mask = np.zeros((curr_img.shape[0] + 2, curr_img.shape[1] + 2), np.uint8)
+            # seed_point = (curr_img.shape[1] // 2, curr_img.shape[0] - 25)  # (d1 - 2, int(d2 / 2))
+            # # print(color_image.shape, curr_img.shape, mask.shape, seed_point)
+            # threshold = 0.01
+            # _, retval, _, _ = cv2.floodFill(image=curr_img,
             #                                 seedPoint=seed_point,
             #                                 newVal=(0, 0, 0),
-            #                                 loDiff=diffs,
-            #                                 upDiff=diffs,
-            #                                 mask=None)
-            # bool_matrix = np.mean(retval, axis=2) == 0
-            # bool_zeros = np.zeros(d1 * d2).flatten()
-            # bool_indices = np.indices(bool_zeros.shape)[0]  # [::16]
-            # bool_zeros[bool_indices] = bool_matrix.flatten()
-            # bool_matrix = bool_zeros.reshape((d1, d2))
-            # color_image = self.agent.front_rgb_camera.data.copy()
-            # color_image[bool_matrix > 0] = 255
+            #                                 loDiff=(threshold, threshold, threshold),
+            #                                 upDiff=(threshold, threshold, threshold),
+            #                                 mask=mask, flags=8|(255<<8)|cv2.FLOODFILL_MASK_ONLY)
+            #
+            # norm_umatrix = np.zeros((d1, d2))
+            # norm_umatrix[horizon_row:, :] = mask[1:-1, 1:-1] * 255
+            # color_image = self.agent.front_rgb_camera.data
+            # color_image[norm_umatrix > 0] = 255  # [out.get() != max_label] = 255
+            #
             # cv2.imshow('Color', color_image)
             # cv2.waitKey(1)
-            # ground_coords = np.where(bool_matrix > 0)
-            # return self.to_world_coords(img_ground_coords=ground_coords)
 
-    def to_world_coords(self, img_ground_coords):
-        if self.agent.front_depth_camera.data is not None:
-            depth_img = self.agent.front_depth_camera.data
-            depths = depth_img[img_ground_coords][:, np.newaxis] * 1000
-            result = np.multiply(np.array(img_ground_coords).T, depths)
-            S_uv1 = np.hstack((result, depths)).T
-            return img_to_world(scaled_depth_image=S_uv1,
-                                intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
-                                veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
-                                cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
-
-    def compute_reference_norm(self, pcd: o3d.geometry.PointCloud):
-        pcd_tree = o3d.geometry.KDTreeFlann(pcd)  # build KD tree for fast computation
-        [k, idx, _] = pcd_tree.search_knn_vector_3d(self.agent.vehicle.transform.location.to_array(),
-                                                    knn=self.knn)  # find points around me
-        points_near_me = np.asarray(pcd.points)[idx, :]  # 200 x 3
-        u, s, vh = np.linalg.svd(points_near_me, full_matrices=False)  # use svd to find normals of points
-        self.reference_norm = vh[2, :]
+            # d1, d2 = self.agent.front_depth_camera.image_size_y, self.agent.front_depth_camera.image_size_x
+            # x = points[self.f1, :] - points[self.f2, :]
+            # y = points[self.f3, :] - points[self.f4, :]
+            # xyz_norm = self.normalize_v3(np.cross(x, y))
+            # curr_img = xyz_norm.reshape((d1 - self.horizon_row, d2, 3)).astype(np.float32)
+            # mask = np.zeros((curr_img.shape[0] + 2, curr_img.shape[1] + 2), np.uint8)
+            # seed_point = (curr_img.shape[1] // 2, curr_img.shape[0] - 25)  # (d1 - 2, int(d2 / 2))
+            #
+            # _, retval, _, _ = cv2.floodFill(image=curr_img,
+            #                                 seedPoint=seed_point,
+            #                                 newVal=(0, 0, 0),
+            #                                 loDiff=(0.25, 0.25, 0.25),
+            #                                 upDiff=(0.25, 0.25, 0.25),
+            #                                 mask=mask)
+            #
+            # norm_umatrix = np.zeros((d1, d2))
+            # norm_umatrix[self.horizon_row:, :] = mask[1:-1, 1:-1] * 255
+            # color_image = self.agent.front_rgb_camera.data
+            # color_image[norm_umatrix > 0] = 255
+            #
+            # cv2.imshow('Color', color_image)
+            # cv2.waitKey(1)
 
     @staticmethod
     def normalize_v3(arr):
@@ -91,6 +132,8 @@ class GroundPlaneDetector(Detector):
     def compute_vectors_near_me(self):
         d1, d2 = self.agent.front_depth_camera.image_size_y, self.agent.front_depth_camera.image_size_x
         idx, jdx = np.indices((d1, d2))
+        # idx, jdx = idx[self.horizon_row:, :], jdx[self.horizon_row:, :]
+        idx, jdx = idx[:, :], jdx[:, :]
         idx_back = np.clip(idx - 1, 0, idx.max()).flatten()
         idx_front = np.clip(idx + 1, 0, idx.max()).flatten()
         jdx_back = np.clip(jdx - 1, 0, jdx.max()).flatten()
@@ -98,9 +141,35 @@ class GroundPlaneDetector(Detector):
         idx = idx.flatten()
         jdx = jdx.flatten()
 
-        # rand_idx = np.random.choice(np.arange(idx.shape[0]), size=d1*d2, replace=False)
-        f1 = (idx_front * d2 + jdx)  # [::16]  # [rand_idx]
-        f2 = (idx_back * d2 + jdx)  # [::16]  # [rand_idx]
-        f3 = (idx * d2 + jdx_front)  # [::16]  # [rand_idx]
-        f4 = (idx * d2 + jdx_back)  # [::16]  # [rand_idx]
+        f1 = (idx_front * d2 + jdx)
+        f2 = (idx_back * d2 + jdx)
+        f3 = (idx * d2 + jdx_front)
+        f4 = (idx * d2 + jdx_back)
         return f1, f2, f3, f4
+
+
+def computer_normal(normal_window):
+    normal = np.zeros((3,))
+    # Extract only nonzero normals from the normal_window
+    wh, ww, _ = normal_window.shape
+    point_list = []
+    for h_index in range(wh):
+        for w_index in range(ww):
+            if normal_window[h_index, w_index, 2] != 0:
+                point_list.append(normal_window[h_index, w_index, :])
+
+    if len(point_list) > 3:
+        vector_list = []
+        for index1 in range(len(point_list) - 1):
+            for index2 in range(index1 + 1, len(point_list)):
+                vector_list.append(point_list[index1] - point_list[index2])
+        normal_array = np.vstack(vector_list)
+        U, S, Vh = np.linalg.svd(normal_array)
+        normal = Vh[-1, :]
+
+        # Normal may point to opposite directions
+        # For ground-plane detection, we force positive Y direction
+        if normal[1] < 0:
+            normal = -normal
+
+    return normal
