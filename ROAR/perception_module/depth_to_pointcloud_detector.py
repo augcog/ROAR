@@ -54,7 +54,7 @@ class DepthToPointCloudDetector(Detector):
 
             else:
                 K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
-                return (self.agent.front_depth_camera.intrinsics_matrix @ S_uv1).T
+                return (K_inv @ S_uv1).T
         return None
 
     @staticmethod

@@ -10,7 +10,7 @@ from typing import Optional
 from ROAR_Jetson.vive.models import ViveTrackerMessage
 from ROAR_Jetson.jetson_vehicle import Vehicle as JetsonVehicle
 from ROAR_Jetson.camera import RS_T265
-
+from scipy import stats
 
 class JetsonBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
@@ -35,7 +35,8 @@ class JetsonBridge(Bridge):
 
     def convert_depth_from_source_to_agent(self, source) -> Optional[DepthData]:
         if source is not None:
-            return DepthData(data=source)
+            depth_data = DepthData(data=source / np.amax(source))
+            return depth_data
         return None
 
     def convert_vector3d_from_source_to_agent(self, source) -> Vector3D:
