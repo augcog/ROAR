@@ -161,7 +161,20 @@ class Visualizer:
                                         show_semantic_segmentation_ground: bool = False,
                                         show_point_cloud_ground: bool = False,
                                         ground_points: Optional[np.ndarray] = None):
-        """Visualizes image from Front RGB Camera"""
+        """
+        Visualizes image from Front RGB Camera.
+        Args:
+            show_num_waypoints ():
+            show_semantic_segmentation_obstacle ():
+            show_semantic_segmentation_sky ():
+            show_semantic_segmentation_ground ():
+            show_point_cloud_ground ():
+            ground_points ():
+
+        Returns:
+            None
+
+        """
         rgb_img = self.agent.front_rgb_camera.data.copy()
 
         if show_semantic_segmentation_sky or show_semantic_segmentation_obstacle or show_semantic_segmentation_ground:
@@ -198,7 +211,15 @@ class Visualizer:
         cv2.waitKey(1)
 
     def show_birds_eye_visualization(self, focus_on_vehicle: bool = True, view_size: int = 200):
-        """Visualizes top down image of Agent"""
+        """
+        Visualizes top down image of Agent.
+        Args:
+            focus_on_vehicle ():
+            view_size ():
+
+        Returns:
+            None
+        """
         if self.occupancy_grid_map is None:
             self.logger.error("No Occupancy Grid Map is connected")
         else:
