@@ -11,9 +11,9 @@ from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner 
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from pathlib import Path
-from ROAR.visualization_module.visualizer import Visualizer
+from ROAR.utilities_module.occupancy_map import OccupancyGridMap
 import cv2
-
+import time
 
 class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
@@ -21,8 +21,9 @@ class OccupancyMapAgent(Agent):
         self.add_threaded_module(DepthToPointCloudDetector(agent=self,
                                                            should_compute_global_pointcloud=False,
                                                            threaded=True,
-                                                           scale_factor=1))
-        self.add_threaded_module(GroundPlaneDetector(agent=self, threaded=True))
+                                                           scale_factor=1000))
+        self.gpd = GroundPlaneDetector(agent=self, threaded=True)
+        self.add_threaded_module(self.gpd)
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
         self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
@@ -34,13 +35,22 @@ class OccupancyMapAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.visualizer = Visualizer(agent=self)
+        self.occupancy_map = OccupancyGridMap(scale=1)  # 1 m = 100 cm
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
         if self.kwargs.get("ground_coords") is not None:
-            point_cloud = self.kwargs.get("ground_coords")
-            # print(self.vehicle.transform, np.min(point_cloud, axis=0),
-            #       np.max(point_cloud, axis=0))
+            point_cloud: np.ndarray = self.kwargs.get("ground_coords")
+            # print(np.amin(point_cloud, axis=0), np.amax(point_cloud, axis=0))
+            t1 = time.time()
+            print("ground", np.amin(point_cloud, axis=0), np.amax(point_cloud, axis=0),
+                  self.vehicle.transform)
+            self.occupancy_map.update(world_coords=point_cloud)
+            cv2.imshow("ground", self.gpd.curr_mask)
+
+            # self.occupancy_map.vizualize(center=(self.vehicle.transform.location.x, self.vehicle.transform.location.y))
+            # t2 = time.time()
+            # print(1 / (t2 - t1))
+
         return control

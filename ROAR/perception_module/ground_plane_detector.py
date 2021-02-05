@@ -4,8 +4,6 @@ import numpy as np
 from typing import Optional, Any, Tuple
 import open3d as o3d
 import time, cv2
-from ROAR.utilities_module.utilities import img_to_world
-from scipy import stats
 
 
 class GroundPlaneDetector(Detector):
@@ -19,6 +17,7 @@ class GroundPlaneDetector(Detector):
         self.min_x, self.max_x = self.roi[0][0], self.roi[0][1]
         self.min_y, self.max_y = self.roi[1][0], self.roi[1][1]
         self.threshold = 0.15
+        self.curr_mask = None
 
     def run_in_threaded(self, **kwargs):
         while True:
@@ -27,11 +26,13 @@ class GroundPlaneDetector(Detector):
     def run_in_series(self) -> Any:
         if self.agent.kwargs.get("point_cloud", None) is not None:
             try:
-                points: np.ndarray = self.agent.kwargs.get("point_cloud")
+                points: np.ndarray = self.agent.kwargs.get("point_cloud").copy()
+                # print("received pointcloud", np.amin(points, axis=0), np.amax(points, axis=0), self.agent.vehicle.transform.location)
                 # from points find normal vectors
                 h = self.agent.front_depth_camera.image_size_y
                 w = self.agent.front_depth_camera.image_size_x
-                # start of efficiency bottle neck
+
+                # start of efficiency bottle neck TODO: @christian
                 x = points[self.f1, :] - points[self.f2, :]
                 y = points[self.f3, :] - points[self.f4, :]
                 xyz_norm = self.normalize_v3(np.cross(x, y))
@@ -42,7 +43,7 @@ class GroundPlaneDetector(Detector):
                 xyz_norm = xyz_norm.reshape((h, w, 3)).astype(np.float32)
 
                 # we only need to consider the a single axis norm
-                Y_norm_array: np.ndarray = xyz_norm[self.min_x:self.max_x, self.min_y:self.max_y, 0]
+                Y_norm_array: np.ndarray = xyz_norm[self.min_x:self.max_x, self.min_y:self.max_y, 1]
                 x, y = np.unravel_index(np.argmax(Y_norm_array), np.shape(Y_norm_array))
                 seed_h, seed_w = y + self.min_y, x + self.min_x
 
@@ -55,43 +56,29 @@ class GroundPlaneDetector(Detector):
                               flags=8 | (fillvalue << 8) | cv2.FLOODFILL_MASK_ONLY)
                 mask = mask[1:-1, 1:-1]
                 mask[self.agent.front_depth_camera.data > 0.5] = 0
-                cv2.imshow("mask original", mask)
 
                 ret, thresh = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                 # You need to choose 4 or 8 for connectivity type
-                connectivity = 4
+                connectivity = 8
                 # Perform the operation
-                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh, connectivity,
-                                                                                        cv2.CV_32S)
+                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(image=thresh,
+                                                                                        connectivity=connectivity,
+                                                                                        ltype=cv2.CV_32S)
                 # find the label with the biggest area
-                areas = stats[:, 4]
                 nr = np.arange(num_labels)
-                ground_area, ground_label = sorted(zip(areas, nr), reverse=True)[1]
+                ground_area, ground_label = sorted(zip(stats[:, 4], nr), reverse=True)[1]
                 if ground_area < 10000:
                     return
                 mask = np.zeros(labels.shape)
                 mask[labels == ground_label] = 1
-                cv2.imshow("mask connected component", mask)
+                self.curr_mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,  np.ones((5, 5), np.uint8))
+                xyz = np.reshape(a=points, newshape=(h, w, 3))
+                ground_xyz = xyz[self.curr_mask == 1]
 
-                kernel = np.ones((5, 5), np.uint8)
-                closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-                cv2.imshow('mask closing', closing)
+                return ground_xyz
 
-                # Y_map = cv2.normalize(Y_norm_array, None, 1, 0, cv2.NORM_MINMAX)
-                # cv2.imshow("Normal", Y_map)
-                cv2.imshow("depth", self.agent.front_depth_camera.data)
-                # cv2.imshow("Mask", mask)
-                # color_image = self.agent.front_rgb_camera.data.copy()
-                # color_image = cv2.rectangle(color_image,
-                #                             pt1=(self.min_x, self.min_y),
-                #                             pt2=(self.max_x, self.max_y),
-                #                             color=(255, 0, 0),
-                #                             thickness=10)
-                # color_image = cv2.circle(color_image, (seed_w, seed_h), 6, (255, 0, 0), 2)
-                # cv2.imshow("color", color_image)
-                cv2.waitKey(1)
             except Exception as e:
-                self.logger.error(f"Failed to find ground plane: seed point = {e}")
+                self.logger.error(f"Failed to find ground plane: {e}")
 
     @staticmethod
     def normalize_v3(arr):

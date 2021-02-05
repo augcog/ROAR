@@ -1,7 +1,7 @@
 import numpy as np
 from pydantic import BaseModel, Field
 from typing import Union, List, Tuple
-from ROAR.utilities_module .data_structures_models import Transform, Location
+from ROAR.utilities_module.data_structures_models import Transform, Location
 import cv2
 import logging
 import math
@@ -9,152 +9,99 @@ from typing import Optional, List
 from ROAR.utilities_module.camera_models import Camera
 from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR.utilities_module.utilities import img_to_world
+import logging
+import time
 
 
 class OccupancyGridMap:
     """
-    A 2D Occupancy Grid Map representing the world
-
-    Should be able to handle
-        1. Transformation of coordinate from world to grid cord
-        2. Transformation of cord from grid cord to world cord
-        3. Represent the vehicle size and position, vehicle is represented as 0
-            Note that this class does NOT remember the vehicle position,
-            in order to visualize vehicle, vehicle position has to be passed in
-        4. Represent the obstacles' position once its world coordinate is
-           given
-        5. Represent free space's position, once its world coordinate is given
-        6. visualize itself, including zoom to a certain area so that not
-           the entire map is visualized
-        7. The range of values should be bewteen 0 - 1
-            - 0 = obstacles, 1 = free space
-        8 Failure tolerant, if I pass in a wrong world coordinate,
-          it will prompt it, but do not fail. Similar with other functions
-          in this class
-        9. Fixed map size for enhanced performance
+    Log update Occupancy map
     """
 
-    def __init__(self, absolute_maximum_map_size,
-                 map_padding: int = 40, vehicle_width=5, vehicle_height=5):
-        """
+    def __init__(self, scale: float = 1.0, buffer_size: int = 10, occu_prob: float = 0.65, free_prob: float = 0.35):
+        self.scale = scale
+        self.curr_min_world_coord: float = 0
+        self.curr_max_world_coord: float = 100
+        self.buffer_size = buffer_size
+        self.occu_prob = np.log(occu_prob / (1 - occu_prob))
+        self.free_prob = np.log(free_prob / (1 - free_prob))
+        self._map = self._create_empty_map(shape=
+                                           (math.ceil(self.curr_max_world_coord - self.curr_min_world_coord),
+                                            math.ceil(self.curr_max_world_coord - self.curr_min_world_coord)))
+        self.logger = logging.getLogger("Occupancy Grid Map")
 
-        Args:
-            absolute_maximum_map_size: Absolute maximum size of the map, will be used to compute a square occupancy map
-            map_padding: additional padding intended to add.
-        Note: This method pad to both sides, for example, it create padding
-        to the left of min_x, and to the right of max_x
-        Note: map_padding is for when when visualizing, we have to take a whole
-         block and just in case the route is to the edge of the map,
-         it will not error out
-        """
-        self.logger = logging.getLogger(__name__)
-        self.map: Optional[np.ndarray] = None
+    def _create_empty_map(self, shape: Tuple[int, int]):
+        return np.zeros(shape=(shape[0] + self.buffer_size, shape[1] + self.buffer_size))
 
-        self._absolute_maximum_map_size = absolute_maximum_map_size
+    def update(self, world_coords: np.ndarray) -> bool:
+        try:
+            # print(np.amin(world_coords, axis=0), np.amax(world_coords, axis=0))
+            scaled_world_coords = world_coords * self.scale
 
-        self._min_x = -math.floor(self._absolute_maximum_map_size)
-        self._min_y = -math.floor(self._absolute_maximum_map_size)
+            # rescale world coord to min = 0
+            Xs = scaled_world_coords[:, 0]
+            Zs = scaled_world_coords[:, 1]
 
-        self._max_x = math.ceil(self._absolute_maximum_map_size)
-        self._max_y = math.ceil(self._absolute_maximum_map_size)
+            # rescale occupancy map if neccessary
+            min_coord = min(np.min(Xs), np.min(Zs))
+            max_coord = max(np.max(Xs), np.max(Zs))
 
-        self._map_additiona_padding = map_padding
+            translated_Xs = np.array(Xs + abs(min_coord), dtype=np.int)
+            translated_Zs = np.array(Zs + abs(min_coord), dtype=np.int)
 
-        self.vehicle_width = vehicle_width
-        self.vehicle_height = vehicle_height
+            if min_coord < self.curr_min_world_coord or max_coord > self.curr_max_world_coord:
+                self._rescale_occupancy_map(min_coord=min_coord, max_coord=max_coord)
 
-        self._initialize_map()
+            # plot transformed world coord
+            occupied_mask = np.zeros(shape=self._map.shape) # self._map.copy()
+            occupied_mask[translated_Xs, translated_Zs] = 1
+            cv2.imshow("occupied mask", cv2.resize(occupied_mask, dsize=(500,500)))
+            cv2.waitKey(1)
+            # print(np.amin(translated_Xs), np.amax(translated_Xs), np.amin(translated_Zs), np.amax(translated_Zs),
+            #       self._map.shape)
+            self._map[occupied_mask == 1] += self.occu_prob
+            self._map[occupied_mask == 0] += self.free_prob
+            self._map.clip(min=0, max=1)
+            return True
+        except Exception as e:
+            self.logger.error(f"Something went wrong: {e}")
+            return False
 
-    def _initialize_map(self):
-        x_total = self._max_x - self._min_x + 2 * self._map_additiona_padding
-        y_total = self._max_y - self._min_y + 2 * self._map_additiona_padding
-        self.map = np.zeros([x_total, y_total])
-        self.logger.debug(f"Occupancy Grid Map of size {x_total} x {y_total} "
-                          f"initialized")
+    def _rescale_occupancy_map(self, min_coord: float, max_coord: float, auto_scale_factor=1):
+        auto_scale_factor = 1 if auto_scale_factor < 1 else auto_scale_factor
+        min_coord = min(self.curr_min_world_coord, min_coord)
+        max_coord = max(self.curr_max_world_coord, max_coord)
 
-    def location_to_occu_cord(self, location: Location):
-        return self.cord_translation_from_world(world_cords_xy=
-                                                np.array([[location.x,
-                                                           location.y]]))
+        new_map_shape = (math.ceil((max_coord - min_coord) * auto_scale_factor),
+                         math.ceil((max_coord - min_coord) * auto_scale_factor))
 
-    def cord_translation_from_world(self,
-                                    world_cords_xy: np.ndarray) -> np.ndarray:
-        """
-        Translate from world coordinate to occupancy coordinate
+        # copy current occupancy map
+        curr_occu_map_copy: np.ndarray = self._map.copy()
 
-        If the given world coord is less than min or greater than maximum,
-        then do not execute the translation, log error message
+        # create new map that includes min and max coord
+        new_map: np.ndarray = self._create_empty_map(shape=new_map_shape)
+        if new_map.shape == self._map.shape:
+            return
+        offset = math.ceil(self.curr_min_world_coord - min_coord)
 
-        Args:
-            world_cords_xy: Numpy array of shape (N, 2) representing
-             [[x, y], [x, y], ...]
+        new_map[offset:offset + curr_occu_map_copy.shape[0], offset:offset + curr_occu_map_copy.shape[1]] = \
+            curr_occu_map_copy
 
-        Returns:
-            occupancy grid map coordinate for this world coordinate of shape
-            (N, 2)
-            [
-             [x, y],
-             [x, y]
-            ]
+        # reset curr_min_world_coord and curr_max_world_coord
+        self.curr_min_world_coord = min_coord
+        self.curr_max_world_coord = max_coord
 
-        """
-        # reshape input into a ndarray that looks like [[X, Y], [X, Y]...]
-        # self.logger.debug(f"translating world cords xy: {np.shape(world_cords_xy)}")
-        transformed = np.round(world_cords_xy - [self._min_x, self._min_y]).astype(np.int64)
-        return transformed
+        # reset current_occupancy map
+        self._map = new_map
 
-    def update_grid_map_from_world_cord(self, world_cords_xy):
-        """
-        Updates the grid map based on the world coordinates passed in
-        Args:
-            world_cords_xy: Numpy array of shape (N, 2) representing
-             [[x, y], [x, y], ...]
+    def vizualize(self, center: Tuple[float, float], view_width: int = 20):
+        occu_map_center_x = min(0, int(center[0] + abs(self.curr_min_world_coord)))
+        occu_map_center_y = min(0, int(center[1] + abs(self.curr_min_world_coord)))
 
-        Returns:
-            None
-        """
-        # find occupancy map cords
-        # self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
-        occu_cords = self.cord_translation_from_world(
-            world_cords_xy=world_cords_xy)
-        # self.logger.debug(f"Occupancy Grid Map Cord shape = {np.shape(occu_cords)}")
-        self.map[occu_cords[:, 1], occu_cords[:, 0]] = 1
-
-    def visualize(self,
-                  vehicle_location: Optional[Location] = None,
-                  view_size=200):
-        if vehicle_location is None:
-            cv2.imshow("Occupancy Grid Map", self.map)
-        else:
-            occu_cord = self.location_to_occu_cord(
-                location=vehicle_location)
-            map_copy = self.map.copy()
-            x, y = occu_cord[0]
-            map_copy[
-            y - self.vehicle_height // 2: y + self.vehicle_height // 2,
-            x - self.vehicle_width // 2:x + self.vehicle_width // 2] = 0
-            cv2.imshow("Occupancy Grid Map", map_copy[
-                                             y - view_size // 2: y + view_size // 2:,
-                                             x - view_size // 2: x + view_size // 2
-                                             ])
+        min_x, min_y, max_x, max_y = min(0, occu_map_center_x - view_width), \
+                                     min(0, occu_map_center_y - view_width), \
+                                     max(self._map.shape[0], occu_map_center_x + view_width), \
+                                     max(self._map.shape[1], occu_map_center_y + view_width)
+        # image = self._map[min_x:max_x, min_y:max_y]
+        cv2.imshow("occupancy map", cv2.resize(self._map, dsize=(500,500)))
         cv2.waitKey(1)
-
-    def update_grid_map(self, depth_img, camera: Camera, vehicle: Vehicle):
-        """
-        This is an easier to use update_grid_map method that can be directly called by an agent
-        It will update grid map using the update_grid_map_from_world_cord method
-
-        Args:
-            depth_img: current depth map
-            camera: camera state
-            vehicle: vehicle state
-
-        Returns:
-            None
-        """
-        world_cords = img_to_world(
-            depth_img=depth_img,
-            intrinsics_matrix=camera.intrinsics_matrix,
-            extrinsics_matrix=camera.transform.get_matrix() @ vehicle.transform.get_matrix()
-        )
-        self.update_grid_map_from_world_cord(world_cords_xy=world_cords[:2, :].T)

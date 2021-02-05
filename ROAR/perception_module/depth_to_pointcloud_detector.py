@@ -42,6 +42,7 @@ class DepthToPointCloudDetector(Detector):
             if self.should_sample_points and np.shape(coords)[1] > self.max_points_to_convert:
                 coords = np.random.choice(a=coords, size=self.max_points_to_convert, replace=False)
             depths = depth_img[coords][:, np.newaxis] * self.scale_factor
+
             result = np.multiply(np.array(coords).T, depths)
             S_uv1 = np.hstack((result, depths)).T
 
@@ -50,12 +51,14 @@ class DepthToPointCloudDetector(Detector):
                                       intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
                                       veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
                                       cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
+                # print("received pointcloud", np.amin(result, axis=0), np.amax(result, axis=0), self.agent.vehicle.transform.location)
                 return result
 
             else:
                 K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
                 return (K_inv @ S_uv1).T
         return None
+
 
     @staticmethod
     def find_fps(t1, t2):

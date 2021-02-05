@@ -12,3 +12,4 @@ theme:
 
 plugins:
   - search
+  - mkdocstrings
