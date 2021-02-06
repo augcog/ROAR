@@ -1,0 +1,2576 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Robot Open Autonomous Racing is a platform/competition dedicated to teaching students to gain a holistic view and hands-on(virtual) experiences about building a high-performance fully-autonomous 1/10 scale RC car from scratch.">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.7">
+    
+    
+      
+        <title>Planning Module - ROAR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cb6bc1d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.39b8e14a.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ROAR.planning_module.abstract_planner" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../../.." title="ROAR Documentation" class="md-header-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            ROAR Documentation
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Planning Module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ROAR Documentation" class="md-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    ROAR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+      
+      <label class="md-nav__link" for="nav-1">
+        About
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="About" data-md-level="1">
+        <label class="md-nav__title" for="nav-1">
+          <span class="md-nav__icon md-icon"></span>
+          About
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        Architecture
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      
+      <label class="md-nav__link" for="nav-3">
+        Code Documentations
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Code Documentations" data-md-level="1">
+        <label class="md-nav__title" for="nav-3">
+          <span class="md-nav__icon md-icon"></span>
+          Code Documentations
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-1">
+        Bridges
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Bridges" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Bridges
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/bridges/" class="md-nav__link">
+        Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/carla_bridge/" class="md-nav__link">
+        Carla Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/jetson_bridge/" class="md-nav__link">
+        Jetson Bridge
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-2" type="checkbox" id="nav-3-2" checked>
+      
+      <label class="md-nav__link" for="nav-3-2">
+        ROAR
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-2">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_module/" class="md-nav__link">
+        Agent Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controller_module/" class="md-nav__link">
+        Control Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perception_module/" class="md-nav__link">
+        Perception Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Planning Module
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Planning Module
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner" class="md-nav__link">
+    abstract_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="abstract_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner" class="md-nav__link">
+    AbstractPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="AbstractPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner" class="md-nav__link">
+    behavior_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="behavior_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner" class="md-nav__link">
+    behavior_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="behavior_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner" class="md-nav__link">
+    BehaviorPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="BehaviorPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner" class="md-nav__link">
+    local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner" class="md-nav__link">
+    floodfill_based_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="floodfill_based_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner" class="md-nav__link">
+    FloodfillBasedPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="FloodfillBasedPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner" class="md-nav__link">
+    local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner" class="md-nav__link">
+    LocalPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="LocalPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner" class="md-nav__link">
+    simple_waypoint_following_local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="simple_waypoint_following_local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner" class="md-nav__link">
+    SimpleWaypointFollowingLocalPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="SimpleWaypointFollowingLocalPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.is_done" class="md-nav__link">
+    is_done()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_closeness_threhold" class="md-nav__link">
+    set_closeness_threhold()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_mission_plan" class="md-nav__link">
+    set_mission_plan()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner" class="md-nav__link">
+    mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner" class="md-nav__link">
+    json_waypoint_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="json_waypoint_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner" class="md-nav__link">
+    JSONWaypointPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="JSONWaypointPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner" class="md-nav__link">
+    mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner" class="md-nav__link">
+    MissionPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="MissionPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner" class="md-nav__link">
+    waypoint_following_mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="waypoint_following_mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner" class="md-nav__link">
+    WaypointFollowingMissionPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="WaypointFollowingMissionPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.produce_mission_plan" class="md-nav__link">
+    produce_mission_plan()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities_module/" class="md-nav__link">
+        Utilities Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../visualization/" class="md-nav__link">
+        Visualization Module
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3" type="checkbox" id="nav-3-3" >
+      
+      <label class="md-nav__link" for="nav-3-3">
+        ROAR Simulation
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR Simulation" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-3">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR Simulation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/ccu/" class="md-nav__link">
+        Carla Client
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/conf/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner_sim/" class="md-nav__link">
+        Runner Sim
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runcompeval/" class="md-nav__link">
+        Runner Competition Evaluator
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner" class="md-nav__link">
+    abstract_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="abstract_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner" class="md-nav__link">
+    AbstractPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="AbstractPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner" class="md-nav__link">
+    behavior_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="behavior_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner" class="md-nav__link">
+    behavior_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="behavior_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner" class="md-nav__link">
+    BehaviorPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="BehaviorPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner" class="md-nav__link">
+    local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner" class="md-nav__link">
+    floodfill_based_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="floodfill_based_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner" class="md-nav__link">
+    FloodfillBasedPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="FloodfillBasedPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner" class="md-nav__link">
+    local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner" class="md-nav__link">
+    LocalPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="LocalPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner" class="md-nav__link">
+    simple_waypoint_following_local_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="simple_waypoint_following_local_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner" class="md-nav__link">
+    SimpleWaypointFollowingLocalPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="SimpleWaypointFollowingLocalPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.is_done" class="md-nav__link">
+    is_done()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_closeness_threhold" class="md-nav__link">
+    set_closeness_threhold()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_mission_plan" class="md-nav__link">
+    set_mission_plan()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner" class="md-nav__link">
+    mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner" class="md-nav__link">
+    json_waypoint_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="json_waypoint_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner" class="md-nav__link">
+    JSONWaypointPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="JSONWaypointPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner" class="md-nav__link">
+    mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner" class="md-nav__link">
+    MissionPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="MissionPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner" class="md-nav__link">
+    waypoint_following_mission_planner
+  </a>
+  
+    <nav class="md-nav" aria-label="waypoint_following_mission_planner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner" class="md-nav__link">
+    WaypointFollowingMissionPlanner
+  </a>
+  
+    <nav class="md-nav" aria-label="WaypointFollowingMissionPlanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.produce_mission_plan" class="md-nav__link">
+    produce_mission_plan()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Planning Module</h1>
+                
+                <div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.planning_module.abstract_planner">
+
+        <code>abstract_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.abstract_planner" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.planning_module.abstract_planner.AbstractPlanner">
+
+        <code>AbstractPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.abstract_planner.AbstractPlanner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.planning_module.abstract_planner.AbstractPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.abstract_planner.AbstractPlanner.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/abstract_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>On every step, produce an actionable plan</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Any</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/abstract_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    On every step, produce an actionable plan</span>
+<span class="sd">    Returns:</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_threaded">
+
+<code class="highlight language-python"><span class="n">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.abstract_planner.AbstractPlanner.run_in_threaded" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>This is the threaded function.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/abstract_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.planning_module.behavior_planner">
+
+        <code>behavior_planner</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.behavior_planner" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.behavior_planner.behavior_planner">
+
+        <code>behavior_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.behavior_planner.behavior_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner">
+
+        <code>BehaviorPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/behavior_planner/behavior_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.behavior_planner.behavior_planner.BehaviorPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>On every step, produce an actionable plan</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Any</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/behavior_planner/behavior_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.planning_module.local_planner">
+
+        <code>local_planner</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.local_planner.floodfill_based_planner">
+
+        <code>floodfill_based_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.floodfill_based_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner">
+
+        <code>FloodfillBasedPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.floodfill_based_planner.FloodfillBasedPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>On every step, produce an actionable plan</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/floodfill_based_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.local_planner.local_planner">
+
+        <code>local_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.local_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.local_planner.local_planner.LocalPlanner">
+
+        <code>LocalPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.local_planner.LocalPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">behavior_planner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mission_planner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent</span><span class="p">,</span>
+        <span class="n">controller</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Controller</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">behavior_planner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BehaviorPlanner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mission_planner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MissionPlanner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Controller</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span> <span class="k">if</span> <span class="n">controller</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">controller</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">behavior_planner</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">BehaviorPlanner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">behavior_planner</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="n">behavior_planner</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">MissionPlanner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mission_planner</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="n">mission_planner</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.local_planner.LocalPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.local_planner.LocalPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>On every step, produce an actionable plan</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">VehicleControl</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner">
+
+        <code>simple_waypoint_following_local_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner">
+
+        <code>SimpleWaypointFollowingLocalPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">mission_planner</span><span class="p">,</span> <span class="n">behavior_planner</span><span class="p">,</span> <span class="n">closeness_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Initialize Simple Waypoint Following Planner</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent</code></td>
+<td><code>Agent</code></td>
+<td>
+<p>newest agent state</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>controller</code></td>
+<td><code>Controller</code></td>
+<td>
+<p>Control module used</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>mission_planner</code></td>
+<td><code>MissionPlanner</code></td>
+<td>
+<p>mission planner used</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>behavior_planner</code></td>
+<td><code>BehaviorPlanner</code></td>
+<td>
+<p>behavior planner used</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>closeness_threshold</code></td>
+<td><code></code></td>
+<td>
+<p>how close can a waypoint be with the vehicle</p>
+</td>
+<td><code>0.5</code></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/simple_waypoint_following_local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
+        <span class="n">controller</span><span class="p">:</span> <span class="n">Controller</span><span class="p">,</span>
+        <span class="n">mission_planner</span><span class="p">:</span> <span class="n">MissionPlanner</span><span class="p">,</span>
+        <span class="n">behavior_planner</span><span class="p">:</span> <span class="n">BehaviorPlanner</span><span class="p">,</span>
+        <span class="n">closeness_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Initialize Simple Waypoint Following Planner</span>
+<span class="sd">    Args:</span>
+<span class="sd">        agent: newest agent state</span>
+<span class="sd">        controller: Control module used</span>
+<span class="sd">        mission_planner: mission planner used</span>
+<span class="sd">        behavior_planner: behavior planner used</span>
+<span class="sd">        closeness_threshold: how close can a waypoint be with the vehicle</span>
+<span class="sd">    """</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span>
+                     <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+                     <span class="n">mission_planner</span><span class="o">=</span><span class="n">mission_planner</span><span class="p">,</span>
+                     <span class="n">behavior_planner</span><span class="o">=</span><span class="n">behavior_planner</span><span class="p">,</span>
+                     <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"SimplePathFollowingLocalPlanner"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_mission_plan</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Simple Path Following Local Planner Initiated"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closeness_threshold</span> <span class="o">=</span> <span class="n">closeness_threshold</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closeness_threshold_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span>
+        <span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">simple_waypoint_local_planner_config_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">))</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.is_done">
+
+<code class="highlight language-python"><span class="n">is_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.is_done" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>If there are nothing in self.way_points_queue,
+that means you have finished a lap, you are done</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bool</code></td>
+<td>
+<p>True if Done, False otherwise</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/simple_waypoint_following_local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">is_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    If there are nothing in self.way_points_queue,</span>
+<span class="sd">    that means you have finished a lap, you are done</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if Done, False otherwise</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<div class="admonition procedure">
+<p class="admonition-title">Procedure</p>
+<ol>
+<li>Sync data</li>
+<li>get the correct look ahead for current speed</li>
+<li>get the correct next waypoint</li>
+<li>feed waypoint into controller</li>
+<li>return result from controller</li>
+</ol>
+</div>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>next control that the local think the agent should execute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/simple_waypoint_following_local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Run step for the local planner</span>
+<span class="sd">    Procedure:</span>
+<span class="sd">        1. Sync data</span>
+<span class="sd">        2. get the correct look ahead for current speed</span>
+<span class="sd">        3. get the correct next waypoint</span>
+<span class="sd">        4. feed waypoint into controller</span>
+<span class="sd">        5. return result from controller</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        next control that the local think the agent should execute.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span><span class="o">.</span><span class="n">mission_plan</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">VehicleControl</span><span class="p">()</span>
+
+    <span class="c1"># get vehicle's location</span>
+    <span class="n">vehicle_transform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Transform</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span>
+
+    <span class="k">if</span> <span class="n">vehicle_transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">AgentException</span><span class="p">(</span><span class="s2">"I do not know where I am, I cannot proceed forward"</span><span class="p">)</span>
+
+    <span class="c1"># redefine closeness level based on speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_closeness_threhold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">closeness_threshold_config</span><span class="p">)</span>
+
+    <span class="c1"># get current waypoint</span>
+    <span class="n">curr_closest_dist</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Destination reached"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">VehicleControl</span><span class="p">()</span>
+        <span class="n">waypoint</span><span class="p">:</span> <span class="n">Transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">curr_dist</span> <span class="o">=</span> <span class="n">vehicle_transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">waypoint</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">curr_dist</span> <span class="o">&lt;</span> <span class="n">curr_closest_dist</span><span class="p">:</span>
+            <span class="c1"># if i find a waypoint that is closer to me than before</span>
+            <span class="c1"># note that i will always enter here to start the calculation for curr_closest_dist</span>
+            <span class="n">curr_closest_dist</span> <span class="o">=</span> <span class="n">curr_dist</span>
+        <span class="k">elif</span> <span class="n">curr_dist</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">closeness_threshold</span><span class="p">:</span>
+            <span class="c1"># i have moved onto a waypoint, remove that waypoint from the queue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="n">target_waypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">control</span><span class="p">:</span> <span class="n">VehicleControl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">(</span><span class="n">next_waypoint</span><span class="o">=</span><span class="n">target_waypoint</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+                      <span class="sa">f</span><span class="s2">"Curr Transform: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+                      <span class="sa">f</span><span class="s2">"Target Location: </span><span class="si">{</span><span class="n">target_waypoint</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+                      <span class="sa">f</span><span class="s2">"Control: </span><span class="si">{</span><span class="n">control</span><span class="si">}</span><span class="s2"> | Speed: </span><span class="si">{</span><span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">control</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_closeness_threhold">
+
+<code class="highlight language-python"><span class="n">set_closeness_threhold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_closeness_threhold" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/simple_waypoint_following_local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_closeness_threhold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">curr_speed</span> <span class="o">=</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">speed_upper_bound</span><span class="p">,</span> <span class="n">closeness_threshold</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">speed_upper_bound</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">speed_upper_bound</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">curr_speed</span> <span class="o">&lt;</span> <span class="n">speed_upper_bound</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">closeness_threshold</span> <span class="o">=</span> <span class="n">closeness_threshold</span>
+            <span class="k">break</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_mission_plan">
+
+<code class="highlight language-python"><span class="n">set_mission_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.local_planner.simple_waypoint_following_local_planner.SimpleWaypointFollowingLocalPlanner.set_mission_plan" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Clears current waypoints, and reset mission plan from start
+I am simply transferring the mission plan into my waypoint queue.
+Assuming that this current run will run all the way to the end</p>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>
+<p>None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/local_planner/simple_waypoint_following_local_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_mission_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Clears current waypoints, and reset mission plan from start</span>
+<span class="sd">    I am simply transferring the mission plan into my waypoint queue.</span>
+<span class="sd">    Assuming that this current run will run all the way to the end</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">while</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span><span class="o">.</span><span class="n">mission_plan</span>
+    <span class="p">):</span>  <span class="c1"># this actually clears the mission plan!!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">way_points_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span><span class="o">.</span><span class="n">mission_plan</span><span class="o">.</span><span class="n">popleft</span><span class="p">())</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.planning_module.mission_planner">
+
+        <code>mission_planner</code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.mission_planner.json_waypoint_planner">
+
+        <code>json_waypoint_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.json_waypoint_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner">
+
+        <code>JSONWaypointPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/json_waypoint_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">json_waypoint_file_path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mission_plan</span><span class="p">:</span> <span class="n">deque</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.json_waypoint_planner.JSONWaypointPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Abstract run step function for Mission Planner</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicle</code></td>
+<td><code></code></td>
+<td>
+<p>new vehicle state</p>
+</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deque</code></td>
+<td>
+<p>Plan for next steps</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/json_waypoint_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deque</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="n">map_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_file</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">map_entries</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_map_entry_to_transform</span><span class="p">(</span><span class="n">map_entry</span><span class="o">=</span><span class="n">m</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.mission_planner.mission_planner">
+
+        <code>mission_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.mission_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.mission_planner.mission_planner.MissionPlanner">
+
+        <code>MissionPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/mission_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mission_plan</span><span class="p">:</span> <span class="n">deque</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.mission_planner.MissionPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Abstract run step function for Mission Planner</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicle</code></td>
+<td><code></code></td>
+<td>
+<p>new vehicle state</p>
+</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>List[ROAR.utilities_module.data_structures_models.Transform]</code></td>
+<td>
+<p>Plan for next steps</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/mission_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Transform</span><span class="p">]:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Abstract run step function for Mission Planner</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vehicle: new vehicle state</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Plan for next steps</span>
+
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="ROAR.planning_module.mission_planner.waypoint_following_mission_planner">
+
+        <code>waypoint_following_mission_planner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner">
+
+        <code>WaypointFollowingMissionPlanner</code>
+
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>A mission planner that takes in a file that contains x,y,z coordinates, formulate into carla.Transform</p>
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.__init__" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/waypoint_following_mission_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">waypoint_file_path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mission_plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">produce_mission_plan</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Path Following Mission Planner Initiated."</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.produce_mission_plan">
+
+<code class="highlight language-python"><span class="n">produce_mission_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.produce_mission_plan" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Generates a list of waypoints based on the input file path
+:return a list of waypoint</p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/waypoint_following_mission_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">produce_mission_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deque</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Generates a list of waypoints based on the input file path</span>
+<span class="sd">    :return a list of waypoint</span>
+<span class="sd">    """</span>
+    <span class="n">mission_plan</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="n">raw_path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_file</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">raw_path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">mission_plan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_coord_to_transform</span><span class="p">(</span><span class="n">coord</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Computed Mission path of length [</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mission_plan</span><span class="p">)</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mission_plan</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h5 class="doc doc-heading" id="ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.planning_module.mission_planner.waypoint_following_mission_planner.WaypointFollowingMissionPlanner.run_in_series" title="Permanent link">¤</a></h5>
+<div class="doc doc-contents ">
+<p>Regenerate waypoints from file
+Find the waypoint that is closest to the current vehicle location.
+return a mission plan starting from that waypoint</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicle</code></td>
+<td><code></code></td>
+<td>
+<p>current state of the vehicle</p>
+</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deque</code></td>
+<td>
+<p>mission plan that start from the current vehicle location</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/planning_module/mission_planner/waypoint_following_mission_planner.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deque</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Regenerate waypoints from file</span>
+<span class="sd">    Find the waypoint that is closest to the current vehicle location.</span>
+<span class="sd">    return a mission plan starting from that waypoint</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vehicle: current state of the vehicle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mission plan that start from the current vehicle location</span>
+<span class="sd">    """</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">WaypointFollowingMissionPlanner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"TO BE IMPLEMENTED"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">produce_mission_plan</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../perception_module/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Perception Module
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../utilities_module/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Utilities Module
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.9c0e82ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

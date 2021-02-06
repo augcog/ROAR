@@ -1,0 +1,2981 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Robot Open Autonomous Racing is a platform/competition dedicated to teaching students to gain a holistic view and hands-on(virtual) experiences about building a high-performance fully-autonomous 1/10 scale RC car from scratch.">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.7">
+    
+    
+      
+        <title>Control Module - ROAR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cb6bc1d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.39b8e14a.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ROAR.control_module.controller" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../../.." title="ROAR Documentation" class="md-header-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            ROAR Documentation
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Control Module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ROAR Documentation" class="md-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    ROAR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+      
+      <label class="md-nav__link" for="nav-1">
+        About
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="About" data-md-level="1">
+        <label class="md-nav__title" for="nav-1">
+          <span class="md-nav__icon md-icon"></span>
+          About
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        Architecture
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      
+      <label class="md-nav__link" for="nav-3">
+        Code Documentations
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Code Documentations" data-md-level="1">
+        <label class="md-nav__title" for="nav-3">
+          <span class="md-nav__icon md-icon"></span>
+          Code Documentations
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-1">
+        Bridges
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Bridges" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Bridges
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/bridges/" class="md-nav__link">
+        Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/carla_bridge/" class="md-nav__link">
+        Carla Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/jetson_bridge/" class="md-nav__link">
+        Jetson Bridge
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-2" type="checkbox" id="nav-3-2" checked>
+      
+      <label class="md-nav__link" for="nav-3-2">
+        ROAR
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-2">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_module/" class="md-nav__link">
+        Agent Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Control Module
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Control Module
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller" class="md-nav__link">
+    controller
+  </a>
+  
+    <nav class="md-nav" aria-label="controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller" class="md-nav__link">
+    Controller
+  </a>
+  
+    <nav class="md-nav" aria-label="Controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller" class="md-nav__link">
+    mpc_controller
+  </a>
+  
+    <nav class="md-nav" aria-label="mpc_controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController" class="md-nav__link">
+    VehicleMPCController
+  </a>
+  
+    <nav class="md-nav" aria-label="VehicleMPCController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.clip_throttle" class="md-nav__link">
+    clip_throttle()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.create_array_of_symbols" class="md-nav__link">
+    create_array_of_symbols()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_fun" class="md-nav__link">
+    generate_fun()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_grad" class="md-nav__link">
+    generate_grad()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_2D" class="md-nav__link">
+    get_closest_waypoint_index_2D()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_3D" class="md-nav__link">
+    get_closest_waypoint_index_3D()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_func_constraints_and_bounds" class="md-nav__link">
+    get_func_constraints_and_bounds()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_state0" class="md-nav__link">
+    get_state0()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.minimize_cost" class="md-nav__link">
+    minimize_cost()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.transform_into_cars_coordinate_system" class="md-nav__link">
+    transform_into_cars_coordinate_system()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller" class="md-nav__link">
+    pid_controller
+  </a>
+  
+    <nav class="md-nav" aria-label="pid_controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController" class="md-nav__link">
+    LatPIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="LatPIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController" class="md-nav__link">
+    LongPIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="LongPIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController" class="md-nav__link">
+    PIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="PIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.find_k_values" class="md-nav__link">
+    find_k_values()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control" class="md-nav__link">
+    pure_pursuit_control
+  </a>
+  
+    <nav class="md-nav" aria-label="pure_pursuit_control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController" class="md-nav__link">
+    LatitunalPurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="LatitunalPurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController" class="md-nav__link">
+    LongitunalPurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="LongitunalPurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController" class="md-nav__link">
+    PurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="PurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perception_module/" class="md-nav__link">
+        Perception Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning_module/" class="md-nav__link">
+        Planning Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities_module/" class="md-nav__link">
+        Utilities Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../visualization/" class="md-nav__link">
+        Visualization Module
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3" type="checkbox" id="nav-3-3" >
+      
+      <label class="md-nav__link" for="nav-3-3">
+        ROAR Simulation
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR Simulation" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-3">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR Simulation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/ccu/" class="md-nav__link">
+        Carla Client
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/conf/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner_sim/" class="md-nav__link">
+        Runner Sim
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runcompeval/" class="md-nav__link">
+        Runner Competition Evaluator
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller" class="md-nav__link">
+    controller
+  </a>
+  
+    <nav class="md-nav" aria-label="controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller" class="md-nav__link">
+    Controller
+  </a>
+  
+    <nav class="md-nav" aria-label="Controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.controller.Controller.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller" class="md-nav__link">
+    mpc_controller
+  </a>
+  
+    <nav class="md-nav" aria-label="mpc_controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController" class="md-nav__link">
+    VehicleMPCController
+  </a>
+  
+    <nav class="md-nav" aria-label="VehicleMPCController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.clip_throttle" class="md-nav__link">
+    clip_throttle()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.create_array_of_symbols" class="md-nav__link">
+    create_array_of_symbols()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_fun" class="md-nav__link">
+    generate_fun()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_grad" class="md-nav__link">
+    generate_grad()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_2D" class="md-nav__link">
+    get_closest_waypoint_index_2D()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_3D" class="md-nav__link">
+    get_closest_waypoint_index_3D()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_func_constraints_and_bounds" class="md-nav__link">
+    get_func_constraints_and_bounds()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_state0" class="md-nav__link">
+    get_state0()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.minimize_cost" class="md-nav__link">
+    minimize_cost()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.mpc_controller.VehicleMPCController.transform_into_cars_coordinate_system" class="md-nav__link">
+    transform_into_cars_coordinate_system()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller" class="md-nav__link">
+    pid_controller
+  </a>
+  
+    <nav class="md-nav" aria-label="pid_controller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController" class="md-nav__link">
+    LatPIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="LatPIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LatPIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController" class="md-nav__link">
+    LongPIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="LongPIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.LongPIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController" class="md-nav__link">
+    PIDController
+  </a>
+  
+    <nav class="md-nav" aria-label="PIDController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.find_k_values" class="md-nav__link">
+    find_k_values()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pid_controller.PIDController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control" class="md-nav__link">
+    pure_pursuit_control
+  </a>
+  
+    <nav class="md-nav" aria-label="pure_pursuit_control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController" class="md-nav__link">
+    LatitunalPurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="LatitunalPurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController" class="md-nav__link">
+    LongitunalPurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="LongitunalPurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController" class="md-nav__link">
+    PurePursuitController
+  </a>
+  
+    <nav class="md-nav" aria-label="PurePursuitController">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.run_in_series" class="md-nav__link">
+    run_in_series()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Control Module</h1>
+                
+                <div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.control_module.controller">
+
+        <code>controller</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.controller" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.controller.Controller">
+
+        <code>Controller</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.controller.Controller" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.controller.Controller.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.controller.Controller.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"Controller"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.controller.Controller.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.controller.Controller.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Abstract function for run step</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td>
+<p>next waypoint</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>VehicleControl</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> \
+        <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Abstract function for run step</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        next_waypoint: next waypoint</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        VehicleControl</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">VehicleControl</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.controller.Controller.run_in_threaded">
+
+<code class="highlight language-python"><span class="n">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.controller.Controller.run_in_threaded" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>This is the threaded function.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.control_module.mpc_controller">
+
+        <code>mpc_controller</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController">
+
+        <code>VehicleMPCController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">route_file_path</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="n">inf</span><span class="p">,</span> <span class="n">steps_ahead</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_throttle</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_steering</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
+             <span class="n">route_file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>  <span class="c1"># read in route</span>
+             <span class="n">target_speed</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">),</span>
+             <span class="n">steps_ahead</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+             <span class="n">max_throttle</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">max_steering</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="c1"># Read in route file</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">route_file_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="c1"># Fit the route to a curve</span>
+    <span class="n">spline_points</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">tck</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">splprep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">u_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">u</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">spline_points</span><span class="p">)</span>
+    <span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">splev</span><span class="p">(</span><span class="n">u_new</span><span class="p">,</span> <span class="n">tck</span><span class="p">,</span> <span class="n">der</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">]</span>
+
+    <span class="c1"># Modified parm</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prev_cte</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">=</span> <span class="n">target_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state_vars</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">,</span> <span class="s1">'v'</span><span class="p">,</span> <span class="s1">'ψ'</span><span class="p">,</span> <span class="s1">'cte'</span><span class="p">,</span> <span class="s1">'eψ'</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">=</span> <span class="n">steps_ahead</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+
+    <span class="c1"># Cost function coefficients</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cte_coeff</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># 100</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">epsi_coeff</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># 100</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">speed_coeff</span> <span class="o">=</span> <span class="mf">0.4</span>  <span class="c1"># 0.2</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">acc_coeff</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">steer_coeff</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># 0.1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">consec_acc_coeff</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">consec_steer_coeff</span> <span class="o">=</span> <span class="mi">50</span>
+
+    <span class="c1"># Front wheel L</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Lf</span> <span class="o">=</span> <span class="mf">2.5</span>
+
+    <span class="c1"># How the polynomial fitting the desired curve is fitted</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">steps_poly</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># modify to 3 when using 3D data</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">poly_degree</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="c1"># Bounds for the optimizer</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">6</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">*</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">*</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_throttle</span><span class="p">)]</span>  <span class="c1"># throttle bounds</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">*</span> <span class="p">[(</span><span class="o">-</span><span class="n">max_steering</span><span class="p">,</span> <span class="n">max_steering</span><span class="p">)]</span>
+        <span class="c1"># steer bounds</span>
+    <span class="p">)</span>
+
+    <span class="c1"># State 0 placeholder</span>
+    <span class="n">num_vars</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_vars</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># State variables and two actuators</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">*</span> <span class="n">num_vars</span><span class="p">)</span>
+
+    <span class="c1"># Lambdify and minimize stuff</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span> <span class="o">=</span> <span class="s1">'numpy'</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_grad_func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constr_funcs</span> <span class="o">=</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_func_constraints_and_bounds</span><span class="p">()</span>
+
+    <span class="c1"># To keep the previous state</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">steer</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"MPC Controller initiated"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.clip_throttle">
+
+<code class="highlight language-python"><span class="n">clip_throttle</span><span class="p">(</span><span class="n">throttle</span><span class="p">,</span> <span class="n">curr_speed</span><span class="p">,</span> <span class="n">target_speed</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.clip_throttle" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">clip_throttle</span><span class="p">(</span><span class="n">throttle</span><span class="p">,</span> <span class="n">curr_speed</span><span class="p">,</span> <span class="n">target_speed</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+        <span class="n">throttle</span> <span class="o">-</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="p">(</span><span class="n">curr_speed</span> <span class="o">-</span> <span class="n">target_speed</span><span class="p">),</span>
+        <span class="mf">0.4</span><span class="p">,</span>
+        <span class="mf">0.9</span>
+    <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.create_array_of_symbols">
+
+<code class="highlight language-python"><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="n">str_symbol</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.create_array_of_symbols" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">create_array_of_symbols</span><span class="p">(</span><span class="n">str_symbol</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'</span><span class="si">{symbol}</span><span class="s1">0:</span><span class="si">{N}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">str_symbol</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">))</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.generate_fun">
+
+<code class="highlight language-python"><span class="n">generate_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symb_fun</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_fun" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Generates a function of the form <code>fun(x, *args)</code></p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">generate_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symb_fun</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Generates a function of the form `fun(x, *args)`</span>
+<span class="sd">    """</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">init</span> <span class="o">+</span> <span class="n">poly</span>
+    <span class="k">return</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">((</span><span class="n">vars_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="n">symb_fun</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.generate_grad">
+
+<code class="highlight language-python"><span class="n">generate_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symb_fun</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.generate_grad" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>TODO: add comments</p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">generate_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symb_fun</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    TODO: add comments</span>
+<span class="sd">    """</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">init</span> <span class="o">+</span> <span class="n">poly</span>
+    <span class="k">return</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">vars_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">),</span>
+        <span class="n">derive_by_array</span><span class="p">(</span><span class="n">symb_fun</span><span class="p">,</span> <span class="n">vars_</span> <span class="o">+</span> <span class="n">args</span><span class="p">)[:</span><span class="nb">len</span><span class="p">(</span><span class="n">vars_</span><span class="p">)],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span>
+    <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_2D">
+
+<code class="highlight language-python"><span class="n">get_closest_waypoint_index_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">car_location</span><span class="p">,</span> <span class="n">waypoint_location</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_2D" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Get the index of the closest waypoint in self.pts_2D
+Note: it may give wrong index when the route is overlapped</p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">get_closest_waypoint_index_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">car_location</span><span class="p">,</span> <span class="n">waypoint_location</span><span class="p">):</span>
+    <span class="sd">"""Get the index of the closest waypoint in self.pts_2D</span>
+<span class="sd">        Note: it may give wrong index when the route is overlapped</span>
+<span class="sd">    """</span>
+    <span class="n">location_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">car_location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">car_location</span><span class="o">.</span><span class="n">y</span>
+    <span class="p">])</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span> <span class="o">-</span> <span class="n">location_arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_3D">
+
+<code class="highlight language-python"><span class="n">get_closest_waypoint_index_3D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">car_location</span><span class="p">,</span> <span class="n">waypoint_location</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_closest_waypoint_index_3D" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Get the index of the closest waypoint in self.track_DF
+car_location: current car location
+waypoint_location: next_waypoint</p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">get_closest_waypoint_index_3D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">car_location</span><span class="p">,</span> <span class="n">waypoint_location</span><span class="p">):</span>
+    <span class="sd">"""Get the index of the closest waypoint in self.track_DF</span>
+<span class="sd">        car_location: current car location</span>
+<span class="sd">        waypoint_location: next_waypoint</span>
+<span class="sd">    """</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">waypoint_location</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                              <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span><span class="p">[</span>
+                                     <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">waypoint_location</span><span class="o">.</span><span class="n">y</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">location_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="n">car_location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">car_location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">car_location</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+        <span class="p">])</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_DF</span> <span class="o">-</span> <span class="n">location_arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.get_func_constraints_and_bounds">
+
+<code class="highlight language-python"><span class="n">get_func_constraints_and_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_func_constraints_and_bounds" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Defines MPC's cost function and constraints.</p>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">get_func_constraints_and_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Defines MPC's cost function and constraints.</span>
+<span class="sd">    """</span>
+    <span class="c1"># Polynomial coefficients will also be symbolic variables</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'poly'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">poly_degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Initialize the initial state</span>
+    <span class="n">x_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'x_init'</span><span class="p">)</span>
+    <span class="n">y_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'y_init'</span><span class="p">)</span>
+    <span class="n">ψ_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'ψ_init'</span><span class="p">)</span>
+    <span class="n">v_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'v_init'</span><span class="p">)</span>
+    <span class="n">cte_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'cte_init'</span><span class="p">)</span>
+    <span class="n">eψ_init</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">'eψ_init'</span><span class="p">)</span>
+
+    <span class="n">init</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_init</span><span class="p">,</span> <span class="n">y_init</span><span class="p">,</span> <span class="n">ψ_init</span><span class="p">,</span> <span class="n">v_init</span><span class="p">,</span> <span class="n">cte_init</span><span class="p">,</span> <span class="n">eψ_init</span><span class="p">)</span>
+
+    <span class="c1"># State variables</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">ψ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'ψ'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'v'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">cte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'cte'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">eψ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'eψ'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+
+    <span class="c1"># Actuators</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">δ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_array_of_symbols</span><span class="p">(</span><span class="s1">'δ'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+
+    <span class="n">vars_</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="c1"># Symbolic arrays (but NOT actuators)</span>
+        <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">ψ</span><span class="p">,</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="o">*</span><span class="n">cte</span><span class="p">,</span> <span class="o">*</span><span class="n">eψ</span><span class="p">,</span>
+
+        <span class="c1"># Symbolic arrays (actuators)</span>
+        <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">δ</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">cost</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">):</span>
+        <span class="n">cost</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="c1"># Reference state penalties</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cte_coeff</span> <span class="o">*</span> <span class="n">cte</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsi_coeff</span> <span class="o">*</span> <span class="n">eψ</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+                <span class="c1"># Actuator penalties</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">acc_coeff</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">steer_coeff</span> <span class="o">*</span> <span class="n">δ</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Penalty for differences in consecutive actuators</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">cost</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">consec_acc_coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">consec_steer_coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">δ</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">δ</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Initialize constraints</span>
+    <span class="n">eq_constr</span> <span class="o">=</span> <span class="n">_EqualityConstraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_vars</span><span class="p">)</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'x'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_init</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'y'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_init</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'ψ'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ψ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ψ_init</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'v'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">v_init</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'cte'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cte</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">cte_init</span>
+    <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'eψ'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">eψ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">eψ_init</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">):</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="n">poly</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">poly</span><span class="p">)))</span>
+        <span class="c1"># The desired ψ is equal to the derivative of the polynomial</span>
+        <span class="c1"># curve at</span>
+        <span class="c1">#  point x[t-1]</span>
+        <span class="n">ψdes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">poly</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">i</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                   <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly</span><span class="p">)))</span>
+
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'x'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
+                <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sym</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ψ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'y'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ψ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'ψ'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ψ</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
+                <span class="n">ψ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">δ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'v'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'cte'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cte</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
+                <span class="n">curve</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span>
+            <span class="n">eψ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">eq_constr</span><span class="p">[</span><span class="s1">'eψ'</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">eψ</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">ψ</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ψdes</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">δ</span><span class="p">[</span>
+            <span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># Generate actual functions from</span>
+    <span class="n">cost_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_fun</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span>
+    <span class="n">cost_grad_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_grad</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span>
+
+    <span class="n">constr_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_vars</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_fun</span><span class="p">(</span><span class="n">eq_constr</span><span class="p">[</span><span class="n">symbol</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">vars_</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span>
+                                     <span class="n">poly</span><span class="p">)</span>
+            <span class="n">grad_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_grad</span><span class="p">(</span><span class="n">eq_constr</span><span class="p">[</span><span class="n">symbol</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">vars_</span><span class="p">,</span>
+                                           <span class="n">init</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span>
+            <span class="n">constr_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'eq'</span><span class="p">,</span> <span class="s1">'fun'</span><span class="p">:</span> <span class="n">func</span><span class="p">,</span> <span class="s1">'jac'</span><span class="p">:</span> <span class="n">grad_func</span><span class="p">,</span>
+                 <span class="s1">'args'</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cost_func</span><span class="p">,</span> <span class="n">cost_grad_func</span><span class="p">,</span> <span class="n">constr_funcs</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.get_state0">
+
+<code class="highlight language-python"><span class="n">get_state0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">cte</span><span class="p">,</span> <span class="n">epsi</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.get_state0" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">get_state0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">cte</span><span class="p">,</span> <span class="n">epsi</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="ow">or</span> <span class="mi">0</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span> <span class="ow">or</span> <span class="mi">0</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">psi</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">cte</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">6</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">epsi</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">6</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">7</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">[</span><span class="mi">7</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">:</span><span class="mi">8</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state0</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.minimize_cost">
+
+<code class="highlight language-python"><span class="n">minimize_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.minimize_cost" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">minimize_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">init</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">constr_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constr_funcs</span><span class="p">:</span>
+        <span class="n">constr_func</span><span class="p">[</span><span class="s1">'args'</span><span class="p">]</span> <span class="o">=</span> <span class="n">init</span>
+
+    <span class="k">return</span> <span class="n">minimize</span><span class="p">(</span>
+        <span class="n">fun</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span><span class="p">,</span>
+        <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
+        <span class="n">jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_grad_func</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+        <span class="n">constraints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constr_funcs</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s1">'SLSQP'</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Abstract function for run step</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td>
+<p>next waypoint</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>VehicleControl</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">VehicleMPCController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">(</span><span class="n">next_waypoint</span><span class="p">)</span>
+    <span class="c1"># get vehicle location (x, y)</span>
+    <span class="c1"># location = self.vehicle.transform.location</span>
+
+    <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">location</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">y</span>
+    <span class="c1"># get vehicle rotation</span>
+    <span class="c1"># rotation = self.vehicle.transform.rotation</span>
+    <span class="n">rotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotation</span>
+    <span class="n">ψ</span> <span class="o">=</span> <span class="n">rotation</span><span class="o">.</span><span class="n">yaw</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># transform into radient</span>
+    <span class="n">cos_ψ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ψ</span><span class="p">)</span>
+    <span class="n">sin_ψ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ψ</span><span class="p">)</span>
+    <span class="c1"># get vehicle speed</span>
+    <span class="c1"># v = Vehicle.get_speed(self.vehicle)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+    <span class="c1"># get next waypoint location</span>
+    <span class="n">wx</span><span class="p">,</span> <span class="n">wy</span> <span class="o">=</span> <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span>
+    <span class="c1"># debug logging</span>
+    <span class="c1"># self.logger.debug(f"car location:  ({x}, {y})")</span>
+    <span class="c1"># self.logger.debug(f"car ψ: {ψ}")</span>
+    <span class="c1"># self.logger.debug(f"car speed: {v}")</span>
+    <span class="c1"># self.logger.debug(f"next waypoint: ({wx}, {wy})")</span>
+
+    <span class="c1">### 3D ###</span>
+    <span class="c1"># get the index of next waypoint</span>
+    <span class="c1"># waypoint_index = self.get_closest_waypoint_index_3D(location,</span>
+    <span class="c1"># next_waypoint.location)</span>
+    <span class="c1"># # find more waypoints index to fit a polynomial</span>
+    <span class="c1"># waypoint_index_shifted = waypoint_index - 2</span>
+    <span class="c1"># indeces = waypoint_index_shifted + self.steps_poly * np.arange(</span>
+    <span class="c1"># self.poly_degree + 1)</span>
+    <span class="c1"># indeces = indeces % self.track_DF.shape[0]</span>
+    <span class="c1"># # get waypoints for polynomial fitting</span>
+    <span class="c1"># pts = np.array([[self.track_DF.iloc[i][0], self.track_DF.iloc[i][</span>
+    <span class="c1"># 1]] for i in indeces])</span>
+
+    <span class="c1">### 2D ###</span>
+    <span class="n">index_2D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_closest_waypoint_index_2D</span><span class="p">(</span><span class="n">location</span><span class="p">,</span>
+                                                  <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">index_2D_shifted</span> <span class="o">=</span> <span class="n">index_2D</span> <span class="o">-</span> <span class="mi">5</span>
+    <span class="n">indeces_2D</span> <span class="o">=</span> <span class="n">index_2D_shifted</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_poly</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poly_degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">indeces_2D</span> <span class="o">=</span> <span class="n">indeces_2D</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pts_2D</span><span class="p">[</span><span class="n">indeces_2D</span><span class="p">]</span>
+
+    <span class="c1"># self.logger.debug(f'\nwaypoint index:\n  {index_2D}')</span>
+    <span class="c1"># self.logger.debug(f'\nindeces:\n  {indeces_2D}')</span>
+
+    <span class="c1"># transform waypoints from world to car coorinate</span>
+    <span class="n">pts_car</span> <span class="o">=</span> <span class="n">VehicleMPCController</span><span class="o">.</span><span class="n">transform_into_cars_coordinate_system</span><span class="p">(</span>
+        <span class="n">pts</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">cos_ψ</span><span class="p">,</span>
+        <span class="n">sin_ψ</span>
+    <span class="p">)</span>
+    <span class="c1"># fit the polynomial</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">pts_car</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pts_car</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">poly_degree</span><span class="p">)</span>
+
+    <span class="c1"># Debug</span>
+    <span class="c1"># self.logger.debug(f'\nwaypoint index:\n  {waypoint_index}')</span>
+    <span class="c1"># self.logger.debug(f'\nindeces:\n  {indeces}')</span>
+    <span class="c1"># self.logger.debug(f'\npts for poly_fit:\n  {pts}')</span>
+    <span class="c1"># self.logger.debug(f'\npts_car:\n  {pts_car}')</span>
+
+    <span class="c1">###########</span>
+
+    <span class="n">cte</span> <span class="o">=</span> <span class="n">poly</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">eψ</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">poly</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">init</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">cte</span><span class="p">,</span> <span class="n">eψ</span><span class="p">,</span> <span class="o">*</span><span class="n">poly</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state0</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">cte</span><span class="p">,</span> <span class="n">eψ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">throttle</span><span class="p">,</span>
+                                  <span class="n">poly</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimize_cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state0</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+
+    <span class="c1"># self.steer = -0.6 * cte - 5.5 * (cte - self.prev_cte)</span>
+    <span class="c1"># self.prev_cte = cte</span>
+    <span class="c1"># self.throttle = VehicleMPCController.clip_throttle(self.throttle,</span>
+    <span class="c1"># v, self.target_speed)</span>
+
+    <span class="n">control</span> <span class="o">=</span> <span class="n">VehicleControl</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">'success'</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steer</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_ahead</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Unsuccessful optimization'</span><span class="p">)</span>
+
+    <span class="n">control</span><span class="o">.</span><span class="n">steering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steer</span>
+    <span class="n">control</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">throttle</span>
+
+    <span class="k">return</span> <span class="n">control</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.mpc_controller.VehicleMPCController.transform_into_cars_coordinate_system">
+
+<code class="highlight language-python"><span class="n">transform_into_cars_coordinate_system</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cos_ψ</span><span class="p">,</span> <span class="n">sin_ψ</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.mpc_controller.VehicleMPCController.transform_into_cars_coordinate_system" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/mpc_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">transform_into_cars_coordinate_system</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cos_ψ</span><span class="p">,</span> <span class="n">sin_ψ</span><span class="p">):</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">pts</span> <span class="o">-</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+    <span class="n">pts_car</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+    <span class="n">pts_car</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos_ψ</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_ψ</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">pts_car</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin_ψ</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">cos_ψ</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pts_car</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.control_module.pid_controller">
+
+        <code>pid_controller</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pid_controller.LatPIDController">
+
+        <code>LatPIDController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LatPIDController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.LatPIDController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LatPIDController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+             <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">steering_boundary</span> <span class="o">=</span> <span class="n">steering_boundary</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.LatPIDController.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LatPIDController.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Calculates a vector that represent where you are going.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td></td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>float</code></td>
+<td>
+<p>lat_control</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Calculates a vector that represent where you are going.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        next_waypoint ():</span>
+<span class="sd">        **kwargs ():</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        lat_control</span>
+<span class="sd">    """</span>
+    <span class="c1"># calculate a vector that represent where you are going</span>
+    <span class="n">v_begin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">location</span>
+    <span class="n">v_end</span> <span class="o">=</span> <span class="n">v_begin</span> <span class="o">+</span> <span class="n">Location</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">pitch</span><span class="p">)),</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">v_begin</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+        <span class="n">z</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">pitch</span><span class="p">)),</span>
+    <span class="p">)</span>
+    <span class="n">v_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v_end</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v_end</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">v_end</span><span class="o">.</span><span class="n">z</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+
+    <span class="c1"># calculate error projection</span>
+    <span class="n">w_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span> <span class="o">-</span> <span class="n">v_begin</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_dot</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">w_vec</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v_vec</span><span class="p">)),</span>
+            <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v_vec</span><span class="p">,</span> <span class="n">w_vec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_cross</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_dot</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_dot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">_de</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+        <span class="n">_ie</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_de</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_ie</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">k_p</span><span class="p">,</span> <span class="n">k_d</span><span class="p">,</span> <span class="n">k_i</span> <span class="o">=</span> <span class="n">PIDController</span><span class="o">.</span><span class="n">find_k_values</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">vehicle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+
+    <span class="n">lat_control</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">k_p</span> <span class="o">*</span> <span class="n">_dot</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">k_d</span> <span class="o">*</span> <span class="n">_de</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">k_i</span> <span class="o">*</span> <span class="n">_ie</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">steering_boundary</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">steering_boundary</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">lat_control</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pid_controller.LongPIDController">
+
+        <code>LongPIDController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LongPIDController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.LongPIDController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">throttle_boundary</span><span class="p">,</span> <span class="n">max_speed</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LongPIDController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">throttle_boundary</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">max_speed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+             <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span> <span class="o">=</span> <span class="n">max_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">throttle_boundary</span> <span class="o">=</span> <span class="n">throttle_boundary</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.LongPIDController.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.LongPIDController.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Abstract function for run step</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td>
+<p>next waypoint</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>float</code></td>
+<td>
+<p>VehicleControl</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="n">target_speed</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"target_speed"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">))</span>
+    <span class="n">current_speed</span> <span class="o">=</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+
+    <span class="n">k_p</span><span class="p">,</span> <span class="n">k_d</span><span class="p">,</span> <span class="n">k_i</span> <span class="o">=</span> <span class="n">PIDController</span><span class="o">.</span><span class="n">find_k_values</span><span class="p">(</span><span class="n">vehicle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">target_speed</span> <span class="o">-</span> <span class="n">current_speed</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># print(self._error_buffer[-1], self._error_buffer[-2])</span>
+        <span class="n">_de</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+        <span class="n">_ie</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_buffer</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_de</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_ie</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">k_p</span> <span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">k_d</span> <span class="o">*</span> <span class="n">_de</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">k_i</span> <span class="o">*</span> <span class="n">_ie</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">throttle_boundary</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">throttle_boundary</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1"># self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "</span>
+    <span class="c1">#       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")</span>
+          <span class="c1">#f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")</span>
+    <span class="k">return</span> <span class="n">output</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pid_controller.PIDController">
+
+        <code>PIDController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.PIDController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.PIDController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="p">,</span> <span class="n">throttle_boundary</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.PIDController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+             <span class="n">throttle_boundary</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">max_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">throttle_boundary</span> <span class="o">=</span> <span class="n">throttle_boundary</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">steering_boundary</span> <span class="o">=</span> <span class="n">steering_boundary</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">pid_config_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">long_pid_controller</span> <span class="o">=</span> <span class="n">LongPIDController</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span>
+                                                 <span class="n">throttle_boundary</span><span class="o">=</span><span class="n">throttle_boundary</span><span class="p">,</span>
+                                                 <span class="n">max_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"longitudinal_controller"</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lat_pid_controller</span> <span class="o">=</span> <span class="n">LatPIDController</span><span class="p">(</span>
+        <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"latitudinal_controller"</span><span class="p">],</span>
+        <span class="n">steering_boundary</span><span class="o">=</span><span class="n">steering_boundary</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.PIDController.find_k_values">
+
+<code class="highlight language-python"><span class="n">find_k_values</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.PIDController.find_k_values" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">find_k_values</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="n">current_speed</span> <span class="o">=</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="n">vehicle</span><span class="o">=</span><span class="n">vehicle</span><span class="p">)</span>
+    <span class="n">k_p</span><span class="p">,</span> <span class="n">k_d</span><span class="p">,</span> <span class="n">k_i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">speed_upper_bound</span><span class="p">,</span> <span class="n">kvalues</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">speed_upper_bound</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">speed_upper_bound</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_speed</span> <span class="o">&lt;</span> <span class="n">speed_upper_bound</span><span class="p">:</span>
+            <span class="n">k_p</span><span class="p">,</span> <span class="n">k_d</span><span class="p">,</span> <span class="n">k_i</span> <span class="o">=</span> <span class="n">kvalues</span><span class="p">[</span><span class="s2">"Kp"</span><span class="p">],</span> <span class="n">kvalues</span><span class="p">[</span><span class="s2">"Kd"</span><span class="p">],</span> <span class="n">kvalues</span><span class="p">[</span><span class="s2">"Ki"</span><span class="p">]</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">([</span><span class="n">k_p</span><span class="p">,</span> <span class="n">k_d</span><span class="p">,</span> <span class="n">k_i</span><span class="p">],</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pid_controller.PIDController.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pid_controller.PIDController.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>Abstract function for run step</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td>
+<p>next waypoint</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>VehicleControl</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pid_controller.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="n">throttle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">long_pid_controller</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">(</span><span class="n">next_waypoint</span><span class="o">=</span><span class="n">next_waypoint</span><span class="p">,</span>
+                                                      <span class="n">target_speed</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"target_speed"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">))</span>
+    <span class="n">steering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat_pid_controller</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">(</span><span class="n">next_waypoint</span><span class="o">=</span><span class="n">next_waypoint</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">VehicleControl</span><span class="p">(</span><span class="n">throttle</span><span class="o">=</span><span class="n">throttle</span><span class="p">,</span> <span class="n">steering</span><span class="o">=</span><span class="n">steering</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control">
+
+        <code>pure_pursuit_control</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController">
+
+        <code>LatitunalPurePursuitController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">look_ahead_gain</span><span class="p">,</span> <span class="n">look_ahead_distance</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">look_ahead_gain</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">look_ahead_distance</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_gain</span> <span class="o">=</span> <span class="n">look_ahead_gain</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_distance</span> <span class="o">=</span> <span class="n">look_ahead_distance</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.run_step">
+
+<code class="highlight language-python"><span class="n">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LatitunalPurePursuitController.run_step" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>float</code></td>
+<td>
+<p>VehicleControl.clamp</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">"""</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        next_waypoint ():</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        VehicleControl.clamp</span>
+<span class="sd">    """</span>
+    <span class="n">target_z</span> <span class="o">=</span> <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">target_x</span> <span class="o">=</span> <span class="n">next_waypoint</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">angle_difference</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span>
+        <span class="n">target_z</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+        <span class="n">target_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span>
+    <span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">pitch</span><span class="p">)</span>
+    <span class="n">curr_look_forward</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_gain</span> <span class="o">*</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="n">vehicle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_distance</span>
+    <span class="p">)</span>
+    <span class="n">lateral_difference</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span>
+        <span class="mf">2.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wheel_base</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_difference</span><span class="p">)</span> <span class="o">/</span> <span class="n">curr_look_forward</span><span class="p">,</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">VehicleControl</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">lateral_difference</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController">
+
+        <code>LongitunalPurePursuitController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">kp</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">kp</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">=</span> <span class="n">target_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">kp</span> <span class="o">=</span> <span class="n">kp</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.run_step">
+
+<code class="highlight language-python"><span class="n">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.LongitunalPurePursuitController.run_step" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="n">VehicleControl</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kp</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">-</span> <span class="n">Vehicle</span><span class="o">.</span><span class="n">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)),</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">1</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.PurePursuitController">
+
+        <code>PurePursuitController</code>
+
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.PurePursuitController" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.PurePursuitController.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">look_ahead_gain</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">look_ahead_distance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.__init__" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicle</code></td>
+<td><code></code></td>
+<td>
+<p>Vehicle information</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>look_ahead_gain</code></td>
+<td><code>float</code></td>
+<td>
+<p>Look ahead factor</p>
+</td>
+<td><code>0.1</code></td>
+</tr>
+<tr>
+<td><code>look_ahead_distance</code></td>
+<td><code>float</code></td>
+<td>
+<p>look ahead distance</p>
+</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>target_speed</code></td>
+<td><code></code></td>
+<td>
+<p>desired longitudinal speed to maintain</p>
+</td>
+<td><code>60</code></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
+        <span class="n">look_ahead_gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">look_ahead_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">target_speed</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vehicle: Vehicle information</span>
+<span class="sd">        look_ahead_gain: Look ahead factor</span>
+<span class="sd">        look_ahead_distance: look ahead distance</span>
+<span class="sd">        target_speed: desired longitudinal speed to maintain</span>
+<span class="sd">    """</span>
+
+    <span class="nb">super</span><span class="p">(</span><span class="n">PurePursuitController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">max_speed</span> \
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">max_speed</span> <span class="k">else</span> <span class="n">target_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_gain</span> <span class="o">=</span> <span class="n">look_ahead_gain</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">look_ahead_distance</span> <span class="o">=</span> <span class="n">look_ahead_distance</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">latitunal_controller</span> <span class="o">=</span> <span class="n">LatitunalPurePursuitController</span><span class="p">(</span>
+        <span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span>
+        <span class="n">look_ahead_gain</span><span class="o">=</span><span class="n">look_ahead_gain</span><span class="p">,</span>
+        <span class="n">look_ahead_distance</span><span class="o">=</span><span class="n">look_ahead_distance</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">longitunal_controller</span> <span class="o">=</span> <span class="n">LongitunalPurePursuitController</span><span class="p">(</span>
+        <span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="n">target_speed</span>
+    <span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h4 class="doc doc-heading" id="ROAR.control_module.pure_pursuit_control.PurePursuitController.run_in_series">
+
+<code class="highlight language-python"><span class="n">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.control_module.pure_pursuit_control.PurePursuitController.run_in_series" title="Permanent link">¤</a></h4>
+<div class="doc doc-contents ">
+<p>run one step of Pure Pursuit Control</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vehicle</code></td>
+<td><code></code></td>
+<td>
+<p>current vehicle state</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>next_waypoint</code></td>
+<td><code>Transform</code></td>
+<td>
+<p>Next waypoint, Transform</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>Vehicle Control</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/control_module/pure_pursuit_control.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    run one step of Pure Pursuit Control</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vehicle: current vehicle state</span>
+<span class="sd">        next_waypoint: Next waypoint, Transform</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Vehicle Control</span>
+
+<span class="sd">    """</span>
+    <span class="n">control</span> <span class="o">=</span> <span class="n">VehicleControl</span><span class="p">(</span>
+        <span class="n">throttle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">longitunal_controller</span><span class="o">.</span><span class="n">run_step</span><span class="p">(),</span>
+        <span class="n">steering</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">latitunal_controller</span><span class="o">.</span><span class="n">run_step</span><span class="p">(</span><span class="n">next_waypoint</span><span class="o">=</span><span class="n">next_waypoint</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">control</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../agent_module/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Agent Module
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../perception_module/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Perception Module
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.9c0e82ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
