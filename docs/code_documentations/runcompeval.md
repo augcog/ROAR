@@ -1,1 +1,1 @@
-    ::: runner_competition_evaluator
+::: runner_competition_evaluator
