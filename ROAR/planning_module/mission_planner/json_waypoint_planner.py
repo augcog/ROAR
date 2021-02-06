@@ -28,6 +28,15 @@ class JSONWaypointPlanner(MissionPlanner):
         return result
 
     def _map_entry_to_transform(self, map_entry: MapEntry):
+        """
+        Finds Transform of the midpoint between two points on the map.
+
+        Args:
+            map_entry ():
+
+        Returns:
+            Transform(Location)
+        """
         mid_point = (np.array(map_entry.point_a) + np.array(map_entry.point_b)) / 2
         return Transform(
             location=Location(x=mid_point[0], y=mid_point[1], z=mid_point[2])

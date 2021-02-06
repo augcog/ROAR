@@ -5,6 +5,35 @@ nav:
       - Introduction: introduction.md
       - Architecture: architecture.md
     - Quick Start: quickstart.md
+    - Code Documentations:
+        - Bridges:
+            - Bridge: code_documentations/Bridges/bridges.md
+            - Carla Bridge: code_documentations/Bridges/carla_bridge.md
+            - Jetson Bridge: code_documentations/Bridges/jetson_bridge.md
+        - ROAR:
+            - Agent Module: code_documentations/ROAR/agent_module.md
+            - Control Module: code_documentations/ROAR/controller_module.md
+            - Perception Module: code_documentations/ROAR/perception_module.md
+            - Planning Module: code_documentations/ROAR/planning_module.md
+            - Utilities Module: code_documentations/ROAR/utilities_module.md
+            - Visualization Module: code_documentations/ROAR/visualization.md
+        - ROAR Simulation:
+            - Carla Client: code_documentations/ROAR_Sim/ccu.md
+            - Configurations: code_documentations/ROAR_Sim/conf.md
+        - Runner Sim: code_documentations/runner_sim.md
+        - Runner Competition Evaluator: code_documentations/runcompeval.md
+
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - pymdownx.emoji
+  - pymdownx.tabbed
+  - toc:
+      permalink: "¤"
 
 
 theme:
@@ -12,4 +41,14 @@ theme:
 
 plugins:
   - search
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          rendering:
+            show_root_heading: no
+            show_category_heading: false
+            show_if_no_docstring: yes
+            show_source: true
+            show_root_toc_entry: false
+            show_object_full_path: no
+

@@ -19,6 +19,7 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.lane_detection_agent import LaneDetectionAgent
 def main():
+    """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR_Sim/configurations/agent_configuration.json"))
     carla_config = CarlaConfig.parse_file(Path("./ROAR_Sim/configurations/configuration.json"))
 

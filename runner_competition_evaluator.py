@@ -10,12 +10,31 @@ from typing import Tuple
 from prettytable import PrettyTable
 
 
-def compute_score(carla_runner: CarlaRunner) -> Tuple[float, int, bool]:
+def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,42])) -> Tuple[float, int, bool]:
+    """
+    Calculates the score of the vehicle upon completion of the track based on certain metrics
+    Args:
+        carla_runner ():
+        min_bounding_box ():
+        max_bounding_box ():
+
+    Returns:
+        time_elapsed:
+        num_collision: number of collisions during simulation
+        lap_completed: True if vehicle reaches the finish bounding box
+
+    """
     time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
     num_collision: int = carla_runner.agent_collision_counter
-    lap_completed = True if \
-        np.linalg.norm(carla_runner.end_vehicle_position - carla_runner.start_vehicle_position) < 50 else False
+
+    lower_diff = carla_runner.end_vehicle_position - min_bounding_box
+    upper_diff = max_bounding_box - carla_runner.end_vehicle_position
+    lower_check = [True if n > 0 else False for n in lower_diff]
+    upper_check = [True if n > 0 else False for n in upper_diff]
+    lap_completed = all(lower_check) and all(upper_check)
+
     return time_elapsed, num_collision, lap_completed
+
 
 
 def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path) -> Tuple[float, int, bool]:

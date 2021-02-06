@@ -17,7 +17,6 @@ class OccupancyGridMap:
     """
     Log update Occupancy map
     """
-
     def __init__(self, scale: float = 1.0, buffer_size: int = 10, occu_prob: float = 0.65, free_prob: float = 0.35):
         self.scale = scale
         self.curr_min_world_coord: float = 0
@@ -104,4 +103,4 @@ class OccupancyGridMap:
                                      max(self._map.shape[1], occu_map_center_y + view_width)
         # image = self._map[min_x:max_x, min_y:max_y]
         cv2.imshow("occupancy map", cv2.resize(self._map, dsize=(500,500)))
-        cv2.waitKey(1)
+

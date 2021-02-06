@@ -77,7 +77,7 @@ class CarlaBridge(Bridge):
     def convert_rgb_from_source_to_agent(
             self, source: carla.Image
     ) -> Union[RGBData, None]:
-        """Convert CARLA raw Image to a Union with RGB numpy array"""
+        """Convert CARLA raw Image to a Union with RGB numpy array."""
 
         try:
             source.convert(cc.Raw)
@@ -89,7 +89,7 @@ class CarlaBridge(Bridge):
     def convert_depth_from_source_to_agent(
             self, source: carla.Image
     ) -> Union[DepthData, None]:
-        """Convert CARLA raw depth info to """
+        """Convert CARLA raw Image to a Union with Depth numpy array."""
         try:
             array = np.frombuffer(source.raw_data, dtype=np.dtype("uint8"))
             array = np.reshape(array, (source.height, source.width, 4))  # BGRA
@@ -103,9 +103,11 @@ class CarlaBridge(Bridge):
             return None
 
     def convert_vector3d_from_source_to_agent(self, source: carla.Vector3D) -> Vector3D:
+        """Convert CARLA raw Vector3d Data to a Vector3D Object."""
         return Vector3D(x=source.x, y=source.y, z=source.z)
 
     def convert_imu_from_source_to_agent(self, source: IMUSensor) -> IMUData:
+        """Convert CARLA raw IMUData to IMUData(accelerometer, gyroscope)."""
         return IMUData(
             accelerometer=Vector3D(
                 x=source.accelerometer[0],
@@ -118,6 +120,7 @@ class CarlaBridge(Bridge):
         )
 
     def convert_sensor_data_from_source_to_agent(self, source: dict) -> SensorsData:
+        """Returns CARLA Sensors Data from raw front RGB, rear RGB, front depth, and IMU Data."""
         return SensorsData(
             front_rgb=self.convert_rgb_from_source_to_agent(
                 source=source.get("front_rgb", None)
@@ -134,6 +137,7 @@ class CarlaBridge(Bridge):
         )
 
     def convert_vehicle_from_source_to_agent(self, source: carla.Vehicle) -> Vehicle:
+        """Converts Velocity, Transform, and Control of carla.Vehicle"""
         control: VehicleControl = self.convert_control_from_source_to_agent(
             source.get_control()
         )
@@ -149,6 +153,7 @@ class CarlaBridge(Bridge):
     def convert_control_from_agent_to_source(
             self, control: VehicleControl
     ) -> carla.VehicleControl:
+        """Converts control to carla.VehicleControl"""
         return carla.VehicleControl(
             throttle=abs(control.throttle),
             steer=control.steering,
@@ -162,17 +167,24 @@ class CarlaBridge(Bridge):
     def convert_vector3d_from_agent_to_source(
             self, vector3d: Vector3D
     ) -> carla.Vector3D:
+        """Convert Vector3D Object to a CARLA raw Vector3d Data."""
         return carla.Vector3D(x=vector3d.x, y=vector3d.y, z=vector3d.z)
 
     def convert_location_from_agent_to_source(self, source: Location) -> carla.Location:
+        """Convert Agent's Location to a Carla.Location."""
         return carla.Location(x=source.x, y=-source.z, z=source.y)
 
+
+
+
     def convert_rotation_from_agent_to_source(self, source: Rotation) -> carla.Rotation:
+        """Convert Agent's Rotation to a Carla.Rotation."""
         return carla.Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
 
     def convert_transform_from_agent_to_source(
             self, source: Transform
     ) -> carla.Transform:
+        """Convert Agent's Transform to a Carla.Transform."""
         return carla.Transform(
             location=self.convert_location_from_agent_to_source(source=source.location),
             rotation=self.convert_rotation_from_agent_to_source(source=source.rotation),
