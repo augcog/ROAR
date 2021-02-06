@@ -47,8 +47,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
     def set_mission_plan(self) -> None:
         """
-        clears current waypoints, and reset mission plan from start
-        I am simply transfering the mission plan into my waypoint queue.
+        Clears current waypoints, and reset mission plan from start
+        I am simply transferring the mission plan into my waypoint queue.
         Assuming that this current run will run all the way to the end
 
         Returns:

@@ -66,6 +66,7 @@ class OccupancyGridMap:
         self._initialize_map()
 
     def _initialize_map(self):
+        """Creates empty Occupancy Grid Map of zeroes"""
         x_total = self._max_x - self._min_x + 2 * self._map_additiona_padding
         y_total = self._max_y - self._min_y + 2 * self._map_additiona_padding
         self.map = np.zeros([x_total, y_total])
@@ -73,6 +74,7 @@ class OccupancyGridMap:
                           f"initialized")
 
     def location_to_occu_cord(self, location: Location):
+        """Converts World coordinate to coordinate in Occupancy Grid Map"""
         return self.cord_translation_from_world(world_cords_xy=
                                                 np.array([[location.x,
                                                            location.y]]))

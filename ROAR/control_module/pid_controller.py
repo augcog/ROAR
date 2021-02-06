@@ -94,6 +94,15 @@ class LatPIDController(Controller):
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+        """
+        Calculates a vector that represent where you are going.
+        Args:
+            next_waypoint ():
+            **kwargs ():
+
+        Returns:
+            lat_control
+        """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location
         v_end = v_begin + Location(

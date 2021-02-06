@@ -89,6 +89,14 @@ class LatitunalPurePursuitController:
         self.look_ahead_distance = look_ahead_distance
 
     def run_step(self, next_waypoint: Transform) -> float:
+        """
+
+        Args:
+            next_waypoint ():
+
+        Returns:
+            VehicleControl.clamp
+        """
         target_z = next_waypoint.location.z
         target_x = next_waypoint.location.x
         angle_difference = math.atan2(

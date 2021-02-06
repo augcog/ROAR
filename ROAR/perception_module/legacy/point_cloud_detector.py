@@ -31,6 +31,7 @@ class PointCloudDetector(Detector):
         return points_3d
 
     def calculate_world_cords(self):
+        """Converts depth data from the Front Depth Camera to World coordinates."""
         depth_img = self.agent.front_depth_camera.data.copy()
 
         coords = np.where(depth_img < self.max_detectable_distance)

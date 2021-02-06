@@ -13,34 +13,98 @@ from ROAR_Jetson.jetson_vehicle import Vehicle as JetsonVehicle
 
 class JetsonBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
+        """
+        Convert Location data from Jetson Vehicle to Agent's location data type.
+        Args:
+            source ():
+
+        Returns:
+            Location(x, y, z)
+        """
         return Location(x=source.x, y=source.y, z=-source.z)
 
     def convert_rotation_from_source_to_agent(self, source) -> Rotation:
+        """
+        Convert a Jetson raw rotation to Rotation(pitch=float,yaw=float,roll=float).
+        Args:
+            source ():
+
+        Returns:
+            Rotation(pitch, yaw, roll)
+        """
         return Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
 
     def convert_transform_from_source_to_agent(self, source) -> Transform:
+        """
+        Convert Jetson raw location and rotation to Transform(location,rotation).
+        Args:
+            source ():
+
+        Returns:
+            Transform(Location, Rotation)
+        """
         return Transform(
             location=self.convert_location_from_source_to_agent(source=source.location),
             rotation=self.convert_rotation_from_source_to_agent(source=source.rotation),
         )
 
     def convert_control_from_source_to_agent(self, source: JetsonVehicle) -> VehicleControl:
+        """
+        Convert Jetson raw vehicle control to VehicleControl(throttle,steering).
+        Args:
+            source ():
+
+        Returns:
+            VehicleControl(Throttle, Steering)
+        """
         return VehicleControl(throttle=source.throttle, steering=source.steering)
 
     def convert_rgb_from_source_to_agent(self, source) -> Optional[RGBData]:
+        """
+        Convert Jetson raw Image to an Optional with RGB numpy array.
+        Args:
+            source ():
+
+        Returns:
+            RGBData
+        """
         if source is not None:
             return RGBData(data=source)
         return None
 
     def convert_depth_from_source_to_agent(self, source) -> Optional[DepthData]:
+        """
+        Convert Jetson raw Image to an Optional with Depth numpy array.
+        Args:
+            source ():
+
+        Returns:
+            DepthData
+        """
         if source is not None:
             return DepthData(data=source)
         return None
 
     def convert_vector3d_from_source_to_agent(self, source) -> Vector3D:
+        """
+        Convert Jetson raw Vector3d Data to a Vector3D Object.
+        Args:
+            source ():
+
+        Returns:
+            Vector3D(x, y, z)
+        """
         return Vector3D(x=source.x, y=source.y, z=source.z)
 
     def convert_imu_from_source_to_agent(self, source) -> IMUData:
+        """
+        Convert Jetson raw IMUData to IMUData(accelerometer, gyroscope).
+        Args:
+            source ():
+
+        Returns:
+            IMUData(accelerometer, gyroscope)
+        """
         # TODO fill in data here
         return IMUData(
             accelerometer=Vector3D(x=0, y=0, z=0),
@@ -48,6 +112,14 @@ class JetsonBridge(Bridge):
         )
 
     def convert_sensor_data_from_source_to_agent(self, source) -> SensorsData:
+        """
+        Returns Jetson Sensors Data from raw front RGB, rear RGB, front depth, and IMU Data.
+        Args:
+            source ():
+
+        Returns:
+            SensorData(front_RGB, rear_RGB, front_depth, IMU_Data)
+        """
         return SensorsData(
             front_rgb=self.convert_rgb_from_source_to_agent(
                 source=source.get("front_rgb", None)
@@ -67,6 +139,14 @@ class JetsonBridge(Bridge):
 
     def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
             Optional[ViveTrackerData]:
+        """
+        Converts raw Vive Tracker data to ViveTrackerData(Location, Rotation, Velocity).
+        Args:
+            source ():
+
+        Returns:
+            ViveTrackerData(Location, Rotation, Velocity)
+        """
         if source is not None:
             vive_tracker_data = ViveTrackerData(
                 location=Location(
@@ -89,6 +169,14 @@ class JetsonBridge(Bridge):
         return None
 
     def convert_vehicle_from_source_to_agent(self, source: JetsonVehicle) -> Vehicle:
+        """
+        Converts Transform, Velocity, Wheel_Base, and Control of JetsonVehicle.
+        Args:
+            source ():
+
+        Returns:
+            Vehicle(Transform, Velocity, Wheel_Base, Control)
+        """
         return Vehicle(transform=Transform(
             location=Location(x=-source.location[0], y=source.location[1], z=-source.location[2]),
             rotation=Rotation(roll=-source.rotation[2], pitch=source.rotation[0], yaw=-source.rotation[1]),
@@ -99,7 +187,23 @@ class JetsonBridge(Bridge):
         )
 
     def convert_control_from_agent_to_source(self, control: VehicleControl) -> Tuple:
+        """
+        Converts control to Throttle and Steering numpy arrays bound between -1 and 1.
+        Args:
+            control ():
+
+        Returns:
+            Tuple
+        """
         return np.clip(control.throttle, a_min=-1, a_max=1), np.clip(control.steering, a_min=-1, a_max=1)
 
     def convert_vector3d_from_agent_to_source(self, vector3d: Vector3D) -> Any:
+        """
+        Convert Jetson Vector3D Object to Vector3D data.
+        Args:
+            vector3d ():
+
+        Returns:
+            Array
+        """
         return [vector3d.x, vector3d.y, vector3d.z]
