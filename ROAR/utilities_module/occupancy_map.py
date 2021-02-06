@@ -53,7 +53,7 @@ class OccupancyGridMap:
                 self._rescale_occupancy_map(min_coord=min_coord, max_coord=max_coord)
 
             # plot transformed world coord
-            occupied_mask = np.zeros(shape=self._map.shape) # self._map.copy()
+            occupied_mask = self._map.copy() # np.zeros(shape=self._map.shape) # self._map.copy()
             occupied_mask[translated_Xs, translated_Zs] = 1
             cv2.imshow("occupied mask", cv2.resize(occupied_mask, dsize=(500,500)))
             cv2.waitKey(1)
