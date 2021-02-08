@@ -35,16 +35,16 @@ class CarlaBridge(Bridge):
         Returns:
 
         """
-        # return Location(x=source.x, y=source.y, z=source.z)
-        return Location(x=source.x, y=-source.z, z=-source.y)
+        return Location(x=source.x, y=source.y, z=source.z)
+        # return Location(x=source.y, y=-source.z, z=source.x)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
         roll, pitch, yaw = source.roll, source.pitch, source.yaw
         # reflective_matrix = np.array([
-        #     [1, 0, 0],
+        #     [0, 1, 0],
         #     [0, 0, -1],
-        #     [0, -1, 0]
+        #     [1, 0, 0]
         # ])
         # R_Carla = rotation_matrix_from_euler(roll=roll, pitch=pitch, yaw=yaw)
         # # R_ROAR = P * R_carla * P

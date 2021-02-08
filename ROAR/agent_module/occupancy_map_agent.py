@@ -19,7 +19,7 @@ class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.add_threaded_module(DepthToPointCloudDetector(agent=self,
-                                                           should_compute_global_pointcloud=False,
+                                                           should_compute_global_pointcloud=True,
                                                            threaded=True,
                                                            scale_factor=1000))
         self.gpd = GroundPlaneDetector(agent=self, threaded=True)
@@ -47,7 +47,6 @@ class OccupancyMapAgent(Agent):
             print("ground", np.amin(point_cloud, axis=0), np.amax(point_cloud, axis=0),
                   self.vehicle.transform)
             self.occupancy_map.update(world_coords=point_cloud)
-            cv2.imshow("ground", self.gpd.curr_mask)
 
             # self.occupancy_map.vizualize(center=(self.vehicle.transform.location.x, self.vehicle.transform.location.y))
             # t2 = time.time()
