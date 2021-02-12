@@ -49,7 +49,7 @@ class OccupancyMapAgent(Agent):
         if self.kwargs.get("obstacle_coords", None) is not None:
             points = self.kwargs["obstacle_coords"]
             # points[:, 1] = 0
-            self.occupancy_map.update(points)
+            self.occupancy_map.update(points, vehicle_location=self.vehicle.transform.location)
             self.occupancy_map.visualize()
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()

@@ -18,7 +18,7 @@ class OccupancyGridMap:
     Log update Occupancy map
     """
 
-    def __init__(self, scale: float = 1.0, buffer_size: int = 10, occu_prob: float = 0.65, free_prob: float = 0.35):
+    def __init__(self, scale: float = 1.0, buffer_size: int = 50, occu_prob: float = 0.65, free_prob: float = 0.35):
         self.scale = scale
         self.min_x: int = 0
         self.min_y: int = 0
@@ -35,7 +35,7 @@ class OccupancyGridMap:
     def _create_empty_map(shape: Tuple[int, int], buffer_size=10) -> np.ndarray:
         return np.zeros(shape=(shape[0] + buffer_size, shape[1] + buffer_size))
 
-    def update(self, world_coords: np.ndarray) -> bool:
+    def update(self, world_coords: np.ndarray, vehicle_location: Optional[Location] = None) -> bool:
         try:
             scaled_world_coords = world_coords * self.scale
 
@@ -46,11 +46,16 @@ class OccupancyGridMap:
             min_x, max_x = int(np.min(Xs)), int(np.max(Xs))
             min_y, max_y = int(np.min(Zs)), int(np.max(Zs))
 
-            map_size = (max_x-min_x + 10, max_y-min_y+10)
+            map_size = (max_x-min_x + self.buffer_size, max_y-min_y+self.buffer_size)
             translated_Xs = np.array(Xs - min_x, dtype=np.int)
             translated_Ys = np.array(Zs - min_y, dtype=np.int)
+
+            vehicle_occ_x = int(vehicle_location.x - min_x)
+            vehicle_occ_y = int(vehicle_location.z - min_y)
+
             curr_map = np.zeros(shape=map_size)
             curr_map[translated_Xs, translated_Ys] = 1
+            curr_map[vehicle_occ_x-1:vehicle_occ_x+1, vehicle_occ_y-1:vehicle_occ_y+1] = 1
             self._map = curr_map
             # cv2.imshow("curr_map", cv2.resize(curr_map, (500,500)))
             # cv2.waitKey(1)
