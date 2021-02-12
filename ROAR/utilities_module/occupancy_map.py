@@ -17,90 +17,98 @@ class OccupancyGridMap:
     """
     Log update Occupancy map
     """
+
     def __init__(self, scale: float = 1.0, buffer_size: int = 10, occu_prob: float = 0.65, free_prob: float = 0.35):
         self.scale = scale
-        self.curr_min_world_coord: float = 0
-        self.curr_max_world_coord: float = 100
+        self.min_x: int = 0
+        self.min_y: int = 0
+        self.max_x: int = 100
+        self.max_y: int = 100
         self.buffer_size = buffer_size
         self.occu_prob = np.log(occu_prob / (1 - occu_prob))
         self.free_prob = np.log(free_prob / (1 - free_prob))
-        self._map = self._create_empty_map(shape=
-                                           (math.ceil(self.curr_max_world_coord - self.curr_min_world_coord),
-                                            math.ceil(self.curr_max_world_coord - self.curr_min_world_coord)))
+        self._map: np.ndarray = self._create_empty_map(shape=(math.ceil(self.max_x - self.min_x),
+                                                              math.ceil(self.max_y - self.min_y)))
         self.logger = logging.getLogger("Occupancy Grid Map")
 
-    def _create_empty_map(self, shape: Tuple[int, int]):
-        return np.zeros(shape=(shape[0] + self.buffer_size, shape[1] + self.buffer_size))
+    @staticmethod
+    def _create_empty_map(shape: Tuple[int, int], buffer_size=10) -> np.ndarray:
+        return np.zeros(shape=(shape[0] + buffer_size, shape[1] + buffer_size))
 
     def update(self, world_coords: np.ndarray) -> bool:
         try:
-            # print(np.amin(world_coords, axis=0), np.amax(world_coords, axis=0))
             scaled_world_coords = world_coords * self.scale
 
             # rescale world coord to min = 0
             Xs = scaled_world_coords[:, 0]
             Zs = scaled_world_coords[:, 2]
 
-            # rescale occupancy map if neccessary
-            min_coord = min(np.min(Xs), np.min(Zs))
-            max_coord = max(np.max(Xs), np.max(Zs))
+            min_x, max_x = int(np.min(Xs)), int(np.max(Xs))
+            min_y, max_y = int(np.min(Zs)), int(np.max(Zs))
 
-            translated_Xs = np.array(Xs + abs(min_coord), dtype=np.int)
-            translated_Zs = np.array(Zs + abs(min_coord), dtype=np.int)
+            map_size = (max_x-min_x + 10, max_y-min_y+10)
+            translated_Xs = np.array(Xs - min_x, dtype=np.int)
+            translated_Ys = np.array(Zs - min_y, dtype=np.int)
+            curr_map = np.zeros(shape=map_size)
+            curr_map[translated_Xs, translated_Ys] = 1
+            self._map = curr_map
+            # cv2.imshow("curr_map", cv2.resize(curr_map, (500,500)))
+            # cv2.waitKey(1)
 
-            if min_coord < self.curr_min_world_coord or max_coord > self.curr_max_world_coord:
-                self._rescale_occupancy_map(min_coord=min_coord, max_coord=max_coord)
+            # print("BEFORE RESCALING: ", max_x - min_x, max_y - min_y)
 
-            # plot transformed world coord
-            occupied_mask =  np.zeros(shape=self._map.shape) # self._map.copy()
-            occupied_mask[translated_Xs, translated_Zs] = 1
-            cv2.imshow("occupied mask", cv2.resize(occupied_mask[0:200,0:200], dsize=(500, 500)))
-            cv2.waitKey(1)
-            # print(np.amin(translated_Xs), np.amax(translated_Xs), np.amin(translated_Zs), np.amax(translated_Zs),
-            #       self._map.shape)
-            self._map[occupied_mask == 1] += self.occu_prob
-            self._map[occupied_mask == 0] += self.free_prob
-            self._map.clip(min=0, max=1)
+            # if min_x < self.min_x or min_y < self.min_y or max_x > self.max_x or max_y > self.max_y:
+            #     self.rescale_map(new_min_x=min_x, new_max_x=max_x, new_min_y=min_y, new_max_y=max_y)
+            #
+            # # translate to occupancy map coordinate
+            # translated_Xs, translated_Ys = self.to_occupancy_map_coor(Xs, Zs)
+            #
+            # self._map = np.zeros(shape=self._map.shape)
+            # self._map[translated_Xs, translated_Ys] = 1
+
+            # translated_Xs = np.array(Xs - min_x, dtype=np.int)
+            # translated_Ys = np.array(Zs - min_y, dtype=np.int)
+            # # print("AFTER RESCALING: ", np.max(translated_Xs) - np.min(translated_Xs),
+            # #       np.max(translated_Ys) - np.min(translated_Ys), np.shape(self._map))
+            # occupied_mask = np.zeros(shape=self._map.shape)
+            # occupied_mask[translated_Xs, translated_Ys] = 1
+            #
+            # self._map[occupied_mask == 1] += self.occu_prob
+            # self._map[occupied_mask == 0] += self.free_prob
+
+            # self._map.clip(min=0, max=1)
+            # # cv2.imshow("occupied_mask", cv2.resize(occupied_mask, (500, 500)))
+            # cv2.imshow("map", cv2.resize(self._map, (500, 500)))
+            # cv2.waitKey(1)
+
             return True
         except Exception as e:
             self.logger.error(f"Something went wrong: {e}")
             return False
 
-    def _rescale_occupancy_map(self, min_coord: float, max_coord: float, auto_scale_factor=1):
-        auto_scale_factor = 1 if auto_scale_factor < 1 else auto_scale_factor
-        min_coord = min(self.curr_min_world_coord, min_coord)
-        max_coord = max(self.curr_max_world_coord, max_coord)
+    def rescale_map(self, new_min_x: int, new_max_x: int, new_min_y: int, new_max_y: int):
+        old_width, old_height = self._map.shape
+        old_min_x, old_max_x, old_min_y, old_max_y = self.min_x, self.max_x, self.min_y, self.max_y
 
-        new_map_shape = (math.ceil((max_coord - min_coord) * auto_scale_factor),
-                         math.ceil((max_coord - min_coord) * auto_scale_factor))
+        new_min_x, new_min_y = min(new_min_x, old_min_x), min(new_min_y, old_min_y)
+        new_max_x, new_max_y = max(new_max_x, old_max_x), max(new_max_y, old_max_y)
 
-        # copy current occupancy map
-        curr_occu_map_copy: np.ndarray = self._map.copy()
+        new_map_size = (math.ceil(new_max_x - new_min_x), math.ceil(new_max_y - new_min_y))
+        new_map = self._create_empty_map(shape=new_map_size, buffer_size=self.buffer_size)
 
-        # create new map that includes min and max coord
-        new_map: np.ndarray = self._create_empty_map(shape=new_map_shape)
-        if new_map.shape == self._map.shape:
-            return
-        offset = math.ceil(self.curr_min_world_coord - min_coord)
+        new_map[(old_min_x - new_min_x):  (old_min_x - new_min_x) + old_width,
+        (old_min_y - new_min_y):  (old_min_y - new_min_y) + old_height] = self._map
 
-        new_map[offset:offset + curr_occu_map_copy.shape[0], offset:offset + curr_occu_map_copy.shape[1]] = \
-            curr_occu_map_copy
-
-        # reset curr_min_world_coord and curr_max_world_coord
-        self.curr_min_world_coord = min_coord
-        self.curr_max_world_coord = max_coord
-
-        # reset current_occupancy map
         self._map = new_map
+        self.min_x, self.min_y, self.max_x, self.max_y = new_min_x, new_min_y, new_max_x, new_max_y
 
-    def vizualize(self, center: Tuple[float, float], view_width: int = 20):
-        occu_map_center_x = min(0, int(center[0] + abs(self.curr_min_world_coord)))
-        occu_map_center_y = min(0, int(center[1] + abs(self.curr_min_world_coord)))
+    def visualize(self):
+        map_copy = self._map.copy()
+        cv2.imshow("map", cv2.resize(map_copy, (500,500)))
+        cv2.waitKey(1)
+    def to_occupancy_map_coor(self, Xs, Ys, ) -> Tuple[np.ndarray, np.ndarray]:
+        translated_Xs = np.array(Xs - self.min_x, dtype=np.int)
+        translated_Ys = np.array(Ys - self.min_y, dtype=np.int)
+        return translated_Xs, translated_Ys
 
-        min_x, min_y, max_x, max_y = min(0, occu_map_center_x - view_width), \
-                                     min(0, occu_map_center_y - view_width), \
-                                     max(self._map.shape[0], occu_map_center_x + view_width), \
-                                     max(self._map.shape[1], occu_map_center_y + view_width)
-        # image = self._map[min_x:max_x, min_y:max_y]
-        cv2.imshow("occupancy map", cv2.resize(self._map, dsize=(500,500)))
 

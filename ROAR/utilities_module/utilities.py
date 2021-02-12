@@ -45,14 +45,6 @@ def img_to_world(scaled_depth_image: np.ndarray,
     ones = np.ones(shape=np.shape(raw_p3d)[1])
     raw_p3d_padded = np.vstack([raw_p3d, ones])
 
-    cords_xyz_1 = np.vstack([
-        raw_p3d[2, :],
-        raw_p3d[0, :],
-        -raw_p3d[1, :],
-        ones
-    ])
-    r_world_veh = np.linalg.inv(veh_world_matrix)
-    r_veh_cam = np.linalg.inv(cam_veh_matrix)
     return (veh_world_matrix @ cam_veh_matrix @ raw_p3d_padded)[:3, :].T
 
 

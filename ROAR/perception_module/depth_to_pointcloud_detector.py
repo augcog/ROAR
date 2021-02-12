@@ -5,7 +5,7 @@ from typing import Optional
 import time
 from ROAR.utilities_module.utilities import img_to_world
 import cv2
-
+from numpy.matlib import repmat
 
 class DepthToPointCloudDetector(Detector):
     def __init__(self,
@@ -35,26 +35,19 @@ class DepthToPointCloudDetector(Detector):
         """
         if self.agent.front_depth_camera.data is not None:
             depth_img = self.agent.front_depth_camera.data.copy()
-            if self.should_filter_by_distance:
-                coords = np.where(depth_img < self.max_detectable_distance)
-            else:
-                coords = np.where(depth_img <= np.amax(depth_img))  # it will just return all coordinate pairs
-            if self.should_sample_points and np.shape(coords)[1] > self.max_points_to_convert:
-                coords = np.random.choice(a=coords, size=self.max_points_to_convert, replace=False)
+            coords = np.where(depth_img <= np.amax(depth_img))  # it will just return all coordinate pairs
             depths = depth_img[coords][:, np.newaxis] * self.scale_factor
-
             result = np.multiply(np.array(coords).T, depths)
             S_uv1 = np.hstack((result, depths)).T
-
             if self.should_compute_global_pointcloud:
                 result = img_to_world(scaled_depth_image=S_uv1,
                                       intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
                                       veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
                                       cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
-                # print("received pointcloud", np.amin(result, axis=0), np.amax(result, axis=0), self.agent.vehicle.transform.location)
                 return result
 
             else:
+                # return p3d.T
                 K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
                 return (K_inv @ S_uv1).T
         return None
