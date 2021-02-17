@@ -7,11 +7,12 @@ import time, cv2
 
 
 class GroundPlaneDetector(DepthToPointCloudDetector):
-    def __init__(self, agent: Agent, knn: int = 200, **kwargs):
+    def __init__(self, agent: Agent, knn: int = 200, res: int = 4, **kwargs):
         super().__init__(agent, **kwargs)
         self.reference_norm: Optional[np.ndarray] = np.array([-0.00000283, -0.00012446, 0.99999999])
         self.knn = knn
-        self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me()
+        self.res = res
+        self.f1, self.f2, self.f3, self.f4 = self.compute_vectors_near_me(res)
 
     def run_in_series(self) -> Any:
         points = super(GroundPlaneDetector, self).run_in_series()  # Nx3
@@ -21,8 +22,8 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         # OpenCV FloodFill
         d1 = self.agent.front_depth_camera.image_size_y
         d2 = self.agent.front_depth_camera.image_size_x
-        curr_img = normals.reshape((int(d1/4), int(d2/4), 3)).astype(np.float32)
-        seed_point = (int(d1/4) - 1, int(int(d2/4) / 2))
+        curr_img = normals.reshape((int(d1/self.res), int(d2/self.res), 3)).astype(np.float32)
+        seed_point = (int(d1/self.res) - 10, int(int(d2/self.res) / 2))
         _, retval, _, _ = cv2.floodFill(image=curr_img,
                                         seedPoint=seed_point,
                                         newVal=(0, 0, 0),
@@ -31,7 +32,7 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
                                         mask=None)
         bool_matrix = np.mean(retval, axis=2) == 0
         bool_zeros = np.zeros(d1 * d2).flatten()
-        bool_indices = np.indices(bool_zeros.shape)[0][::16]
+        bool_indices = np.indices(bool_zeros.shape)[0][::self.res**2]
         bool_zeros[bool_indices] = bool_matrix.flatten()
         bool_matrix = bool_zeros.reshape((d1, d2))
 
@@ -65,7 +66,7 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         return arr
 
 
-    def compute_vectors_near_me(self):
+    def compute_vectors_near_me(self, res):
         d1, d2 = self.agent.front_depth_camera.image_size_y, self.agent.front_depth_camera.image_size_x
         idx, jdx = np.indices((d1, d2))
         idx_back = np.clip(idx - 1, 0, idx.max()).flatten()
@@ -76,8 +77,8 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
         jdx = jdx.flatten()
 
         # rand_idx = np.random.choice(np.arange(idx.shape[0]), size=d1*d2, replace=False)
-        f1 = (idx_front * d2 + jdx)[::16]  # [rand_idx]
-        f2 = (idx_back * d2 + jdx)[::16]  # [rand_idx]
-        f3 = (idx * d2 + jdx_front)[::16]  # [rand_idx]
-        f4 = (idx * d2 + jdx_back)[::16]  # [rand_idx]
+        f1 = (idx_front * d2 + jdx)[::res**2]  # [rand_idx]
+        f2 = (idx_back * d2 + jdx)[::res**2]  # [rand_idx]
+        f3 = (idx * d2 + jdx_front)[::res**2]  # [rand_idx]
+        f4 = (idx * d2 + jdx_back)[::res**2]  # [rand_idx]
         return f1, f2, f3, f4
