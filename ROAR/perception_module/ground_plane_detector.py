@@ -31,10 +31,11 @@ class GroundPlaneDetector(DepthToPointCloudDetector):
                                         upDiff=(0.01, 0.01, 0.01),
                                         mask=None)
         bool_matrix = np.mean(retval, axis=2) == 0
-        bool_zeros = np.zeros(d1 * d2).flatten()
-        bool_indices = np.indices(bool_zeros.shape)[0][::self.res**2]
-        bool_zeros[bool_indices] = bool_matrix.flatten()
-        bool_matrix = bool_zeros.reshape((d1, d2))
+        # bool_zeros = np.zeros(d1 * d2).flatten()
+        # bool_indices = np.indices(bool_zeros.shape)[0][::self.res**2]
+        # bool_zeros[bool_indices] = bool_matrix.flatten()
+        # bool_matrix = bool_zeros.reshape((d1, d2))
+        bool_matrix = cv2.resize(bool_matrix, (d1, d2), 0, 0, interpolation=cv2.INTER_NEAREST)
 
         color_image = self.agent.front_rgb_camera.data.copy()
         color_image[bool_matrix > 0] = 255
