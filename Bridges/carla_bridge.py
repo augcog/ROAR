@@ -55,8 +55,7 @@ class CarlaBridge(Bridge):
         yaw = alpha = np.degrees(np.arctan2(r21, r11))
         pitch = beta = np.degrees(np.arctan2(-r31, np.sqrt(r32 ** 2 + r33 ** 2)))
         roll = gamma = np.degrees(np.arctan2(r32, r33))
-        # print(roll, pitch, yaw)
-        return Rotation(roll=roll, pitch=pitch, yaw=yaw)
+        return Rotation(roll=roll - 90, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform

@@ -80,6 +80,8 @@ class ObstacleDetector(Detector):
                 obstacle_mask[ground_mask == 1] = 0
                 obstacle_mask[:depth_data.shape[1] // 8 * 3, :] = 0
                 self.curr_mask = obstacle_mask
+                # cv2.imshow("obstacle mask", obstacle_mask)
+
                 xyz = np.reshape(a=points, newshape=(h, w, 3))
                 ground_coords = xyz[ground_mask == 1]
                 self.agent.kwargs["ground_coords"] = ground_coords
@@ -87,7 +89,7 @@ class ObstacleDetector(Detector):
                 obstacle_coords = xyz[obstacle_mask == 1]
                 vehicle_location = self.agent.vehicle.transform.location.to_array()
                 dists = np.linalg.norm(obstacle_coords - vehicle_location, axis=1)
-                obstacle_coords = obstacle_coords[dists < 100]  # consider doing this filter early on
+                obstacle_coords = obstacle_coords[dists < 50]  # consider doing this filter early on
 
                 self.agent.kwargs["obstacle_coords"] = obstacle_coords
 
