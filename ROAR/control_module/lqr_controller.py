@@ -79,8 +79,10 @@ class LQRController(Controller):
         
         # Assume we want to go in the direction of the waypoint at the target speed foreversies
         xd = np.array([0, target_speed])
+        cur_speed = Vehicle.get_speed(self.agent.vehicle)
+        cd = np.array([0, cur_speed])
         # Calculate the feasible ud trajectory
-        ud,_,_,_ = np.linalg.lstsq(self.B, xd-np.dot(self.A, xd), rcond=None)
+        ud,_,_,_ = np.linalg.lstsq(self.B, xd-np.dot(self.A, cd), rcond=None)
         
         # convert to offset variables zt and ht
         zt = xt - xd
