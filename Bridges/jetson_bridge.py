@@ -10,7 +10,8 @@ from typing import Optional
 from ROAR_Jetson.vive.models import ViveTrackerMessage
 from ROAR_Jetson.jetson_vehicle import Vehicle as JetsonVehicle
 from ROAR_Jetson.camera import RS_T265
-from scipy import stats
+from ROAR_Jetson.camera_d_t import RS_D_T
+from typing import Union
 
 class JetsonBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
@@ -140,9 +141,8 @@ class JetsonBridge(Bridge):
                 source=source.get("vive_tracking", None))
         )
 
-    def convert_t265_to_agent(self, t265: Optional[RS_T265]) -> Optional[TrackingData]:
+    def convert_t265_to_agent(self, t265: Union[RS_T265, RS_D_T]) -> Optional[TrackingData]:
         if t265 is not None:
-
             location = t265.location
             rotation = t265.rotation  # pitch yaw roll
             velocity = t265.velocity
