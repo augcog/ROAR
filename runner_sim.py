@@ -9,7 +9,6 @@ from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from ROAR.agent_module.pid_agent import PIDAgent
-from ROAR.agent_module.cascade_obj_agent import CascadeObjAgent
 from ROAR.agent_module.lqr_agent import LQRAgent
 
 
