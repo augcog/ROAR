@@ -15,7 +15,7 @@ from pathlib import Path
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
 import matplotlib.pyplot as plt
 import open3d as o3d
-
+import cv2
 
 class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
@@ -31,11 +31,15 @@ class OccupancyMapAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap()  # 1 m = 100 cm
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=2000,
+                                              world_coord_resolution=10,
+                                              occu_prob=0.9)  # 1 m = 100 cm
         self.add_threaded_module(DepthToPointCloudDetector(agent=self,
                                                            should_compute_global_pointcloud=True,
                                                            threaded=True,
                                                            scale_factor=1000))
+        # self.gpd = GroundPlaneDetector(self, threaded=True)
+        # self.add_threaded_module(self.gpd)
         self.obstacle_detector = ObstacleDetector(self, threaded=True)
         self.add_threaded_module(self.obstacle_detector)
         # self.vis = o3d.visualization.Visualizer()
@@ -48,18 +52,21 @@ class OccupancyMapAgent(Agent):
         control = self.local_planner.run_in_series()
         if self.kwargs.get("obstacle_coords", None) is not None:
             points = self.kwargs["obstacle_coords"]
-            # points[:, 1] = 0
-            self.occupancy_map.update(points, vehicle_location=self.vehicle.transform.location)
-            self.occupancy_map.visualize()
+            self.occupancy_map.update(points)
+            self.occupancy_map.visualize(self.vehicle.transform.location)
+            # print(self.vehicle.transform)
+            # cv2.imshow("mask", self.obstacle_detector.curr_mask)
+            # cv2.waitKey(1)
+            # # self.occupancy_map.visualize()
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()
-            #     self.pcd.points = o3d.utility.Vector3dVector(points)
+            #     self.pcd.points = o3d.utility.Vector3dVector(grounds)
             #     self.vis.add_geometry(self.pcd)
             #     self.vis.poll_events()
             #     self.vis.update_renderer()
             #     self.points_added = True
             # else:
-            #     self.pcd.points = o3d.utility.Vector3dVector(points)
+            #     self.pcd.points = o3d.utility.Vector3dVector(grounds)
             #     self.vis.update_geometry(self.pcd)
             #     self.vis.poll_events()
             #     self.vis.update_renderer()

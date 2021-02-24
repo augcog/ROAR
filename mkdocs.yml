@@ -12,13 +12,22 @@ nav:
             - Jetson Bridge: code_documentations/Bridges/jetson_bridge.md
         - ROAR:
             - Agent Module: code_documentations/ROAR/agent_module.md
+            - Configurations: code_documentations/ROAR/config.md
             - Control Module: code_documentations/ROAR/controller_module.md
             - Perception Module: code_documentations/ROAR/perception_module.md
             - Planning Module: code_documentations/ROAR/planning_module.md
             - Utilities Module: code_documentations/ROAR/utilities_module.md
             - Visualization Module: code_documentations/ROAR/visualization.md
         - ROAR Simulation:
-            - Carla Client: code_documentations/ROAR_Sim/ccu.md
+            - Carla Client:
+                - Carla Runner: code_documentations/ROAR_Sim/carla_client.md
+                - Util:
+                  - Camera Manager: code_documentations/ROAR_Sim/camera.md
+                  - Hud: code_documentations/ROAR_Sim/hud.md
+                  - Keyboard Controls: code_documentations/ROAR_Sim/kbc.md
+                  - Sensors: code_documentations/ROAR_Sim/sensors.md
+                  - Utilities: code_documentations/ROAR_Sim/util.md
+                  - World: code_documentations/ROAR_Sim/world.md
             - Configurations: code_documentations/ROAR_Sim/conf.md
         - Runner Sim: code_documentations/runner_sim.md
         - Runner Competition Evaluator: code_documentations/runcompeval.md

@@ -9,5 +9,10 @@ pydantic==1.5.1
 pygame==1.9.6
 pyserial==3.4
 scipy==1.5.2
-sympy
-deprecated
+sympy~=1.7.1
+deprecated~=1.2.11
+opencv-python~=4.4.0.42
+plotly~=4.14.3
+pyrealsense2~=2.38.1.2225
+pillow~=8.1.0
+prettytable~=2.0.0
