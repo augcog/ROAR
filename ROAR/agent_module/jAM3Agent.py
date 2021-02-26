@@ -35,7 +35,7 @@ class JAM3Agent(Agent):
 
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
-            closeness_threshold=1)
+            closeness_threshold=.5)
         self.logger.debug(
             f"Waypoint Following Agent Initiated. Reading f"
             f"rom {self.route_file_path.as_posix()}")

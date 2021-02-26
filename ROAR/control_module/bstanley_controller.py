@@ -93,6 +93,7 @@ class BLatStanley_controller(Controller):
         self.steering_boundary = steering_boundary
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
+        self.waypointrecord=[]
 
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float: #*********** aka stanley_control(state, cx, cy, cyaw, last_target_idx)
@@ -114,7 +115,7 @@ class BLatStanley_controller(Controller):
         vel = self.agent.vehicle.velocity
         veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
 
-        k = 1.9 #control gain
+        k = .5 #control gain
 
         # veh_loc = self.agent.vehicle.transform.location
 
@@ -123,11 +124,11 @@ class BLatStanley_controller(Controller):
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
 
         lat_control = float(
-                    np.clip((head_err + np.arctan(k * pos_err/(veh_spd+.3)))/60, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip((head_err + (np.arctan(k * pos_err/(veh_spd+.3))))/60, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
 
-        print('lat_control = ', lat_control)
-        print('-----------------------------------------')
+        # print('lat_control = ', lat_control)
+        # print('-----------------------------------------')
 
         return lat_control
 
@@ -205,14 +206,15 @@ class BLatStanley_controller(Controller):
         vf_npath2 = np.matmul(gvw, npath2)
 
         # ***
-        print ('theta_deg = ',theta_deg)
-        print ('vf_npath = ',vf_npath)
-        print('vf_npath1 = ', vf_npath1)
-        print('vf_npath2 = ', vf_npath2)
-        print ('Gvw = ', gvw)
-        # print ('Gvw inv = ', gwv)
-        print('vehicle frame next waypoint = ', vf_nextwp)
-        print('next waypoint = ', nextwp)
+        # print ('theta_deg = ',theta_deg)
+        # print ('vf_npath = ',vf_npath)
+        # print('vf_npath1 = ', vf_npath1)
+        # print('vf_npath2 = ', vf_npath2)
+        # print ('Gvw = ', gvw)
+        # # print ('Gvw inv = ', gwv)
+        # print('vehicle frame next waypoint = ', vf_nextwp)
+        # print('next waypoint = ', nextwp)
+        # print('next waypoint object',next_waypoint)
         # print ('next waypoint = ', next_waypoint.location)
         '''
         # *** get in vehicle reference ***
@@ -270,7 +272,17 @@ class BLatStanley_controller(Controller):
         path_pitch = path_pitch_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
-        head_err = path_pitch - veh_pitch
+        hd_err = path_pitch - veh_pitch
+        head_err = 0
+        if hd_err > 180:
+            head_err = hd_err-360
+        elif hd_err < -180:
+            head_err = hd_err +360
+        else:
+            head_err = hd_err
+
+
+
         # head_err = vf_path_pitch - theta_deg
 
         print('--------------------------------------')
@@ -279,8 +291,14 @@ class BLatStanley_controller(Controller):
         print('veh pitch = ', veh_pitch)
         # print('**pitch to path** = ', pitch_to_path)
         # print('**dpathhead_ang**',dpathhead_ang)
-        print('veh x = ', veh_x)
-        print('veh z = ', veh_z)
+        # print('veh x = ', veh_x)
+        # print('veh z = ', veh_z)
+
+        print(f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}")
+        datarow=f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}"
+        self.waypointrecord.append(datarow.split(","))
+
+
         # # print('front x = ', frontx)
         # # print('front z = ', frontz)
         # print('path x = ', path_x)
@@ -293,11 +311,13 @@ class BLatStanley_controller(Controller):
         # print('next path z2 = ', nz2)
         #
         # print('**distance to path = ', dpath)
-        # print('path pitch = ', path_pitch)
+        print('path pitch = ', path_pitch)
         # print('path_pitch_rad = ', path_pitch_rad)
         # # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
         # # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
         # # print('path queue 20 = ', self.agent.local_planner.way_points_queue[17])
+        print('** hd err **', hd_err)
+
         print('** heading error **', head_err)
         print('vf cross track error',vf_cte)
         # # print('_dot err', _dot)
