@@ -1,12 +1,7 @@
-from ROAR.perception_module.detector import Detector
 import logging
 import open3d as o3d
 import numpy as np
-import cv2
-import time
-from typing import Optional
-from ROAR.perception_module.point_cloud_detector import PointCloudDetector
-from ROAR.utilities_module.data_structures_models import Transform, Location, Rotation
+from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
 
 
 class GroundPlanePointCloudDetector(PointCloudDetector):
@@ -56,6 +51,7 @@ class GroundPlanePointCloudDetector(PointCloudDetector):
         return ground
 
     def calculate_world_cords(self):
+        """Converts depth data from the Front Depth Camera to World coordinates."""
         depth_img = self.agent.front_depth_camera.data.copy()
 
         coords = np.where(depth_img < self.max_detectable_distance)

@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial import distance
 from typing import Union, Optional
 from typing import List
-
+from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
 class Location(BaseModel):
     x: float = Field(
@@ -36,8 +36,15 @@ class Location(BaseModel):
     def __str__(self):
         return f"x: {self.x:.3}, y: {self.y:.3}, z: {self.z:.3}"
 
+    def __truediv__(self, scalar):
+        return Location(x=self.x / scalar, y=self.y / scalar, z=self.z / scalar)
+
     def to_array(self) -> np.array:
         return np.array([self.x, self.y, self.z])
+
+    @staticmethod
+    def from_array(array):
+        return Location(x=array[0], y=array[1], z=array[2])
 
 
 class Rotation(BaseModel):
@@ -51,6 +58,22 @@ class Rotation(BaseModel):
     def to_array(self) -> np.array:
         return np.array([self.pitch, self.yaw, self.roll])
 
+    @staticmethod
+    def from_array(array):
+        return Rotation(pitch=array[0], yaw=array[1], roll=array[2])
+
+    def __add__(self, other):
+        """"""
+        return Rotation(pitch=self.pitch + other.pitch, yaw=self.yaw + other.yaw, roll=self.roll + other.roll)
+
+    def __truediv__(self, scalar):
+        return Rotation(pitch=self.pitch / scalar, yaw=self.yaw / scalar, roll=self.roll / scalar)
+
+    def __rmul__(self, scalar):
+        return Rotation(pitch=self.pitch * scalar, yaw=self.yaw * scalar, roll=self.roll * scalar)
+
+    __mul__ = __rmul__
+
 
 class Transform(BaseModel):
     location: Location = Field(default=Location(x=0, y=0, z=0))
@@ -63,30 +86,21 @@ class Transform(BaseModel):
 
         Returns:
             Extrinsics matrix
+
+        [R, T]
+        [0 1]
         """
         location = self.location
         rotation = self.rotation
-        yaw, pitch, roll = rotation.yaw, rotation.pitch, rotation.roll
-        c_y = np.cos(np.radians(yaw))
-        s_y = np.sin(np.radians(yaw))
-        c_r = np.cos(np.radians(roll))
-        s_r = np.sin(np.radians(roll))
-        c_p = np.cos(np.radians(pitch))
-        s_p = np.sin(np.radians(pitch))
+
+        roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
+        rotation_matrix = rotation_matrix_from_euler(roll=roll, pitch=pitch, yaw=yaw)
 
         matrix = np.identity(4)
         matrix[0, 3] = location.x
         matrix[1, 3] = location.y
         matrix[2, 3] = location.z
-        matrix[0, 0] = c_p * c_y
-        matrix[0, 1] = c_y * s_p * s_r - s_y * c_r
-        matrix[0, 2] = -c_y * s_p * c_r - s_y * s_r
-        matrix[1, 0] = s_y * c_p
-        matrix[1, 1] = s_y * s_p * s_r + c_y * c_r
-        matrix[1, 2] = -s_y * s_p * c_r + c_y * s_r
-        matrix[2, 0] = s_p
-        matrix[2, 1] = -c_p * s_r
-        matrix[2, 2] = c_p * c_r
+        matrix[0:3, 0:3] = rotation_matrix
         return matrix
 
     def __str__(self):
@@ -94,6 +108,26 @@ class Transform(BaseModel):
 
     def record(self):
         return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
+
+    def to_array(self) -> np.ndarray:
+        return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch,
+                         self.rotation.yaw])
+
+
+    @staticmethod
+    def from_array(array):
+        return Transform(location=Location.from_array(array[:3]), rotation=Rotation.from_array(array[3:]))
+
+    def __add__(self, other):
+        return Transform.from_array(self.to_array() + other.to_array())
+
+    def __truediv__(self, scalar):
+        return Transform.from_array(self.to_array() / scalar)
+
+    def __rmul__(self, scalar):
+        return Transform.from_array(self.to_array() * scalar)
+
+    __mul__ = __rmul__
 
 
 class Vector3D(BaseModel):
@@ -142,6 +176,9 @@ class ViveTrackerData(BaseModel):
     velocity: Vector3D = Field()
     tracker_name: str = Field(default="Tracker")
 
+class TrackingData(BaseModel):
+    transform: Transform = Field(default=Transform())
+    velocity: Vector3D = Field()
 
 class SensorsData(BaseModel):
     front_rgb: Union[RGBData, None] = Field(default=None)

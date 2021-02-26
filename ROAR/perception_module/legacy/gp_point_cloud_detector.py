@@ -1,5 +1,5 @@
 from typing import Any
-from ROAR.perception_module.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
+from ROAR.perception_module.legacy.ground_plane_point_cloud_detector import GroundPlanePointCloudDetector
 import cv2
 import numpy as np
 import open3d as o3d
@@ -44,6 +44,7 @@ class GP_pointcloud_detector(GroundPlanePointCloudDetector):
             cv2.waitKey(1)
 
     def calculate_world_cords(self):
+        """Converts depth data from the Front Depth Camera to World coordinates."""
         depth_img = self.agent.front_depth_camera.data.copy()
 
         coords = np.where(depth_img < 0.9)

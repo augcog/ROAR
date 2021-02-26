@@ -16,7 +16,7 @@ class PIDAgent(Agent):
         self.target_speed = target_speed
         self.logger = logging.getLogger("PID Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(-1, 1))
+        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
 
@@ -36,7 +36,7 @@ class PIDAgent(Agent):
         super(PIDAgent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
-        if self.local_planner.is_done():
+        if self.is_done:
             control = VehicleControl()
             self.logger.debug("Path Following Agent is Done. Idling.")
         else:
