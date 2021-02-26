@@ -5,7 +5,10 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 # from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
 from ROAR.agent_module.pid_agent import PIDAgent
 # from ROAR.agent_module.jetson_pure_pursuit_agent import PurePursuitAgent
-from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
+# from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
+from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
+from ROAR.agent_module.lane_detection_agent import LaneDetectionAgent
+from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from pathlib import Path
 import logging
 import warnings
@@ -14,7 +17,7 @@ import os
 import json
 import sys
 import serial
-
+import argparse
 
 
 def main():
@@ -26,7 +29,7 @@ def main():
             prepare(jetson_config=jetson_config)
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
-        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = OccupancyMapAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
         jetson_runner.start_game_loop(use_manual_control=False)
     except Exception as e:
@@ -36,7 +39,7 @@ def main():
 def prepare(jetson_config: JetsonConfig):
     if 'win' in sys.platform:
         # windows, just detect whether arduino exist on COM4
-        s = serial.Serial("COM4")
+        s = serial.Serial(jetson_config.win_serial_port)
         status = s.isOpen()
     else:
         # assume that this is going to be a unix based system
@@ -55,12 +58,25 @@ def allow_dev_access(pwd):
     return True if p == 0 else False
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s - %(name)s '
-                               '- %(levelname)s - %(message)s',
-                        level=logging.DEBUG)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", default=False, help="debug flag", type=str2bool)
+    args = parser.parse_args()
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        datefmt="%H:%M:%S", level=logging.DEBUG if args.debug is True else logging.INFO)
+    logging.getLogger("Vive Tracker Client [tracker_1]").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
-
     main()

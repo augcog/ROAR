@@ -23,6 +23,8 @@ class JSONWaypointGeneratingAgent(Agent):  #added n to "GeneratigAgent".  below 
                                                          vehicle=vehicle)
         try:
             self.gpd.run_in_series()
+            ground_points = self.kwargs["ground_points"]
+            # using the next waypoint to find the line
 
         except Exception as e:
             self.logger.error(e)

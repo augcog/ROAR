@@ -13,7 +13,7 @@ from ROAR.planning_module.local_planner.local_planner import LocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 import threading
-
+from typing import Dict, Any
 
 class Agent(ABC):
     """
@@ -24,7 +24,7 @@ class Agent(ABC):
     """
 
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, imu: Optional[IMUData] = None,
-                 should_init_default_cam=True):
+                 should_init_default_cam=True, **kwargs):
         """
         Initialize cameras, output folder, and logging utilities
 
@@ -34,14 +34,13 @@ class Agent(ABC):
             imu: IMU data (will be deprecated to be passed in like this)
         """
         self.logger = logging.getLogger(__name__)
-
         self.vehicle = vehicle
         self.agent_settings = agent_settings
         self.front_rgb_camera = agent_settings.front_rgb_cam
         self.front_depth_camera = agent_settings.front_depth_cam
         self.rear_rgb_camera = agent_settings.rear_rgb_cam
         self.imu = imu
-
+        self.is_done = False
         self.output_folder_path = \
             Path(self.agent_settings.output_data_folder_path)
         self.front_depth_camera_output_folder_path = \
@@ -51,6 +50,7 @@ class Agent(ABC):
         self.rear_rgb_camera_output_folder_path = \
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
+        self.transform_output_folder_path = self.output_folder_path / "transform"
 
         self.local_planner: Optional[LocalPlanner] = None
         self.behavior_planner: Optional[BehaviorPlanner] = None
@@ -63,6 +63,17 @@ class Agent(ABC):
 
         if should_init_default_cam:
             self.init_cam()
+
+        if self.should_save_sensor_data:
+            self.front_depth_camera_output_folder_path.mkdir(parents=True,
+                                                             exist_ok=True)
+            self.front_rgb_camera_output_folder_path.mkdir(parents=True,
+                                                           exist_ok=True)
+            self.rear_rgb_camera_output_folder_path.mkdir(parents=True,
+                                                          exist_ok=True)
+            self.transform_output_folder_path.mkdir(parents=True,
+                                                    exist_ok=True)
+        self.kwargs: Dict[str, Any] = kwargs  # additional info
 
     def add_threaded_module(self, module: Module):
         if module.threaded:
@@ -94,14 +105,6 @@ class Agent(ABC):
                 self.rear_rgb_camera.calculate_default_intrinsics_matrix()
             )
 
-        if self.should_save_sensor_data:
-            self.front_depth_camera_output_folder_path.mkdir(parents=True,
-                                                             exist_ok=True)
-            self.front_rgb_camera_output_folder_path.mkdir(parents=True,
-                                                           exist_ok=True)
-            self.rear_rgb_camera_output_folder_path.mkdir(parents=True,
-                                                          exist_ok=True)
-
     @abstractmethod
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
@@ -121,6 +124,8 @@ class Agent(ABC):
         self.sync_data(sensors_data=sensors_data, vehicle=vehicle)
         if self.should_save_sensor_data:
             self.save_sensor_data()
+        if self.local_planner is not None and self.local_planner.is_done():
+            self.is_done = True
         return VehicleControl()
 
     def sync_data(self, sensors_data: SensorsData, vehicle: Vehicle) -> None:
@@ -170,20 +175,38 @@ class Agent(ABC):
             None
         """
         try:
-            cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                         f"frame_{self.time_counter}.png").as_posix(),
-                        self.front_rgb_camera.data)
-
-            np.save((self.front_depth_camera_output_folder_path /
-                     f"frame_{self.time_counter}").as_posix(),
-                    self.front_depth_camera.data)
-
-            cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                         f"frame_{self.time_counter}.png").as_posix(),
-                        self.rear_rgb_camera.data)
+            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+                cv2.imwrite((self.front_rgb_camera_output_folder_path /
+                             f"frame_{self.time_counter}.png").as_posix(),
+                            self.front_rgb_camera.data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
+        try:
+            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+                np.save((self.front_depth_camera_output_folder_path /
+                         f"frame_{self.time_counter}").as_posix(),
+                        self.front_depth_camera.data)
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        try:
+            if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
+                cv2.imwrite((self.rear_rgb_camera_output_folder_path /
+                             f"frame_{self.time_counter}.png").as_posix(),
+                            self.rear_rgb_camera.data)
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        try:
+            transform_file = (Path(self.transform_output_folder_path) / f"frame_{self.time_counter}.txt").open('w')
+            transform_file.write(self.vehicle.transform.record())
+            transform_file.close()
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
 
     def start_module_threads(self):
         for module in self.threaded_modules:

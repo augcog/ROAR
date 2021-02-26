@@ -20,6 +20,10 @@ class VehicleControl(BaseModel):
         return self.clamp(self.throttle, -1, 1)
 
     def get_steering(self) -> float:
+        """
+        Cap it between -1  and 1
+        :return:
+        """
         return self.clamp(self.steering, -1, 1)
 
 

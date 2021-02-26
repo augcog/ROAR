@@ -14,5 +14,6 @@ class Detector(Module):
     def run_in_series(self, **kwargs) -> Any:
         return None
 
+    @abstractmethod
     def run_in_threaded(self, **kwargs):
         pass

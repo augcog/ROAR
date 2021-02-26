@@ -34,5 +34,9 @@ class LocalPlanner(AbstractPlanner):
         self.way_points_queue = deque()
 
     @abstractmethod
+    def is_done(self):
+        return False
+
+    @abstractmethod
     def run_in_series(self) -> VehicleControl:
         return VehicleControl()

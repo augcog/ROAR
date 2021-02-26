@@ -1,3 +1,9 @@
+import warnings
+import logging
+
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+logging.getLogger("numpy").setLevel(logging.ERROR)
+warnings.filterwarnings('ignore')
 import logging
 import numpy as np
 import warnings
@@ -11,8 +17,11 @@ from ROAR.agent_module.jAM1Agent import JAM1Agent
 
 from ROAR.agent_module.special_agents.json_waypoint_generating_agent import JSONWaypointGeneratingAgent
 from ROAR.agent_module.pid_agent import PIDAgent
+from ROAR.agent_module.lqr_agent import LQRAgent
+
 
 def main():
+    """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR_Sim/configurations/agent_configuration.json"))
     carla_config = CarlaConfig.parse_file(Path("./ROAR_Sim/configurations/configuration.json"))
 
@@ -22,6 +31,7 @@ def main():
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
+
         #agent = JSONWaypointGeneratingAgent(vehicle=my_vehicle, agent_settings=agent_config)
 
         #agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
@@ -29,6 +39,7 @@ def main():
 
 
         carla_runner.start_game_loop(agent=agent, use_manual_control=False)#*******True for manual control, False auto
+        #carla_runner.start_game_loop(agent=agent, use_manual_control=True)
 
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
@@ -37,8 +48,8 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s - %(name)s '
-                               '- %(levelname)s - %(message)s',
+    logging.basicConfig(format='%(levelname)s - %(asctime)s - %(name)s '
+                               '- %(message)s',
                         level=logging.DEBUG)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")

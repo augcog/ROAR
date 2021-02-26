@@ -47,8 +47,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
     def set_mission_plan(self) -> None:
         """
-        clears current waypoints, and reset mission plan from start
-        I am simply transfering the mission plan into my waypoint queue.
+        Clears current waypoints, and reset mission plan from start
+        I am simply transferring the mission plan into my waypoint queue.
         Assuming that this current run will run all the way to the end
 
         Returns:
@@ -118,9 +118,10 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
         target_waypoint = self.way_points_queue[0]
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        # self.logger.debug(f"\nCurr Trans: {self.agent.vehicle.transform}\n"
-        #                   f"Target loc: {target_waypoint}\n"
-        #                   f"control:    {control} | curr_speed: {Vehicle.get_speed(self.agent.vehicle)}")
+        # self.logger.debug(f"\n"
+        #                   f"Curr Transform: {self.agent.vehicle.transform}\n"
+        #                   f"Target Location: {target_waypoint.location}\n"
+        #                   f"Control: {control} | Speed: {Vehicle.get_speed(self.agent.vehicle)}\n")
         return control
 
     def set_closeness_threhold(self, config: dict):

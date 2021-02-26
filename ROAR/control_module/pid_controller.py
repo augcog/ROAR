@@ -63,6 +63,7 @@ class LongPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+        # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
@@ -72,7 +73,7 @@ class LongPIDController(Controller):
 
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
-            _de = abs((self._error_buffer[-2] - self._error_buffer[-1])) / self._dt
+            _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
             _ie = sum(self._error_buffer) * self._dt
         else:
             _de = 0.0
@@ -119,33 +120,42 @@ class LatPIDController(Controller):
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+        """
+        Calculates a vector that represent where you are going.
+        Args:
+            next_waypoint ():
+            **kwargs ():
+
+        Returns:
+            lat_control
+        """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location
         v_end = v_begin + Location(
             x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-            y=v_begin.y,
+            y=0,
             z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
         )
-        v_vec = np.array([v_end.x - v_begin.x,v_end.y - v_begin.y, v_end.z - v_begin.z])
-
+        v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
+        v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
         # calculate error projection
         w_vec = np.array(
             [
                 next_waypoint.location.x - v_begin.x,
-                next_waypoint.location.y - v_begin.y,
+                0,
                 next_waypoint.location.z - v_begin.z,
             ]
         )
         _dot = math.acos(
             np.clip(
-                np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
+                np.dot(v_vec, w_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
                 -1.0,
                 1.0,
             )
         )
         _cross = np.cross(v_vec, w_vec)
         if _cross[1] > 0:
-            _dot *= -1.0
+            _dot *= -1
         self._error_buffer.append(_dot)
         if len(self._error_buffer) >= 2:
             _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
