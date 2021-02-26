@@ -10,7 +10,7 @@ from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
 
 
-class JAM1Agent(Agent):
+class JAM1Agent_old(Agent):
     def __init__(self, target_speed=120, **kwargs):
         super().__init__(**kwargs)
         self.target_speed = target_speed
@@ -33,8 +33,8 @@ class JAM1Agent(Agent):
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:
-        super(JAM1Agent, self).run_step(vehicle=vehicle,
-                                       sensors_data=sensors_data)
+        super(JAM1Agent_old, self).run_step(vehicle=vehicle,
+                                            sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         if self.local_planner.is_done():
             control = VehicleControl()
