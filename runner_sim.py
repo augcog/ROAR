@@ -21,10 +21,9 @@ from ROAR.agent_module.jAM3AgentOld import JAM3Agent_old
 from ROAR.agent_module.jAM3Agent import JAM3Agent
 
 from ROAR.agent_module.special_agents.json_waypoint_generating_agent import JSONWaypointGeneratingAgent
+from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.lqr_agent import LQRAgent
-
-
 
 def main():
     """Starts game loop"""
@@ -57,7 +56,6 @@ def main():
         np.save("James_waypoints", np.array(waypointrecord))
 
         #carla_runner.start_game_loop(agent=agent, use_manual_control=True)
-
 
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
