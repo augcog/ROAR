@@ -105,31 +105,25 @@ class LatPIDController(Controller):
             lat_control
         """
         # calculate a vector that represent where you are going
-        v_begin = self.agent.vehicle.transform.location
-        v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-            y=0,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-        )
-        v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
-        v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
+        v_begin = self.agent.vehicle.transform.location.to_array()
+        direction_vector = np.array([np.cos(np.radians(self.agent.vehicle.transform.rotation.yaw)),
+                                     0,
+                                     np.sin(np.radians(self.agent.vehicle.transform.rotation.yaw))])
+        v_end = v_begin + direction_vector
+
+        v_vec = np.array([v_end[0] - v_begin[0], 0, - (v_end[2] - v_begin[2])])
         # calculate error projection
         w_vec = np.array(
             [
-                next_waypoint.location.x - v_begin.x,
+                next_waypoint.location.x - v_begin[0],
                 0,
-                next_waypoint.location.z - v_begin.z,
+                next_waypoint.location.z - v_begin[2],
             ]
         )
-        _dot = math.acos(
-            np.clip(
-                np.dot(v_vec, w_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
-                -1.0,
-                1.0,
-            )
-        )
+
+        _dot = math.acos(np.clip(np.dot(v_vec, w_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)), -1.0, 1.0))
         _cross = np.cross(v_vec, w_vec)
-        if _cross[1] > 0:
+        if _cross[1] < 0:
             _dot *= -1
         self._error_buffer.append(_dot)
         if len(self._error_buffer) >= 2:
@@ -144,4 +138,5 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
+        print(f"lat_control: {round(lat_control, 3)} | v_vec = {v_vec} | w_vec = {w_vec}")
         return lat_control
