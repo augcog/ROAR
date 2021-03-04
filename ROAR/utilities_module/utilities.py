@@ -39,7 +39,7 @@ def img_to_world(scaled_depth_image: np.ndarray,
     assert intrinsics_matrix.shape == (3, 3), f"Intrinsics matrix has incorrect shape [{intrinsics_matrix.shape}]"
     assert veh_world_matrix.shape == (4, 4), f"Intrinsics matrix has incorrect shape [{intrinsics_matrix.shape}]"
     assert cam_veh_matrix.shape == (4, 4), f"Intrinsics matrix has incorrect shape [{intrinsics_matrix.shape}]"
-
+    # extrinsics @ inv(K) @ [u, v,1] = [X,Y,Z]
     k_inv = np.linalg.inv(intrinsics_matrix)
     raw_p3d = k_inv @ scaled_depth_image
     ones = np.ones(shape=np.shape(raw_p3d)[1])
@@ -87,7 +87,7 @@ def rotation_matrix_from_euler(roll: float, pitch: float, yaw: float) -> np.ndar
     """
     Takes in roll pitch yaw and compute rotation matrix using the order of
 
-    R = R_yaw @ R_pitch @ R_roll
+    R = R_yaw * R_pitch * R_roll
 
     http://planning.cs.uiuc.edu/node104.html
 
@@ -99,26 +99,41 @@ def rotation_matrix_from_euler(roll: float, pitch: float, yaw: float) -> np.ndar
     Returns:
         3 x 3 array rotation matrix
     """
-    c_y = np.cos(np.radians(yaw))
-    s_y = np.sin(np.radians(yaw))
-    c_r = np.cos(np.radians(roll))
-    s_r = np.sin(np.radians(roll))
-    c_p = np.cos(np.radians(pitch))
-    s_p = np.sin(np.radians(pitch))
+    alpha, beta, gamma = np.radians(yaw), np.radians(pitch), np.radians(roll)
+    c_a = np.cos(alpha)
+    s_a = np.sin(alpha)
+    c_b = np.cos(beta)
+    s_b = np.sin(beta)
+    c_y = np.cos(gamma)
+    s_y = np.sin(gamma)
 
-    R_roll = np.array([
-        [1, 0, 0],
-        [0, c_r, -s_r],
-        [0, s_r, c_r]
-    ])
-    R_pitch = np.array([
-        [c_p, 0, s_p],
-        [0, 1, 0],
-        [-s_p, 0, c_p]
-    ])
-    R_yaw = np.array([
-        [c_y, -s_y, 0],
-        [s_y, c_y, 0],
-        [0, 0, 1]
-    ])
-    return R_yaw @ R_pitch @ R_roll
+    return np.array([[c_a * c_b, c_a * s_b * s_y - s_a * c_y, c_a*s_b*c_y+s_a*s_y],
+                     [s_a*c_b, s_a*s_b*s_y+c_a*c_y, s_a*s_b*c_y-c_a*s_y],
+                     [-s_b, c_b*s_y, c_b*c_y]])
+
+
+
+
+    # c_y = np.cos(alpha)
+    # s_y = np.sin(alpha)
+    # c_r = np.cos(gamma)
+    # s_r = np.sin(gamma)
+    # c_p = c_b = np.cos(beta)
+    # s_p = np.sin(beta)
+    #
+    # R_roll = np.array([
+    #     [1, 0, 0],
+    #     [0, c_r, -s_r],
+    #     [0, s_r, c_r]
+    # ])
+    # R_pitch = np.array([
+    #     [c_p, 0, s_p],
+    #     [0, 1, 0],
+    #     [-s_p, 0, c_p]
+    # ])
+    # R_yaw = np.array([
+    #     [c_y, -s_y, 0],
+    #     [s_y, c_y, 0],
+    #     [0, 0, 1]
+    # ])
+    # return R_yaw @ R_pitch @ R_roll

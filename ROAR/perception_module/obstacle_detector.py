@@ -89,7 +89,7 @@ class ObstacleDetector(Detector):
                 obstacle_coords = xyz[obstacle_mask == 1]
                 vehicle_location = self.agent.vehicle.transform.location.to_array()
                 dists = np.linalg.norm(obstacle_coords - vehicle_location, axis=1)
-                obstacle_coords = obstacle_coords[dists < 50]  # consider doing this filter early on
+                obstacle_coords = obstacle_coords[dists < 100]  # consider doing this filter early on
 
                 self.agent.kwargs["obstacle_coords"] = obstacle_coords
 

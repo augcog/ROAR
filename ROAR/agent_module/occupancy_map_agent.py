@@ -31,8 +31,8 @@ class OccupancyMapAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=2000,
-                                              world_coord_resolution=10,
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
+                                              world_coord_resolution=5,
                                               occu_prob=0.9)  # 1 m = 100 cm
         self.add_threaded_module(DepthToPointCloudDetector(agent=self,
                                                            should_compute_global_pointcloud=True,
@@ -51,6 +51,7 @@ class OccupancyMapAgent(Agent):
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
         if self.kwargs.get("obstacle_coords", None) is not None:
+            print(self.vehicle.transform)
             points = self.kwargs["obstacle_coords"]
             self.occupancy_map.update(points)
             self.occupancy_map.visualize(self.vehicle.transform.location)
