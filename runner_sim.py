@@ -14,7 +14,7 @@ from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 # from ROAR.agent_module.point_cloud_agent import PointCloudAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
-
+from ROAR.agent_module.pid_agent import PIDAgent
 
 def main():
     """Starts game loop"""
@@ -26,8 +26,8 @@ def main():
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-        agent = WaypointGeneratigAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
+        agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()
