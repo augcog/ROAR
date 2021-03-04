@@ -35,34 +35,12 @@ class PIDController(Controller):
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
                                                           target_speed=kwargs.get("target_speed", self.max_speed))
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
-       # print(        self.agent.vehicle.transform.rotation.roll)
-        print('steering', steering)
-
-        veh_x = self.agent.vehicle.transform.location.x
-        veh_y = self.agent.vehicle.transform.location.y
-        veh_z = self.agent.vehicle.transform.location.z
-
-        veh_yaw = self.agent.vehicle.transform.rotation.yaw
-        veh_roll = self.agent.vehicle.transform.rotation.roll
-        veh_pitch = self.agent.vehicle.transform.rotation.pitch
-
-        print('pos x: ', veh_x)
-        print('pos y: ', veh_y)
-        print('pos z: ', veh_z)
-
-        print('yaw: ', veh_yaw)
-        print('roll: ', veh_roll)
-        print('pitch: ', veh_pitch)
-
-
-
-
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
-        k_p, k_d, k_i = .03, 0.9, 0
+        k_p, k_d, k_i = 1, 0, 0
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
@@ -101,28 +79,6 @@ class LongPIDController(Controller):
             _ie = 0.0
         output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
                                self.throttle_boundary[1]))
-        print(self.agent.vehicle.transform.rotation.roll)
-        if abs(self.agent.vehicle.transform.rotation.roll) <= .55:
-            output = 1
-            if abs(self.agent.vehicle.transform.rotation.roll) > .55:
-                output = 0
-                if abs(self.agent.vehicle.transform.rotation.roll) > .6:
-                    output = .8
-                    if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
-                        output = .7
-                        if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
-                            output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
-                            if abs(self.agent.vehicle.transform.rotation.roll) > 7:
-                                output = 0
-                    #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
-                    #         output = .7
-                    #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
-                    #             output = .4
-                    #             if abs(self.agent.vehicle.transform.rotation.roll) > 4:
-                    #                 output = .2
-                    #                 if abs(self.agent.vehicle.transform.rotation.roll) > 6:
-                    #                     output = 0
-
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
               #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
@@ -134,9 +90,7 @@ class LatPIDController(Controller):
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
         self.config = config
-        #self.steering_boundary = steering_boundary
-        self.steering_boundary = (-.1, .1)
-
+        self.steering_boundary = steering_boundary
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
 
@@ -146,7 +100,6 @@ class LatPIDController(Controller):
         Args:
             next_waypoint ():
             **kwargs ():
-
         Returns:
             lat_control
         """
@@ -185,11 +138,9 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        print('_dot PIDcontroller = ', _dot)
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
         lat_control = float(
             np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        print('lat_control = steering?', lat_control)
         return lat_control

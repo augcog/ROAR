@@ -161,17 +161,31 @@ class BLatStanley_controller(Controller):
         veh_roll = self.agent.vehicle.transform.rotation.roll
         veh_pitch = self.agent.vehicle.transform.rotation.pitch
 
+        print('pos x: ', veh_x)
+        print('pos y: ', veh_y)
+        print('pos z: ', veh_z)
+
+        print('yaw: ', veh_yaw)
+        print('pitch: ', veh_pitch)
+        print('roll: ', veh_roll)
+
+
 
         # ************* convert points to vehicle reference *****************
 
-        theta_deg = veh_pitch+90
+        theta_deg = veh_yaw
         theta_rad = np.radians(theta_deg)
-        gvw3d=np.array([[np.cos (theta_rad), 0, np.sin (theta_rad)],
-                     [0,          1,        0 ],
-                     [-np.sin (theta_rad), 0, np.cos (theta_rad)]])
-        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
-                        [np.sin(theta_rad), np.cos(theta_rad), veh_z],
+        # gvw3d=np.array([[np.cos (theta_rad), 0, np.sin (theta_rad)],
+        #              [0,          1,        0 ],
+        #              [-np.sin (theta_rad), 0, np.cos (theta_rad)]])
+        # gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
+        #                 [np.sin(theta_rad), np.cos(theta_rad), veh_z],
+        #                 [0, 0, 1]])
+
+        gwv = np.array([[np.cos(theta_rad), np.sin(theta_rad), veh_x],
+                        [-np.sin(theta_rad), np.cos(theta_rad), veh_z], # neg veh_z?
                         [0, 0, 1]])
+
         gvw = np.linalg.inv(gwv)
         # *** define points in vehicle reference frame ***
 
@@ -180,8 +194,13 @@ class BLatStanley_controller(Controller):
         fz = -.5 * wb
 
         # *** next waypoint ***
+
         nextwp = np.transpose(np.array([next_waypoint.location.x, next_waypoint.location.z, 1]))
         vf_nextwp = np.matmul(gvw, nextwp)
+
+
+        # nextwp = np.transpose(np.array([next_waypoint.location.x, next_waypoint.location.z, 1]))
+        # vf_nextwp = np.matmul(gvw, nextwp)
 
         # *** next points on path
         #*** averaging path points for smooth path vector ***
@@ -212,8 +231,8 @@ class BLatStanley_controller(Controller):
         # print('vf_npath2 = ', vf_npath2)
         # print ('Gvw = ', gvw)
         # # print ('Gvw inv = ', gwv)
-        # print('vehicle frame next waypoint = ', vf_nextwp)
-        # print('next waypoint = ', nextwp)
+        print('vehicle frame next waypoint = ', vf_nextwp)
+        print('next waypoint = ', nextwp)
         # print('next waypoint object',next_waypoint)
         # print ('next waypoint = ', next_waypoint.location)
         '''
@@ -321,6 +340,8 @@ class BLatStanley_controller(Controller):
         print('** heading error **', head_err)
         print('vf cross track error',vf_cte)
         # # print('_dot err', _dot)
+        # vf_cte=0  # check if goes straight
+        # head_err=0
 
         return vf_cte, head_err
 

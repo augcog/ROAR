@@ -54,9 +54,6 @@ class PIDController(Controller):
         print('roll: ', veh_roll)
         print('pitch: ', veh_pitch)
 
-
-
-
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
