@@ -124,7 +124,7 @@ class BLatStanley_controller(Controller):
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
 
         lat_control = float(
-                    np.clip((head_err + (np.arctan(k * pos_err/(veh_spd+.3))))/60, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip((.02*head_err + (np.arctan(k * pos_err/(veh_spd+.3))))/60, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
 
         # print('lat_control = ', lat_control)
@@ -173,7 +173,7 @@ class BLatStanley_controller(Controller):
 
         # ************* convert points to vehicle reference *****************
 
-        theta_deg = veh_yaw
+        theta_deg = -veh_yaw
         theta_rad = np.radians(theta_deg)
         # gvw3d=np.array([[np.cos (theta_rad), 0, np.sin (theta_rad)],
         #              [0,          1,        0 ],
@@ -182,8 +182,8 @@ class BLatStanley_controller(Controller):
         #                 [np.sin(theta_rad), np.cos(theta_rad), veh_z],
         #                 [0, 0, 1]])
 
-        gwv = np.array([[np.cos(theta_rad), np.sin(theta_rad), veh_x],
-                        [-np.sin(theta_rad), np.cos(theta_rad), veh_z], # neg veh_z?
+        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
+                        [np.sin(theta_rad), np.cos(theta_rad), veh_z],
                         [0, 0, 1]])
 
         gvw = np.linalg.inv(gwv)
@@ -258,7 +258,9 @@ class BLatStanley_controller(Controller):
 
         # *** calculate crosstrack error ***
         # *** calculate front axle position error from path with positive error = turn to right, negative = turn to left
-        vf_cte = vf_npath1[0]
+        vf_cte = 1*math.atan2(vf_npath1[1], vf_npath1[0])
+
+        #vf_cte = -vf_npath1[1]
 
 
         # dx = nx1-frontx
@@ -287,11 +289,11 @@ class BLatStanley_controller(Controller):
         #***get heading if vehicle was at the correct spot on path**
         # vf_path_pitch = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
 
-        path_pitch_rad = (math.atan2((nz2 - next_waypoint.location.z), (nx2 - next_waypoint.location.x)))
-        path_pitch = path_pitch_rad*180/np.pi
+        path_yaw_rad = (math.atan2((nz2 - next_waypoint.location.z), (nx2 - next_waypoint.location.x)))
+        path_yaw = path_yaw_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
-        hd_err = path_pitch - veh_pitch
+        hd_err = veh_yaw - path_yaw
         head_err = 0
         if hd_err > 180:
             head_err = hd_err-360
@@ -305,9 +307,9 @@ class BLatStanley_controller(Controller):
         # head_err = vf_path_pitch - theta_deg
 
         print('--------------------------------------')
-        # # print('veh yaw = ', veh_yaw)
+        print('veh yaw = ', veh_yaw)
         # # print('veh roll = ', veh_roll)
-        print('veh pitch = ', veh_pitch)
+        #print('veh pitch = ', veh_pitch)
         # print('**pitch to path** = ', pitch_to_path)
         # print('**dpathhead_ang**',dpathhead_ang)
         # print('veh x = ', veh_x)
@@ -330,7 +332,7 @@ class BLatStanley_controller(Controller):
         # print('next path z2 = ', nz2)
         #
         # print('**distance to path = ', dpath)
-        print('path pitch = ', path_pitch)
+        print('path pitch = ', path_yaw)
         # print('path_pitch_rad = ', path_pitch_rad)
         # # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
         # # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
@@ -341,7 +343,7 @@ class BLatStanley_controller(Controller):
         print('vf cross track error',vf_cte)
         # # print('_dot err', _dot)
         # vf_cte=0  # check if goes straight
-        # head_err=0
+        #head_err=0
 
         return vf_cte, head_err
 

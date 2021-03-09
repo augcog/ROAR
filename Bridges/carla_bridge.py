@@ -40,6 +40,12 @@ class CarlaBridge(Bridge):
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
         roll, pitch, yaw = source.roll, source.pitch, source.yaw
+        if (yaw <= 90):
+            yaw = yaw+90
+        else:
+            yaw = yaw - 270
+
+
         return Rotation(roll=roll, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_source_to_agent(

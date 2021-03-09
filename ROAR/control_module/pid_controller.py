@@ -105,9 +105,15 @@ class LatPIDController(Controller):
         """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
-        direction_vector = np.array([np.cos(np.radians(self.agent.vehicle.transform.rotation.yaw)),
+        print(v_begin)
+        print('next wp x: ', next_waypoint.location.x)
+        print('next wp z: ', next_waypoint.location.z)
+        print('next wp y: ', next_waypoint.location.y)
+
+
+        direction_vector = np.array([np.sin(np.radians(self.agent.vehicle.transform.rotation.yaw)),
                                      0,
-                                     np.sin(np.radians(self.agent.vehicle.transform.rotation.yaw))])
+                                     -np.cos(np.radians(self.agent.vehicle.transform.rotation.yaw))])
         v_end = v_begin + direction_vector
 
         v_vec = np.array([v_end[0] - v_begin[0], 0, - (v_end[2] - v_begin[2])])

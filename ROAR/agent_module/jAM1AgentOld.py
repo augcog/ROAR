@@ -1,7 +1,7 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
-from ROAR.control_module.jam_pid_controller import PIDController
-#from ROAR.control_module.pid_controller import PIDController
+#from ROAR.control_module.jam_pid_controller import PIDController
+from ROAR.control_module.pid_controller import PIDController
 
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
