@@ -3,3 +3,4 @@
 ::: ROAR.agent_module.pid_agent
 ::: ROAR.agent_module.pure_pursuit_agent
 ::: ROAR.agent_module.lqr_agent
+::: ROAR.agent_module.cascade_obj_agent
