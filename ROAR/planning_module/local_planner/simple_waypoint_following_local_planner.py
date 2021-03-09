@@ -22,7 +22,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             controller: Controller,
             mission_planner: MissionPlanner,
             behavior_planner: BehaviorPlanner,
-            closeness_threshold=12,
+            closeness_threshold=.5,
     ):
         """
         Initialize Simple Waypoint Following Planner

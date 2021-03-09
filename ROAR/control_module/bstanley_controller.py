@@ -128,7 +128,7 @@ class BLatStanley_controller(Controller):
                 )
         print('-----------------------------------------')
 
-        print('lat_control = ', lat_control)
+        print('bStanley lat_control = ', lat_control)
         print('-----------------------------------------')
 
         return lat_control
