@@ -16,7 +16,7 @@
     
     
       
-        <title>Quick Start - ROAR Documentation</title>
+        <title>Coordinate - ROAR Documentation</title>
       
     
     
@@ -59,6 +59,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#coordinate" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -87,7 +92,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              Quick Start
+              Coordinate
             
           </span>
         </div>
@@ -165,12 +170,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
       
       <label class="md-nav__link" for="nav-1">
         About
@@ -211,11 +218,20 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../coordinate/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Coordinate
       </a>
+      
     </li>
   
 
@@ -232,18 +248,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
         Quick Start
       </a>
-      
     </li>
   
 
@@ -666,77 +675,32 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>Quick Start</h1>
-                
-                <p><em>Note: for Mac users, please dual boot as Windows 10.</em></p>
-<ol>
-<li>Fork the Repo<ul>
-<li>Please click the <a href="https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo">Fork</a> button on the upper right corner and submit a pull request to master branch.</li>
-<li>For a more in-depth tutorial on recommended setup <a href="https://youtu.be/VA13dAZ9iAw">video</a></li>
-</ul>
-</li>
-<li>
-<p>clone the repo</p>
-<ul>
-<li><code>git clone --recursive https://github.com/YOURUSERNAME/ROAR.git</code></li>
-</ul>
-</li>
-<li>
-<p>Create virtual environment with <em>python3.7</em></p>
-<ul>
-<li><code>conda create -n ROAR python=3.7</code></li>
-<li><code>conda activate ROAR</code></li>
-</ul>
-</li>
-<li>
-<p>Install Dependency</p>
-<ul>
-<li>General Dependency<ul>
-<li><code>pip install -r requirements.txt</code> in the ROAR folder</li>
-</ul>
-</li>
-<li>For simulator<ul>
-<li><code>cd ROAR_Sim</code></li>
-<li><code>pip install -r requirements.txt</code></li>
-<li>Download Simulator distribution for your OS<ul>
-<li><a href="https://drive.google.com/drive/folders/13JSejJED31cZHBbfIz_gyxxPmiqABOJj?usp=sharing">GDrive Link</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>For actual vehicle wired to your computer<ul>
-<li><code>cd ROAR_Jetson</code></li>
-<li><code>pip install -r requirements.txt</code></li>
-</ul>
-</li>
-<li>For actual vehicle running on Jetson Nano<ul>
-<li><code>cd ROAR_Jetson</code></li>
-<li><code>sudo apt-get install python-dev libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev python-numpy subversion libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev</code></li>
-<li><code>pip3 install -r requirements_jetson_nano.txt</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>Enjoy</p>
-<ul>
-<li>For Simulator<ul>
-<li><code>python runner_sim.py</code></li>
-</ul>
-</li>
-<li>For physical car<ul>
-<li><code>python runner_jetson.py</code> or <code>python3 runner_jetson.py</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
+                <h1 id="coordinate">Coordinate<a class="headerlink" href="#coordinate" title="Permanent link">¤</a></h1>
+<p>We are using Aruco Marker for defining center of the world. We are using Aruco Marker ID 0 from configuration 5x5, 250
+<img alt="" src="../images/aruco_5x5_250_id_0.png" /></p>
+<p>A printable PDF version can be found at <a href="https://drive.google.com/file/d/1QtufqHznFYSQKumHuKppixglUSEPIFkc/view?usp=sharing">https://drive.google.com/file/d/1QtufqHznFYSQKumHuKppixglUSEPIFkc/view?usp=sharing</a>.</p>
                 
               
               
@@ -755,7 +719,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../coordinate/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../architecture/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -764,19 +728,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Coordinate
+                Architecture
               </div>
             </div>
           </a>
         
         
-          <a href="../code_documentations/Bridges/bridges/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../quickstart/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Bridge
+                Quick Start
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

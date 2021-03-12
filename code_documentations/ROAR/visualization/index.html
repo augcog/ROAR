@@ -213,6 +213,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../coordinate/" class="md-nav__link">
+        Coordinate
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -356,6 +368,18 @@
     <li class="md-nav__item">
       <a href="../agent_module/" class="md-nav__link">
         Agent Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        Configurations
       </a>
     </li>
   
@@ -576,10 +600,138 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../ROAR_Sim/ccu/" class="md-nav__link">
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1" type="checkbox" id="nav-3-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-3-1">
         Carla Client
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Carla Client" data-md-level="3">
+        <label class="md-nav__title" for="nav-3-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Carla Client
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/carla_client/" class="md-nav__link">
+        Carla Runner
       </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1-2" type="checkbox" id="nav-3-3-1-2" >
+      
+      <label class="md-nav__link" for="nav-3-3-1-2">
+        Util
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Util" data-md-level="4">
+        <label class="md-nav__title" for="nav-3-3-1-2">
+          <span class="md-nav__icon md-icon"></span>
+          Util
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/camera/" class="md-nav__link">
+        Camera Manager
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/hud/" class="md-nav__link">
+        Hud
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/kbc/" class="md-nav__link">
+        Keyboard Controls
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/sensors/" class="md-nav__link">
+        Sensors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/util/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -813,7 +965,7 @@
 <div class="doc doc-object doc-method">
 <h4 class="doc doc-heading" id="ROAR.visualization_module.visualizer.Visualizer.__init__">
 
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">occupancy_grid_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">semantic_segmentation_detector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">point_cloud_detector</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">occupancy_grid_map</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -826,14 +978,10 @@
           <div class="highlight">
 <pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
              <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span>
-             <span class="n">occupancy_grid_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OccupancyGridMap</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">semantic_segmentation_detector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SemanticSegmentationDetector</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">point_cloud_detector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PointCloudDetector</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+             <span class="n">occupancy_grid_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OccupancyGridMap</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">agent</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">occupancy_grid_map</span> <span class="o">=</span> <span class="n">occupancy_grid_map</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span> <span class="o">=</span> <span class="n">semantic_segmentation_detector</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">point_cloud_detector</span> <span class="o">=</span> <span class="n">point_cloud_detector</span>
 </code></pre>
 </div>
 </details>
@@ -899,14 +1047,11 @@
 <span class="k">def</span> <span class="nf">calculate_img_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waypoint_transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Calculate the 2D image coordinate from 3D world space</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        camera:</span>
 <span class="sd">        waypoint_transform: Desired point in 3D world space</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        Array if integers [X, Y, depth]</span>
-
 <span class="sd">    """</span>
     <span class="n">waypoint_location</span> <span class="o">=</span> <span class="n">waypoint_transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span>  <span class="c1"># [x, y, z]</span>
     <span class="n">waypoint_location</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
@@ -918,13 +1063,18 @@
     <span class="n">world_cam_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">world_veh_matrix</span><span class="p">,</span> <span class="n">veh_cam_matrix</span><span class="p">))</span>
 
     <span class="n">cords_xyz</span> <span class="o">=</span> <span class="n">world_cam_matrix</span> <span class="o">@</span> <span class="n">waypoint_location</span>
+    <span class="c1"># print(cords_xyz)</span>
     <span class="n">cords_y_minus_z_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cords_xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">cords_xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">cords_xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="c1"># cords_y_minus_z_x = np.array([cords_xyz[0], cords_xyz[1], -cords_xyz[2]])</span>
     <span class="n">raw_p2d</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span> <span class="o">@</span> <span class="n">cords_y_minus_z_x</span>
-
+    <span class="nb">print</span><span class="p">(</span><span class="n">camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span><span class="p">)</span>
+    <span class="c1"># print(raw_p2d)</span>
     <span class="n">cam_cords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span><span class="n">raw_p2d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cam_cords</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cam_cords</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="c1"># print(result)</span>
+    <span class="k">return</span> <span class="n">result</span>
 </code></pre>
 </div>
 </details>
@@ -1021,7 +1171,7 @@
 <div class="doc doc-object doc-method">
 <h4 class="doc doc-heading" id="ROAR.visualization_module.visualizer.Visualizer.show_first_person_visualization">
 
-<code class="highlight language-python"><span class="n">show_first_person_visualization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_num_waypoints</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_semantic_segmentation_obstacle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_semantic_segmentation_sky</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_semantic_segmentation_ground</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_point_cloud_ground</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ground_points</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">show_first_person_visualization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_num_waypoints</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_point_cloud_ground</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ground_points</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
       <a class="headerlink" href="#ROAR.visualization_module.visualizer.Visualizer.show_first_person_visualization" title="Permanent link">¤</a></h4>
@@ -1046,21 +1196,21 @@
 </tr>
 <tr>
 <td><code>show_semantic_segmentation_obstacle</code></td>
-<td><code>bool</code></td>
+<td><code></code></td>
 <td></td>
-<td><code>False</code></td>
+<td><em>required</em></td>
 </tr>
 <tr>
 <td><code>show_semantic_segmentation_sky</code></td>
-<td><code>bool</code></td>
+<td><code></code></td>
 <td></td>
-<td><code>False</code></td>
+<td><em>required</em></td>
 </tr>
 <tr>
 <td><code>show_semantic_segmentation_ground</code></td>
-<td><code>bool</code></td>
+<td><code></code></td>
 <td></td>
-<td><code>False</code></td>
+<td><em>required</em></td>
 </tr>
 <tr>
 <td><code>show_point_cloud_ground</code></td>
@@ -1098,9 +1248,6 @@
           <div class="highlight">
 <pre><span></span><code><span class="k">def</span> <span class="nf">show_first_person_visualization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                     <span class="n">show_num_waypoints</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-                                    <span class="n">show_semantic_segmentation_obstacle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                    <span class="n">show_semantic_segmentation_sky</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                    <span class="n">show_semantic_segmentation_ground</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                                     <span class="n">show_point_cloud_ground</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                                     <span class="n">ground_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">"""</span>
@@ -1119,23 +1266,6 @@
 <span class="sd">    """</span>
     <span class="n">rgb_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_rgb_camera</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">show_semantic_segmentation_sky</span> <span class="ow">or</span> <span class="n">show_semantic_segmentation_obstacle</span> <span class="ow">or</span> <span class="n">show_semantic_segmentation_ground</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">curr_segmentation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">show_semantic_segmentation_sky</span><span class="p">:</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">curr_segmentation</span>
-                              <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">SKY</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">rgb_img</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">SKY</span>
-            <span class="k">if</span> <span class="n">show_semantic_segmentation_obstacle</span><span class="p">:</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">curr_segmentation</span>
-                              <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">OBSTACLE</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">rgb_img</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">OBSTACLE</span>
-            <span class="k">if</span> <span class="n">show_semantic_segmentation_ground</span><span class="p">:</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">curr_segmentation</span>
-                              <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">GROUND</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">rgb_img</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_detector</span><span class="o">.</span><span class="n">GROUND</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Semantic Segmentation Detector is not configured"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">show_point_cloud_ground</span> <span class="ow">and</span> <span class="n">ground_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">img_cords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_to_img_transform</span><span class="p">(</span><span class="n">ground_points</span><span class="p">)[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
         <span class="c1"># ys = [342, 278, 271, 413 ,327 ,169 ,415, 747 ,507 ,311,311,311,311,311,311]</span>
@@ -1210,10 +1340,8 @@
 <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_waypoint_transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    This function will allow multiple objects to be drawn on here.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        next_waypoint_transform: Next Waypoint's Transform information</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
@@ -1297,12 +1425,10 @@
 <span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">"will no longer support single semantic segmentation visualization"</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">visualize_semantic_segmentation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">semantic_segmetation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        semantic_segmetation: Width x Height x 3 array</span>
 <span class="sd">                              with white = obstacles, black = ground,</span>
 <span class="sd">                              blue = sky</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
@@ -1323,65 +1449,18 @@
 
       <a class="headerlink" href="#ROAR.visualization_module.visualizer.Visualizer.visualize_waypoint" title="Permanent link">¤</a></h4>
 <div class="doc doc-contents ">
-<p>Calculates position of waypoint</p>
-<p><strong>Parameters:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>waypoint_transform</code></td>
-<td><code>Transform</code></td>
-<td></td>
-<td><em>required</em></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code></code></td>
-<td>
-<p>None</p>
-</td>
-</tr>
-</tbody>
-</table>
 <details class="quote">
           <summary>Source code in <code>ROAR/visualization_module/visualizer.py</code></summary>
           <div class="highlight">
 <pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">"Will no longer support seperate graph visualization"</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">visualize_waypoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waypoint_transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Calculates position of waypoint</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        waypoint_transform ():</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">    """</span>
-    <span class="n">coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_img_pos</span><span class="p">(</span>
-        <span class="n">waypoint_transform</span><span class="o">=</span><span class="n">waypoint_transform</span><span class="p">,</span>
-        <span class="n">camera</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span>
-    <span class="p">)</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_to_img_transform</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">waypoint_transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                                       <span class="n">waypoint_transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                                                       <span class="n">waypoint_transform</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span><span class="p">]]))</span>
     <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_rgb_camera</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">arrowedLine</span><span class="p">(</span><span class="n">img</span><span class="p">,</span>
                           <span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">600</span><span class="p">),</span>
-                          <span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                          <span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
                           <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                           <span class="mi">2</span><span class="p">)</span>
     <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">"Next Waypoint"</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
@@ -1444,26 +1523,21 @@
 <pre><span></span><code><span class="k">def</span> <span class="nf">world_to_img_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Calculate the 2D image coordinate from 3D world space</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        xyz: (Nx3) array representing X, Y, Z in world coord</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        Array if integers [u, v, f]</span>
-
 <span class="sd">    """</span>
     <span class="n">xyz1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">),</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">veh_cam_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()</span>  <span class="c1"># 4 x 4</span>
-    <span class="n">world_veh_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()</span>  <span class="c1"># 4 x 4</span>
-
-    <span class="n">world_cam_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">world_veh_matrix</span><span class="p">,</span> <span class="n">veh_cam_matrix</span><span class="p">))</span>
-    <span class="n">cords_xyz1</span> <span class="o">=</span> <span class="n">world_cam_matrix</span> <span class="o">@</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">cords_y_minus_z_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cords_xyz1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="o">-</span><span class="n">cords_xyz1</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">cords_xyz1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]])</span>
-    <span class="n">raw_p2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span> <span class="o">@</span> <span class="n">cords_y_minus_z_x</span>
-    <span class="n">cam_cords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">raw_p2d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">raw_p2d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]]</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">T</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cam_cords</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">UVD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span> <span class="o">@</span> \
+          <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">@</span> \
+          <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()</span> <span class="o">@</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">uvd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">UVD</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">UVD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">UVD</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">UVD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">UVD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">uvd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"waypoint: </span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2"> | Agent = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="si">}</span><span class="s2"> | Pixel = </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> "</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
 </code></pre>
 </div>
 </details>
@@ -1511,13 +1585,13 @@
           </a>
         
         
-          <a href="../../ROAR_Sim/ccu/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../ROAR_Sim/carla_client/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Carla Client
+                Carla Runner
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

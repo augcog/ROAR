@@ -1,0 +1,1489 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Robot Open Autonomous Racing is a platform/competition dedicated to teaching students to gain a holistic view and hands-on(virtual) experiences about building a high-performance fully-autonomous 1/10 scale RC car from scratch.">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.7">
+    
+    
+      
+        <title>World - ROAR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cb6bc1d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.39b8e14a.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ROAR_Sim.carla_client.util.world.World" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../../.." title="ROAR Documentation" class="md-header-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            ROAR Documentation
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              World
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ROAR Documentation" class="md-nav__button md-logo" aria-label="ROAR Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    ROAR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+      
+      <label class="md-nav__link" for="nav-1">
+        About
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="About" data-md-level="1">
+        <label class="md-nav__title" for="nav-1">
+          <span class="md-nav__icon md-icon"></span>
+          About
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        Architecture
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../coordinate/" class="md-nav__link">
+        Coordinate
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      
+      <label class="md-nav__link" for="nav-3">
+        Code Documentations
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Code Documentations" data-md-level="1">
+        <label class="md-nav__title" for="nav-3">
+          <span class="md-nav__icon md-icon"></span>
+          Code Documentations
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-1">
+        Bridges
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Bridges" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Bridges
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/bridges/" class="md-nav__link">
+        Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/carla_bridge/" class="md-nav__link">
+        Carla Bridge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Bridges/jetson_bridge/" class="md-nav__link">
+        Jetson Bridge
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-2" type="checkbox" id="nav-3-2" >
+      
+      <label class="md-nav__link" for="nav-3-2">
+        ROAR
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-2">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/agent_module/" class="md-nav__link">
+        Agent Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/config/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/controller_module/" class="md-nav__link">
+        Control Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/perception_module/" class="md-nav__link">
+        Perception Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/planning_module/" class="md-nav__link">
+        Planning Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/utilities_module/" class="md-nav__link">
+        Utilities Module
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR/visualization/" class="md-nav__link">
+        Visualization Module
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3" type="checkbox" id="nav-3-3" checked>
+      
+      <label class="md-nav__link" for="nav-3-3">
+        ROAR Simulation
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ROAR Simulation" data-md-level="2">
+        <label class="md-nav__title" for="nav-3-3">
+          <span class="md-nav__icon md-icon"></span>
+          ROAR Simulation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1" type="checkbox" id="nav-3-3-1" checked>
+      
+      <label class="md-nav__link" for="nav-3-3-1">
+        Carla Client
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Carla Client" data-md-level="3">
+        <label class="md-nav__title" for="nav-3-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Carla Client
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carla_client/" class="md-nav__link">
+        Carla Runner
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1-2" type="checkbox" id="nav-3-3-1-2" checked>
+      
+      <label class="md-nav__link" for="nav-3-3-1-2">
+        Util
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Util" data-md-level="4">
+        <label class="md-nav__title" for="nav-3-3-1-2">
+          <span class="md-nav__icon md-icon"></span>
+          Util
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../camera/" class="md-nav__link">
+        Camera Manager
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hud/" class="md-nav__link">
+        Hud
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kbc/" class="md-nav__link">
+        Keyboard Controls
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sensors/" class="md-nav__link">
+        Sensors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../util/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          World
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        World
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World" class="md-nav__link">
+    World
+  </a>
+  
+    <nav class="md-nav" aria-label="World">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.clean_spawned_all_actors" class="md-nav__link">
+    clean_spawned_all_actors()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.destroy" class="md-nav__link">
+    destroy()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.destroy_sensors" class="md-nav__link">
+    destroy_sensors()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.render" class="md-nav__link">
+    render()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_camera" class="md-nav__link">
+    set_camera()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_custom_sensor" class="md-nav__link">
+    set_custom_sensor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_sensor" class="md-nav__link">
+    set_sensor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_weather" class="md-nav__link">
+    set_weather()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.spawn_actor" class="md-nav__link">
+    spawn_actor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.spawn_npcs" class="md-nav__link">
+    spawn_npcs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.tick" class="md-nav__link">
+    tick()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.toggle_radar" class="md-nav__link">
+    toggle_radar()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conf/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner_sim/" class="md-nav__link">
+        Runner Sim
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runcompeval/" class="md-nav__link">
+        Runner Competition Evaluator
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World" class="md-nav__link">
+    World
+  </a>
+  
+    <nav class="md-nav" aria-label="World">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.clean_spawned_all_actors" class="md-nav__link">
+    clean_spawned_all_actors()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.destroy" class="md-nav__link">
+    destroy()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.destroy_sensors" class="md-nav__link">
+    destroy_sensors()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.render" class="md-nav__link">
+    render()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_camera" class="md-nav__link">
+    set_camera()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_custom_sensor" class="md-nav__link">
+    set_custom_sensor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_sensor" class="md-nav__link">
+    set_sensor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.set_weather" class="md-nav__link">
+    set_weather()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.spawn_actor" class="md-nav__link">
+    spawn_actor()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.spawn_npcs" class="md-nav__link">
+    spawn_npcs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.tick" class="md-nav__link">
+    tick()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR_Sim.carla_client.util.world.World.toggle_radar" class="md-nav__link">
+    toggle_radar()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>World</h1>
+                
+                <div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h2 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World">
+
+        <code>World</code>
+
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<p>An World that holds all display settings</p>
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carla_world</span><span class="p">,</span> <span class="n">hud</span><span class="p">,</span> <span class="n">carla_settings</span><span class="p">,</span> <span class="n">agent_settings</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.__init__" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<p>Create a World with the given carla_world, head-up display and
+server setting.</p>
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carla_world</span><span class="p">:</span> <span class="n">carla</span><span class="o">.</span><span class="n">World</span><span class="p">,</span>
+             <span class="n">hud</span><span class="p">:</span> <span class="n">HUD</span><span class="p">,</span> <span class="n">carla_settings</span><span class="p">:</span> <span class="n">CarlaConfig</span><span class="p">,</span>
+             <span class="n">agent_settings</span><span class="p">:</span> <span class="n">AgentConfig</span><span class="p">):</span>
+    <span class="sd">"""Create a World with the given carla_world, head-up display and</span>
+<span class="sd">    server setting."""</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="p">:</span> <span class="n">CarlaConfig</span> <span class="o">=</span> <span class="n">carla_settings</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="p">:</span> <span class="n">AgentConfig</span> <span class="o">=</span> <span class="n">agent_settings</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="p">:</span> <span class="n">carla</span><span class="o">.</span><span class="n">World</span> <span class="o">=</span> <span class="n">carla_world</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">clean_spawned_all_actors</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">actor_role_name</span> <span class="o">=</span> <span class="n">carla_settings</span><span class="o">.</span><span class="n">role_name</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">get_map</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'RuntimeError: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'  The server could not send the OpenDRIVE (.xodr) file:'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">'  Make sure it exists, has the same name of your town, '</span>
+            <span class="s1">'and is correct.'</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">hud</span> <span class="o">=</span> <span class="n">hud</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_bridge</span> <span class="o">=</span> <span class="n">CarlaBridge</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_spawn_point_id</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="o">.</span><span class="n">spawn_point_id</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_actor_filter</span> <span class="o">=</span> <span class="n">carla_settings</span><span class="o">.</span><span class="n">carla_vehicle_blueprint_filter</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_car_color</span> <span class="o">=</span> <span class="n">carla_settings</span><span class="o">.</span><span class="n">car_color</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_gamma</span> <span class="o">=</span> <span class="n">carla_settings</span><span class="o">.</span><span class="n">gamma</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collision_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lane_invasion_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gnss_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">imu_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">recording_enabled</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_rgb_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_depth_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rear_rgb_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">recording_start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># set weather</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting Weather"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_weather</span><span class="p">(</span>
+        <span class="n">carla_settings</span><span class="o">.</span><span class="n">carla_weather</span><span class="o">.</span><span class="n">to_carla_weather_params</span><span class="p">())</span>
+
+    <span class="c1"># set player</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting Player"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spawn_actor</span><span class="p">(</span>
+        <span class="n">actor_filter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_actor_filter</span><span class="p">,</span>
+        <span class="n">player_role_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_role_name</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_car_color</span><span class="p">,</span>
+        <span class="n">spawn_point_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spawn_point_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># set camera</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting Camera"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_camera</span><span class="p">()</span>
+
+    <span class="c1"># set sensor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting Default Sensor"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_sensor</span><span class="p">()</span>
+
+    <span class="c1"># set custom sensor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Setting Custom Sensor"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_custom_sensor</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_rgb_sensor_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_depth_sensor_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rear_rgb_sensor_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_sensor_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># spawn npc</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">npcs_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">AgentConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">get_settings</span><span class="p">()</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">synchronous_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">synchronous_mode</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">no_rendering_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">no_rendering_mode</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">synchronous_mode</span><span class="p">:</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">fixed_delta_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">fixed_delta_seconds</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">apply_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">on_tick</span><span class="p">(</span><span class="n">hud</span><span class="o">.</span><span class="n">on_world_tick</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"World Initialized"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.clean_spawned_all_actors">
+
+<code class="highlight language-python"><span class="n">clean_spawned_all_actors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.clean_spawned_all_actors" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<p>This function is to clean all actors that are not traffic light/signals</p>
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">clean_spawned_all_actors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    This function is to clean all actors that are not traffic light/signals</span>
+<span class="sd">    Returns:</span>
+
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">actor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">get_actors</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">"traffic"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">actor</span><span class="o">.</span><span class="n">type_id</span> <span class="ow">and</span> <span class="s2">"spectator"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">actor</span><span class="o">.</span><span class="n">type_id</span><span class="p">:</span>
+            <span class="n">actor</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.destroy">
+
+<code class="highlight language-python"><span class="n">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.destroy" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"destroying all actors belonging to "</span>
+                      <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actor_role_name</span><span class="si">}</span><span class="s2">] in this world"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_radar</span><span class="p">()</span>
+    <span class="n">actors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collision_sensor</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_invasion_sensor</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gnss_sensor</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imu_sensor</span><span class="o">.</span><span class="n">sensor</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">actor</span> <span class="ow">in</span> <span class="n">actors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">actor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">actor</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_custom_sensors</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">npc</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">npcs_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">npc</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">clean_spawned_all_actors</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.destroy_sensors">
+
+<code class="highlight language-python"><span class="n">destroy_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.destroy_sensors" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">destroy_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">sensor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.render">
+
+<code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.render" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.set_camera">
+
+<code class="highlight language-python"><span class="n">set_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cam_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cam_pos_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.set_camera" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cam_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cam_pos_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span> <span class="o">=</span> <span class="n">CameraManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gamma</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">transform_index</span> <span class="o">=</span> <span class="n">cam_pos_index</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">camera_manager</span><span class="o">.</span><span class="n">set_sensor</span><span class="p">(</span><span class="n">cam_index</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">actor_type</span> <span class="o">=</span> <span class="n">get_actor_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="o">.</span><span class="n">notification</span><span class="p">(</span><span class="n">actor_type</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.set_custom_sensor">
+
+<code class="highlight language-python"><span class="n">set_custom_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.set_custom_sensor" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_custom_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">Attachment</span> <span class="o">=</span> <span class="n">carla</span><span class="o">.</span><span class="n">AttachmentType</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_custom_sensors</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_rgb_sensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spawn_custom_sensor</span><span class="p">(</span>
+        <span class="n">blueprint_filter</span><span class="o">=</span><span class="s2">"sensor.camera.rgb"</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">carla_bridge</span><span class="o">.</span><span class="n">convert_transform_from_agent_to_source</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_rgb_cam</span><span class="o">.</span><span class="n">transform</span><span class="p">),</span>
+        <span class="n">attachment</span><span class="o">=</span><span class="n">Attachment</span><span class="o">.</span><span class="n">Rigid</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"fov"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_rgb_cam</span><span class="o">.</span><span class="n">fov</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_depth_sensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spawn_custom_sensor</span><span class="p">(</span>
+        <span class="n">blueprint_filter</span><span class="o">=</span><span class="s2">"sensor.camera.depth"</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">carla_bridge</span><span class="o">.</span><span class="n">convert_transform_from_agent_to_source</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_depth_cam</span><span class="o">.</span><span class="n">transform</span><span class="p">),</span>
+        <span class="n">attachment</span><span class="o">=</span><span class="n">Attachment</span><span class="o">.</span><span class="n">Rigid</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"fov"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_depth_cam</span><span class="o">.</span><span class="n">fov</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rear_rgb_sensor</span> <span class="o">=</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spawn_custom_sensor</span><span class="p">(</span>
+            <span class="n">blueprint_filter</span><span class="o">=</span><span class="s2">"sensor.camera.rgb"</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">carla_bridge</span><span class="o">.</span>
+                <span class="n">convert_transform_from_agent_to_source</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">rear_rgb_cam</span><span class="o">.</span><span class="n">transform</span><span class="p">),</span>
+            <span class="n">attachment</span><span class="o">=</span><span class="n">Attachment</span><span class="o">.</span><span class="n">Rigid</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">"fov"</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">rear_rgb_cam</span><span class="o">.</span><span class="n">fov</span><span class="p">,</span>
+            <span class="p">})</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">save_semantic_segmentation</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_sensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spawn_custom_sensor</span><span class="p">(</span>
+            <span class="n">blueprint_filter</span><span class="o">=</span><span class="s2">"sensor.camera.semantic_segmentation"</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">carla_bridge</span><span class="o">.</span><span class="n">convert_transform_from_agent_to_source</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_depth_cam</span><span class="o">.</span><span class="n">transform</span>
+            <span class="p">),</span>
+            <span class="n">attachment</span><span class="o">=</span><span class="n">Attachment</span><span class="o">.</span><span class="n">Rigid</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">"fov"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">front_depth_cam</span><span class="o">.</span><span class="n">fov</span><span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="n">weak_self</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_rgb_sensor</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">image</span><span class="p">:</span> <span class="n">World</span><span class="o">.</span><span class="n">_parse_front_rgb_sensor_image</span><span class="p">(</span>
+            <span class="n">weak_self</span><span class="o">=</span><span class="n">weak_self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">front_depth_sensor</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">image</span><span class="p">:</span> <span class="n">World</span><span class="o">.</span><span class="n">_parse_front_depth_sensor_image</span><span class="p">(</span>
+            <span class="n">weak_self</span><span class="o">=</span><span class="n">weak_self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rear_rgb_sensor</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="k">lambda</span> <span class="n">image</span><span class="p">:</span>
+                                <span class="n">World</span><span class="o">.</span><span class="n">_parse_rear_rgb_sensor_image</span><span class="p">(</span>
+                                    <span class="n">weak_self</span><span class="o">=</span><span class="n">weak_self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">save_semantic_segmentation</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semantic_segmentation_sensor</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="k">lambda</span> <span class="n">image</span><span class="p">:</span> <span class="n">World</span><span class="o">.</span><span class="n">_parse_semantic_segmentation_image</span><span class="p">(</span>
+            <span class="n">weak_self</span><span class="o">=</span><span class="n">weak_self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">image</span>
+        <span class="p">))</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.set_sensor">
+
+<code class="highlight language-python"><span class="n">set_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.set_sensor" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collision_sensor</span> <span class="o">=</span> <span class="n">CollisionSensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lane_invasion_sensor</span> <span class="o">=</span> <span class="n">LaneInvasionSensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gnss_sensor</span> <span class="o">=</span> <span class="n">GnssSensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">imu_sensor</span> <span class="o">=</span> <span class="n">IMUSensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.set_weather">
+
+<code class="highlight language-python"><span class="n">set_weather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_weather</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.set_weather" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">set_weather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_weather</span><span class="p">:</span> <span class="n">carla</span><span class="o">.</span><span class="n">WeatherParameters</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">weather</span> <span class="o">=</span> <span class="n">new_weather</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.spawn_actor">
+
+<code class="highlight language-python"><span class="n">spawn_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor_filter</span><span class="o">=</span><span class="s1">'vehicle.tesla.model3'</span><span class="p">,</span> <span class="n">player_role_name</span><span class="o">=</span><span class="s1">'npc'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">CarlaCarColor</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">211</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mi">211</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">211</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">255</span><span class="p">),</span> <span class="n">spawn_point_id</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.spawn_actor" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<p>Set up a hero-named player with Grey Tesla Model3 Vehicle </p>
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">spawn_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"vehicle.tesla.model3"</span><span class="p">,</span>
+                <span class="n">player_role_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"npc"</span><span class="p">,</span>
+                <span class="n">color</span><span class="p">:</span> <span class="n">CarlaCarColor</span> <span class="o">=</span> <span class="n">CarlaCarColors</span><span class="o">.</span><span class="n">GREY</span><span class="p">,</span>
+                <span class="n">spawn_point_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)))):</span>
+    <span class="sd">"""Set up a hero-named player with Grey Tesla Model3 Vehicle """</span>
+
+    <span class="n">blueprint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">get_blueprint_library</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">actor_filter</span><span class="p">)</span>
+    <span class="n">blueprint</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">"role_name"</span><span class="p">,</span> <span class="n">player_role_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">has_attribute</span><span class="p">(</span><span class="s2">"color"</span><span class="p">):</span>
+        <span class="n">blueprint</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">"color"</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">has_attribute</span><span class="p">(</span><span class="s2">"is_invincible"</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"TESLA IS INVINCIBLE"</span><span class="p">)</span>
+        <span class="n">blueprint</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">"is_invincible"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">actor</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">spawn_actor</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">get_spawn_points</span><span class="p">()[</span>
+                                             <span class="n">spawn_point_id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">actor</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot spawn actor at ID [</span><span class="si">{</span><span class="n">spawn_point_id</span><span class="si">}</span><span class="s2">]. "</span>
+                         <span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.spawn_npcs">
+
+<code class="highlight language-python"><span class="n">spawn_npcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">npc_configs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.spawn_npcs" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">spawn_npcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">npc_configs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AgentConfig</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">npc_config</span> <span class="ow">in</span> <span class="n">npc_configs</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Spawning NPC [</span><span class="si">{</span><span class="n">npc_config</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">npc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spawn_actor</span><span class="p">(</span><span class="n">spawn_point_id</span><span class="o">=</span><span class="n">npc_config</span><span class="o">.</span><span class="n">spawn_point_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">npcs_mapping</span><span class="p">[</span><span class="n">npc_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">npc</span><span class="p">,</span> <span class="n">npc_config</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to Spawn NPC </span><span class="si">{</span><span class="s1">'default'</span><span class="si">}</span><span class="s2">."</span>
+                              <span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.tick">
+
+<code class="highlight language-python"><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.tick" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">hud</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">carla_settings</span><span class="o">.</span><span class="n">synchronous_mode</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">carla_world</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR_Sim.carla_client.util.world.World.toggle_radar">
+
+<code class="highlight language-python"><span class="n">toggle_radar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR_Sim.carla_client.util.world.World.toggle_radar" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>carla_client/util/world.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">toggle_radar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span> <span class="o">=</span> <span class="n">RadarSensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span><span class="o">.</span><span class="n">sensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radar_sensor</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../util/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Utilities
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../conf/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Configurations
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.9c0e82ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

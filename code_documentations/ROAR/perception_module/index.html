@@ -213,6 +213,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../coordinate/" class="md-nav__link">
+        Coordinate
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -366,6 +378,18 @@
   
   
     <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../controller_module/" class="md-nav__link">
         Control Module
       </a>
@@ -429,6 +453,13 @@
           <li class="md-nav__item">
   <a href="#ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_series" class="md-nav__link">
     run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
   </a>
   
 </li>
@@ -603,10 +634,138 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../ROAR_Sim/ccu/" class="md-nav__link">
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1" type="checkbox" id="nav-3-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-3-1">
         Carla Client
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Carla Client" data-md-level="3">
+        <label class="md-nav__title" for="nav-3-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Carla Client
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/carla_client/" class="md-nav__link">
+        Carla Runner
       </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1-2" type="checkbox" id="nav-3-3-1-2" >
+      
+      <label class="md-nav__link" for="nav-3-3-1-2">
+        Util
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Util" data-md-level="4">
+        <label class="md-nav__title" for="nav-3-3-1-2">
+          <span class="md-nav__icon md-icon"></span>
+          Util
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/camera/" class="md-nav__link">
+        Camera Manager
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/hud/" class="md-nav__link">
+        Hud
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/kbc/" class="md-nav__link">
+        Keyboard Controls
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/sensors/" class="md-nav__link">
+        Sensors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/util/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -706,6 +865,13 @@
           <li class="md-nav__item">
   <a href="#ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_series" class="md-nav__link">
     run_in_series()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_threaded" class="md-nav__link">
+    run_in_threaded()
   </a>
   
 </li>
@@ -835,7 +1001,7 @@
 <div class="doc doc-object doc-method">
 <h3 class="doc doc-heading" id="ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.__init__">
 
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">should_compute_global_pointcloud</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">should_sample_points</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">should_filter_by_distance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_detectable_distance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_points_to_convert</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">should_compute_global_pointcloud</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">should_sample_points</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">should_filter_by_distance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_detectable_distance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">max_points_to_convert</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -852,13 +1018,15 @@
              <span class="n">should_sample_points</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
              <span class="n">should_filter_by_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
              <span class="n">max_detectable_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-             <span class="n">max_points_to_convert</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+             <span class="n">scale_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+             <span class="n">max_points_to_convert</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">should_compute_global_pointcloud</span> <span class="o">=</span> <span class="n">should_compute_global_pointcloud</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">should_sample_points</span> <span class="o">=</span> <span class="n">should_sample_points</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">should_filter_by_distance</span> <span class="o">=</span> <span class="n">should_filter_by_distance</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">max_detectable_distance</span> <span class="o">=</span> <span class="n">max_detectable_distance</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">max_points_to_convert</span> <span class="o">=</span> <span class="n">max_points_to_convert</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="n">scale_factor</span>
 </code></pre>
 </div>
 </details>
@@ -905,23 +1073,61 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">depth_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_filter_by_distance</span><span class="p">:</span>
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">depth_img</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_detectable_distance</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">depth_img</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_sample_points</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">coords</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_points_to_convert</span><span class="p">:</span>
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_points_to_convert</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="n">depths</span> <span class="o">=</span> <span class="n">depth_img</span><span class="p">[</span><span class="n">coords</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">depth_img</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">depth_img</span><span class="p">))</span>  <span class="c1"># it will just return all coordinate pairs</span>
+        <span class="n">depths</span> <span class="o">=</span> <span class="n">depth_img</span><span class="p">[</span><span class="n">coords</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">depths</span><span class="p">)</span>
-        <span class="n">raw_p2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">result</span><span class="p">,</span> <span class="n">depths</span><span class="p">))</span>
-        <span class="n">cords_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span><span class="p">)</span> <span class="o">@</span> <span class="n">raw_p2d</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">S_uv1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">result</span><span class="p">,</span> <span class="n">depths</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_compute_global_pointcloud</span><span class="p">:</span>
-            <span class="n">cords_xyz_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">cords_xyz</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cords_xyz</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))])</span>
-            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">()</span> <span class="o">@</span> <span class="n">cords_xyz_1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">img_to_world</span><span class="p">(</span><span class="n">scaled_depth_image</span><span class="o">=</span><span class="n">S_uv1</span><span class="p">,</span>
+                                  <span class="n">intrinsics_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span><span class="p">,</span>
+                                  <span class="n">veh_world_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">(),</span>
+                                  <span class="n">cam_veh_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">result</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cords_xyz</span><span class="o">.</span><span class="n">T</span>
+            <span class="c1"># return p3d.T</span>
+            <span class="n">K_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">intrinsics_matrix</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">K_inv</span> <span class="o">@</span> <span class="n">S_uv1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="k">return</span> <span class="kc">None</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_threaded">
+
+<code class="highlight language-python"><span class="n">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.perception_module.depth_to_pointcloud_detector.DepthToPointCloudDetector.run_in_threaded" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<p>This is the threaded function.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>**kwargs</code></td>
+<td><code></code></td>
+<td></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/perception_module/depth_to_pointcloud_detector.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">"point_cloud"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">()</span>
 </code></pre>
 </div>
 </details>
@@ -1054,7 +1260,8 @@
 <details class="quote">
           <summary>Source code in <code>ROAR/perception_module/detector.py</code></summary>
           <div class="highlight">
-<pre><span></span><code><span class="k">def</span> <span class="nf">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">run_in_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">pass</span>
 </code></pre>
 </div>
@@ -1083,7 +1290,7 @@
 <div class="doc doc-object doc-method">
 <h3 class="doc doc-heading" id="ROAR.perception_module.ground_plane_detector.GroundPlaneDetector.__init__">
 
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">knn</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">knn</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1094,11 +1301,13 @@
 <details class="quote">
           <summary>Source code in <code>ROAR/perception_module/ground_plane_detector.py</code></summary>
           <div class="highlight">
-<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">knn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">knn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">reference_norm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.00000283</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00012446</span><span class="p">,</span> <span class="mf">0.99999999</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">knn</span> <span class="o">=</span> <span class="n">knn</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_vectors_near_me</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_vectors_near_me</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.15</span>
 </code></pre>
 </div>
 </details>
@@ -1130,17 +1339,15 @@
 <div class="doc doc-object doc-method">
 <h3 class="doc doc-heading" id="ROAR.perception_module.ground_plane_detector.GroundPlaneDetector.compute_vectors_near_me">
 
-<code class="highlight language-python"><span class="n">compute_vectors_near_me</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">compute_vectors_near_me</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span></code>
 
 
       <a class="headerlink" href="#ROAR.perception_module.ground_plane_detector.GroundPlaneDetector.compute_vectors_near_me" title="Permanent link">¤</a></h3>
 <div class="doc doc-contents ">
-<p>Computes vectors near Agent from Front Depth Camera.</p>
 <details class="quote">
           <summary>Source code in <code>ROAR/perception_module/ground_plane_detector.py</code></summary>
           <div class="highlight">
-<pre><span></span><code><span class="k">def</span> <span class="nf">compute_vectors_near_me</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">"""Computes vectors near Agent from Front Depth Camera."""</span>
+<pre><span></span><code><span class="k">def</span> <span class="nf">compute_vectors_near_me</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
     <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_x</span>
     <span class="n">idx</span><span class="p">,</span> <span class="n">jdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">))</span>
     <span class="n">idx_back</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
@@ -1151,10 +1358,10 @@
     <span class="n">jdx</span> <span class="o">=</span> <span class="n">jdx</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
     <span class="c1"># rand_idx = np.random.choice(np.arange(idx.shape[0]), size=d1*d2, replace=False)</span>
-    <span class="n">f1</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_front</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">)[::</span><span class="mi">16</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
-    <span class="n">f2</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_back</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">)[::</span><span class="mi">16</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
-    <span class="n">f3</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx_front</span><span class="p">)[::</span><span class="mi">16</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
-    <span class="n">f4</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx_back</span><span class="p">)[::</span><span class="mi">16</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_front</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">)[::</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
+    <span class="n">f2</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_back</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">)[::</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
+    <span class="n">f3</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx_front</span><span class="p">)[::</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
+    <span class="n">f4</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">jdx_back</span><span class="p">)[::</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># [rand_idx]</span>
     <span class="k">return</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span><span class="p">,</span> <span class="n">f4</span>
 </code></pre>
 </div>
@@ -1226,31 +1433,45 @@
           <summary>Source code in <code>ROAR/perception_module/ground_plane_detector.py</code></summary>
           <div class="highlight">
 <pre><span></span><code><span class="k">def</span> <span class="nf">run_in_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">GroundPlaneDetector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">()</span>  <span class="c1"># Nx3</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f4</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">normals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_v3</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
-    <span class="c1"># OpenCV FloodFill</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_y</span>
-    <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_x</span>
-    <span class="n">curr_img</span> <span class="o">=</span> <span class="n">normals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">d1</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d2</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">seed_point</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d1</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d2</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">retval</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">floodFill</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">curr_img</span><span class="p">,</span>
-                                    <span class="n">seedPoint</span><span class="o">=</span><span class="n">seed_point</span><span class="p">,</span>
-                                    <span class="n">newVal</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-                                    <span class="n">loDiff</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span>
-                                    <span class="n">upDiff</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span>
-                                    <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">bool_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="n">bool_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d1</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="n">bool_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">bool_zeros</span><span class="o">.</span><span class="n">shape</span><span class="p">)[</span><span class="mi">0</span><span class="p">][::</span><span class="mi">16</span><span class="p">]</span>
-    <span class="n">bool_zeros</span><span class="p">[</span><span class="n">bool_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">bool_matrix</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="n">bool_matrix</span> <span class="o">=</span> <span class="n">bool_zeros</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"point_cloud"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"point_cloud"</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f4</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">normals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_v3</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="c1"># OpenCV FloodFill</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_y</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_depth_camera</span><span class="o">.</span><span class="n">image_size_x</span>
+            <span class="n">curr_img</span> <span class="o">=</span> <span class="n">normals</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">d1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d2</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
-    <span class="n">color_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_rgb_camera</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">color_image</span><span class="p">[</span><span class="n">bool_matrix</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">'Color'</span><span class="p">,</span> <span class="n">color_image</span><span class="p">)</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">h</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span>
+            <span class="n">min_y</span><span class="p">,</span> <span class="n">max_y</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">//</span> <span class="mi">4</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">,</span> <span class="n">w</span>
+
+            <span class="c1"># Y_norm_array: np.ndarray = curr_img[min_x:max_x, min_y:max_y, 1]</span>
+            <span class="c1"># x, y = np.unravel_index(np.argmax(Y_norm_array), np.shape(Y_norm_array))</span>
+            <span class="c1"># seed_w, seed_h = y + min_y, x + min_x</span>
+            <span class="c1"># print(seed_w, seed_h, np.shape(curr_img))</span>
+
+            <span class="n">seed_point</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">)</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d2</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">retval</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">floodFill</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">curr_img</span><span class="p">,</span>
+                                            <span class="n">seedPoint</span><span class="o">=</span><span class="n">seed_point</span><span class="p">,</span>
+                                            <span class="n">newVal</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                            <span class="n">loDiff</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span>
+                                            <span class="n">upDiff</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span>
+                                            <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">flags</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">bool_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">bool_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d1</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">bool_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">bool_zeros</span><span class="o">.</span><span class="n">shape</span><span class="p">)[</span><span class="mi">0</span><span class="p">][::</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">bool_zeros</span><span class="p">[</span><span class="n">bool_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">bool_matrix</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">bool_matrix</span> <span class="o">=</span> <span class="n">bool_zeros</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">))</span>
+
+            <span class="n">color_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">front_rgb_camera</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">color_image</span><span class="p">[</span><span class="n">bool_matrix</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">'Color'</span><span class="p">,</span> <span class="n">color_image</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </code></pre>
 </div>
 </details>

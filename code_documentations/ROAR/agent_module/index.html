@@ -213,6 +213,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../coordinate/" class="md-nav__link">
+        Coordinate
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -488,10 +500,49 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent" class="md-nav__link">
+    LQRAgent
+  </a>
+  
+    <nav class="md-nav" aria-label="LQRAgent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        Configurations
+      </a>
     </li>
   
 
@@ -588,10 +639,138 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../ROAR_Sim/ccu/" class="md-nav__link">
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1" type="checkbox" id="nav-3-3-1" >
+      
+      <label class="md-nav__link" for="nav-3-3-1">
         Carla Client
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Carla Client" data-md-level="3">
+        <label class="md-nav__title" for="nav-3-3-1">
+          <span class="md-nav__icon md-icon"></span>
+          Carla Client
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/carla_client/" class="md-nav__link">
+        Carla Runner
       </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3-3-1-2" type="checkbox" id="nav-3-3-1-2" >
+      
+      <label class="md-nav__link" for="nav-3-3-1-2">
+        Util
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Util" data-md-level="4">
+        <label class="md-nav__title" for="nav-3-3-1-2">
+          <span class="md-nav__icon md-icon"></span>
+          Util
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/camera/" class="md-nav__link">
+        Camera Manager
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/hud/" class="md-nav__link">
+        Hud
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/kbc/" class="md-nav__link">
+        Keyboard Controls
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/sensors/" class="md-nav__link">
+        Sensors
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/util/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROAR_Sim/world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -774,6 +953,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent" class="md-nav__link">
+    LQRAgent
+  </a>
+  
+    <nav class="md-nav" aria-label="LQRAgent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ROAR.agent_module.lqr_agent.LQRAgent.run_step" class="md-nav__link">
+    run_step()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -884,6 +1090,7 @@ return a control</p>
           <div class="highlight">
 <pre><span></span><code><span class="k">def</span> <span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensors_data</span><span class="p">:</span> <span class="n">SensorsData</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run_step</span><span class="p">(</span><span class="n">sensors_data</span><span class="o">=</span><span class="n">sensors_data</span><span class="p">,</span> <span class="n">vehicle</span><span class="o">=</span><span class="n">vehicle</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
     <span class="n">control</span> <span class="o">=</span> <span class="n">VehicleControl</span><span class="p">(</span><span class="n">throttle</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">steering</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">control</span>
 </code></pre>
@@ -1075,7 +1282,7 @@ return a control</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">=</span> <span class="n">target_speed</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"PID Agent"</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">route_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">waypoint_file_path</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pid_controller</span> <span class="o">=</span> <span class="n">PIDController</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">throttle_boundary</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pid_controller</span> <span class="o">=</span> <span class="n">PIDController</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">throttle_boundary</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span> <span class="o">=</span> <span class="n">WaypointFollowingMissionPlanner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
     <span class="c1"># initiated right after mission plan</span>
 
@@ -1158,7 +1365,8 @@ return a control</p>
     <span class="nb">super</span><span class="p">(</span><span class="n">PIDAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_step</span><span class="p">(</span><span class="n">vehicle</span><span class="o">=</span><span class="n">vehicle</span><span class="p">,</span>
                                    <span class="n">sensors_data</span><span class="o">=</span><span class="n">sensors_data</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">transform_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">is_done</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_done</span><span class="p">:</span>
         <span class="n">control</span> <span class="o">=</span> <span class="n">VehicleControl</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Path Following Agent is Done. Idling."</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1302,6 +1510,138 @@ return a control</p>
 </div>
 </div>
 </div>
+<div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h2 class="doc doc-heading" id="ROAR.agent_module.lqr_agent.LQRAgent">
+
+        <code>LQRAgent</code>
+
+
+
+      <a class="headerlink" href="#ROAR.agent_module.lqr_agent.LQRAgent" title="Permanent link">¤</a></h2>
+<div class="doc doc-contents ">
+<div class="doc doc-children">
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR.agent_module.lqr_agent.LQRAgent.__init__">
+
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+      <a class="headerlink" href="#ROAR.agent_module.lqr_agent.LQRAgent.__init__" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<details class="quote">
+          <summary>Source code in <code>ROAR/agent_module/lqr_agent.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_speed</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">target_speed</span> <span class="o">=</span> <span class="n">target_speed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"LQR Agent"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">route_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_settings</span><span class="o">.</span><span class="n">waypoint_file_path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lqr_controller</span> <span class="o">=</span> <span class="n">LQRController</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">steering_boundary</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">throttle_boundary</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span> <span class="o">=</span> <span class="n">WaypointFollowingMissionPlanner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+    <span class="c1"># initiated right after mission plan</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">behavior_planner</span> <span class="o">=</span> <span class="n">BehaviorPlanner</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span> <span class="o">=</span> <span class="n">SmoothWaypointFollowingLocalPlanner</span><span class="p">(</span>
+        <span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">controller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lqr_controller</span><span class="p">,</span>
+        <span class="n">mission_planner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mission_planner</span><span class="p">,</span>
+        <span class="n">behavior_planner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">behavior_planner</span><span class="p">,</span>
+        <span class="n">closeness_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"Waypoint Following Agent Initiated. Reading f"</span>
+        <span class="sa">f</span><span class="s2">"rom </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">route_file_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-method">
+<h3 class="doc doc-heading" id="ROAR.agent_module.lqr_agent.LQRAgent.run_step">
+
+<code class="highlight language-python"><span class="n">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">,</span> <span class="n">sensors_data</span><span class="p">)</span></code>
+
+
+      <a class="headerlink" href="#ROAR.agent_module.lqr_agent.LQRAgent.run_step" title="Permanent link">¤</a></h3>
+<div class="doc doc-contents ">
+<p>Receive Sensor Data and vehicle state information on every step and
+return a control</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sensors_data</code></td>
+<td><code>SensorsData</code></td>
+<td>
+<p>sensor data on this frame</p>
+</td>
+<td><em>required</em></td>
+</tr>
+<tr>
+<td><code>vehicle</code></td>
+<td><code>Vehicle</code></td>
+<td>
+<p>vehicle state on this frame</p>
+</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VehicleControl</code></td>
+<td>
+<p>Vehicle Control</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+          <summary>Source code in <code>ROAR/agent_module/lqr_agent.py</code></summary>
+          <div class="highlight">
+<pre><span></span><code><span class="k">def</span> <span class="nf">run_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">sensors_data</span><span class="p">:</span> <span class="n">SensorsData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VehicleControl</span><span class="p">:</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">LQRAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_step</span><span class="p">(</span><span class="n">vehicle</span><span class="o">=</span><span class="n">vehicle</span><span class="p">,</span>
+                                   <span class="n">sensors_data</span><span class="o">=</span><span class="n">sensors_data</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">transform_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">is_done</span><span class="p">():</span>
+        <span class="n">control</span> <span class="o">=</span> <span class="n">VehicleControl</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Path Following Agent is Done. Idling."</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">run_in_series</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">control</span>
+</code></pre>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
                 
               
               
@@ -1335,13 +1675,13 @@ return a control</p>
           </a>
         
         
-          <a href="../controller_module/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../config/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Control Module
+                Configurations
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
