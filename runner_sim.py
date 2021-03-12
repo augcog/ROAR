@@ -16,6 +16,7 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from ROAR.agent_module.pid_agent import PIDAgent
 
+
 def main():
     """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR_Sim/configurations/agent_configuration.json"))
