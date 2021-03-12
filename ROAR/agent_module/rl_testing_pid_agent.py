@@ -1,6 +1,6 @@
 from ROAR.agent_module.agent import Agent
 from pathlib import Path
-from ROAR.control_module.pid_controller import PIDController
+from ROAR.control_module.rl_test_pid_controller import PIDController
 from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
     SimpleWaypointFollowingLocalPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
@@ -9,8 +9,10 @@ from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import VehicleControl, Vehicle
 import logging
 
+import numpy as np
+from typing import Any
 
-class PIDAgent(Agent):
+class RLPIDAgent(Agent):
     def __init__(self, target_speed=40, **kwargs):
         super().__init__(**kwargs)
         self.target_speed = target_speed
@@ -27,14 +29,17 @@ class PIDAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
+
+
+
         self.logger.debug(
             f"Waypoint Following Agent Initiated. Reading f"
             f"rom {self.route_file_path.as_posix()}")
 
     def run_step(self, vehicle: Vehicle,
                  sensors_data: SensorsData) -> VehicleControl:
-        super(PIDAgent, self).run_step(vehicle=vehicle,
-                                       sensors_data=sensors_data)
+        super(RLPIDAgent, self).run_step(vehicle=vehicle,
+                                         sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         if self.is_done:
             control = VehicleControl()
@@ -42,3 +47,4 @@ class PIDAgent(Agent):
         else:
             control = self.local_planner.run_in_series()
         return control
+

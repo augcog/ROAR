@@ -21,11 +21,11 @@ from ROAR.utilities_module.data_structures_models import (
 from ROAR.utilities_module.utilities import png_to_depth
 import numpy as np
 import cv2
+from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
 
 class CarlaBridge(Bridge):
     def convert_location_from_source_to_agent(self, source: carla.Location) -> Location:
-
         """
         Convert Location data from Carla.location to Agent's location data type
         invert the Z axis to make it into right hand coordinate system
@@ -35,12 +35,12 @@ class CarlaBridge(Bridge):
         Returns:
 
         """
-        return Location(x=source.x, y=source.z, z=source.y)
+        return Location(x=source.x, y=-source.z, z=-source.y)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
-
-        return Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
+        roll, pitch, yaw = source.roll, source.pitch, source.yaw
+        return Rotation(roll=roll, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform
@@ -68,7 +68,8 @@ class CarlaBridge(Bridge):
 
         try:
             source.convert(cc.Raw)
-            return RGBData(data=self._to_rgb_array(source))
+            rgb_image = self._to_rgb_array(source)
+            return RGBData(data=rgb_image)
         except:
             return None
 
@@ -158,7 +159,7 @@ class CarlaBridge(Bridge):
 
     def convert_location_from_agent_to_source(self, source: Location) -> carla.Location:
         """Convert Agent's Location to a Carla.Location."""
-        return carla.Location(x=source.x, y=source.z, z=source.y)
+        return carla.Location(x=source.x, y=-source.z, z=source.y)
 
     def convert_rotation_from_agent_to_source(self, source: Rotation) -> carla.Rotation:
         """Convert Agent's Rotation to a Carla.Rotation."""
@@ -188,4 +189,3 @@ class CarlaBridge(Bridge):
         array = array[:, :, :3]
         # array = array[:, :, ::-1]
         return array
-

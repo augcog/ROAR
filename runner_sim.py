@@ -12,6 +12,10 @@ from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.cascade_obj_agent import CascadeObjAgent
 from ROAR.agent_module.lqr_agent import LQRAgent
 
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+logging.getLogger("numpy").setLevel(logging.ERROR)
+warnings.filterwarnings('ignore')
+
 
 def main():
     """Starts game loop"""

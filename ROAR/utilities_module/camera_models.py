@@ -30,13 +30,11 @@ class Camera(BaseModel):
         Will set the attribute intrinsic matrix so that re-calculation is not
         necessary.
         https://github.com/carla-simulator/carla/issues/56
-
         [
                 ax, 0, cx,
                 0, ay, cy,
                 0 , 0, 1
         ]
-
         Returns:
             Intrinsics_matrix
         """

@@ -29,8 +29,8 @@ class PurePursuitController(Controller):
         """
 
         super(PurePursuitController, self).__init__(agent=agent)
-        self.target_speed = self.agent.agent_settings.max_speed \
-            if self.agent.agent_settings.max_speed else target_speed
+        self.target_speed = self.agent.agent_config.max_speed \
+            if self.agent.agent_config.max_speed else target_speed
         self.look_ahead_gain = look_ahead_gain
         self.look_ahead_distance = look_ahead_distance
         self.latitunal_controller = LatitunalPurePursuitController(

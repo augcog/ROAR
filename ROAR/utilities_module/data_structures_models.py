@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial import distance
 from typing import Union, Optional
 from typing import List
-
+from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
 class Location(BaseModel):
     x: float = Field(
@@ -86,30 +86,21 @@ class Transform(BaseModel):
 
         Returns:
             Extrinsics matrix
+
+        [R, T]
+        [0 1]
         """
         location = self.location
         rotation = self.rotation
-        yaw, pitch, roll = rotation.yaw, rotation.pitch, rotation.roll
-        c_y = np.cos(np.radians(yaw))
-        s_y = np.sin(np.radians(yaw))
-        c_r = np.cos(np.radians(roll))
-        s_r = np.sin(np.radians(roll))
-        c_p = np.cos(np.radians(pitch))
-        s_p = np.sin(np.radians(pitch))
+
+        roll, pitch, yaw = rotation.roll, rotation.pitch, rotation.yaw
+        rotation_matrix = rotation_matrix_from_euler(roll=roll, pitch=pitch, yaw=yaw)
 
         matrix = np.identity(4)
         matrix[0, 3] = location.x
         matrix[1, 3] = location.y
         matrix[2, 3] = location.z
-        matrix[0, 0] = c_p * c_y
-        matrix[0, 1] = c_y * s_p * s_r - s_y * c_r
-        matrix[0, 2] = -c_y * s_p * c_r - s_y * s_r
-        matrix[1, 0] = s_y * c_p
-        matrix[1, 1] = s_y * s_p * s_r + c_y * c_r
-        matrix[1, 2] = -s_y * s_p * c_r + c_y * s_r
-        matrix[2, 0] = s_p
-        matrix[2, 1] = -c_p * s_r
-        matrix[2, 2] = c_p * c_r
+        matrix[0:3, 0:3] = rotation_matrix
         return matrix
 
     def __str__(self):
@@ -118,8 +109,10 @@ class Transform(BaseModel):
     def record(self):
         return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
 
-    def to_array(self):
-        return np.concatenate((self.location.to_array(), self.rotation.to_array()))
+    def to_array(self) -> np.ndarray:
+        return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch,
+                         self.rotation.yaw])
+
 
     @staticmethod
     def from_array(array):
@@ -183,6 +176,9 @@ class ViveTrackerData(BaseModel):
     velocity: Vector3D = Field()
     tracker_name: str = Field(default="Tracker")
 
+class TrackingData(BaseModel):
+    transform: Transform = Field(default=Transform())
+    velocity: Vector3D = Field()
 
 class SensorsData(BaseModel):
     front_rgb: Union[RGBData, None] = Field(default=None)
