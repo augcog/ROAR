@@ -42,10 +42,19 @@ def img_to_world(scaled_depth_image: np.ndarray,
     # extrinsics @ inv(K) @ [u, v,1] = [X,Y,Z]
     k_inv = np.linalg.inv(intrinsics_matrix)
     raw_p3d = k_inv @ scaled_depth_image
-    ones = np.ones(shape=np.shape(raw_p3d)[1])
-    raw_p3d_padded = np.vstack([raw_p3d, ones])
 
-    return (veh_world_matrix @ cam_veh_matrix @ raw_p3d_padded)[:3, :].T
+    ones = np.ones(shape=np.shape(raw_p3d)[1])
+    # raw_p3d_padded = np.vstack([raw_p3d, ones])
+
+    raw_p3d_padded = np.vstack([
+        raw_p3d[2,: ],
+        raw_p3d[0,:],
+        -raw_p3d[1,:],
+        ones
+    ])
+    points: np.ndarray = (veh_world_matrix @ cam_veh_matrix @ raw_p3d_padded)[:3, :].T
+
+    return points
 
 
 def img_to_world2(depth_img,

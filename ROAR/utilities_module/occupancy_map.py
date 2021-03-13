@@ -11,7 +11,7 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR.utilities_module.utilities import img_to_world
 import logging
 import time
-
+from scipy.sparse.dok import dok_matrix
 
 class OccupancyGridMap:
     """
@@ -75,7 +75,7 @@ class OccupancyGridMap:
     def _initialize_map(self):
         x_total = self._max_x - self._min_x + 2 * self._map_additiona_padding
         y_total = self._max_y - self._min_y + 2 * self._map_additiona_padding
-        self.map = np.zeros([x_total, y_total])
+        self.map = np.zeros(shape=(x_total, y_total), dtype=np.float32)#dok_matrix((x_total, y_total), dtype=np.float32)
         self.logger.debug(f"Occupancy Grid Map of size {x_total} x {y_total} "
                           f"initialized")
 
@@ -117,20 +117,21 @@ class OccupancyGridMap:
         # self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
         occu_cords = self.cord_translation_from_world(
             world_cords_xy=world_cords_xy)
-        # self.logger.debug(f"Occupancy Grid Map Cord shape = {np.shape(occu_cords)}")
+        # # self.logger.debug(f"Occupancy Grid Map Cord shape = {np.shape(occu_cords)}")
         occu_cords_x, occu_cords_y = occu_cords[:, 0], occu_cords[:, 1]
         min_occu_cords_x, max_occu_cords_x = np.min(occu_cords_x), np.max(occu_cords_x)
         min_occu_cords_y, max_occu_cords_y = np.min(occu_cords_y), np.max(occu_cords_y)
+        self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] = 0
+        self.map[occu_cords_y, occu_cords_x] = 1
+        cv2.imshow("map", cv2.resize(self.map, dsize=(500,500)))
+        cv2.waitKey(1)
 
-        # tmp_map = np.zeros(shape=self.map.shape)
+        # tmp_map = np.zeros(shape=self.map.shape, dtype=np.float32)
         # tmp_map[occu_cords_y, occu_cords_x] = 1
-        # cv2.imshow("tmp_map", cv2.resize(tmp_map, dsize=(500,500)))
+        # cv2.imshow("tmp map", cv2.resize(tmp_map, dsize=(500,500)))
         # cv2.waitKey(1)
-        self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] -= 0.01
-        self.map[occu_cords_y, occu_cords_x] += self.occu_prob
-        self.map[min_occu_cords_y: max_occu_cords_y,
-        min_occu_cords_x:max_occu_cords_x] = \
-            self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x].clip(0, 1)
+
+
 
     def visualize(self,
                   vehicle_location: Optional[Location] = None,
@@ -138,7 +139,6 @@ class OccupancyGridMap:
         if vehicle_location is None:
             cv2.imshow("Occupancy Grid Map", cv2.resize(self.map, dsize=(500, 500)))
         else:
-
             occu_cord = self.location_to_occu_cord(
                 location=vehicle_location)
             map_copy = self.map.copy()
