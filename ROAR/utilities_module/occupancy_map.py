@@ -121,7 +121,7 @@ class OccupancyGridMap:
         occu_cords_x, occu_cords_y = occu_cords[:, 0], occu_cords[:, 1]
         min_occu_cords_x, max_occu_cords_x = np.min(occu_cords_x), np.max(occu_cords_x)
         min_occu_cords_y, max_occu_cords_y = np.min(occu_cords_y), np.max(occu_cords_y)
-        self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] = 0
+        # self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] = 0
         self.map[occu_cords_y, occu_cords_x] = 1
         cv2.imshow("map", cv2.resize(self.map, dsize=(500,500)))
         cv2.waitKey(1)

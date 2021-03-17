@@ -47,17 +47,18 @@ class PointCloudDetector(Detector):
             coords[0][indices_to_select],
             coords[1][indices_to_select]
         )
-
+        print(coords)
         raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=coords[0], j=coords[1]), (3, np.shape(coords)[1])).T
 
         cords_y_minus_z_x = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
         cords_xyz_1 = np.vstack([
-            cords_y_minus_z_x[2, :],
             cords_y_minus_z_x[0, :],
             -cords_y_minus_z_x[1, :],
+            -cords_y_minus_z_x[2, :],
             np.ones((1, np.shape(cords_y_minus_z_x)[1]))
         ])
-        points: np.ndarray = self.agent.vehicle.transform.get_matrix() @ self.agent.front_depth_camera.transform.get_matrix() @ cords_xyz_1
+
+        points = self.agent.vehicle.transform.get_matrix() @ cords_xyz_1
         points = points.T[:, :3]
         return points
 

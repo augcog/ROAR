@@ -36,23 +36,33 @@ class DepthToPointCloudDetector(Detector):
         if self.agent.front_depth_camera.data is not None:
             depth_img = self.agent.front_depth_camera.data.copy()
             coords = np.where(depth_img <= np.amax(depth_img))  # it will just return all coordinate pairs
-            depths = depth_img[coords][:, np.newaxis] * self.scale_factor
-            result = np.multiply(np.array(coords).T, depths)
-            S_uv1 = np.hstack((result, depths)).T
-            if self.should_compute_global_pointcloud:
-                result = img_to_world(scaled_depth_image=S_uv1,
-                                      intrinsics_matrix=self.agent.front_depth_camera.intrinsics_matrix,
-                                      veh_world_matrix=self.agent.vehicle.transform.get_matrix(),
-                                      cam_veh_matrix=self.agent.front_depth_camera.transform.get_matrix())
-                return result
+            raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=coords[0], j=coords[1]),
+                                 (3, np.shape(coords)[1])).T
 
-            else:
-                # return p3d.T
-                K_inv = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix)
-                return (K_inv @ S_uv1).T
+            # depths = depth_img[coords][:, np.newaxis] * self.scale_factor
+            # result = np.multiply(np.array(coords).T, depths)
+            # raw_p2d = np.hstack((result, depths))
+            cords_y_minus_z_x = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
+            cords_xyz_1 = np.vstack([
+                cords_y_minus_z_x[0, :],
+                -cords_y_minus_z_x[1, :],
+                -cords_y_minus_z_x[2, :],
+                np.ones((1, np.shape(cords_y_minus_z_x)[1]))
+            ])
+            points = self.agent.vehicle.transform.get_matrix() @ cords_xyz_1
+            points = points.T[:, :3]
+            return points
         return None
 
 
     @staticmethod
     def find_fps(t1, t2):
         return 1 / (t2 - t1)
+
+    @staticmethod
+    def _pix2xyz(depth_img, i, j):
+        return [
+            depth_img[i, j] * j * 1000,
+            depth_img[i, j] * i * 1000,
+            depth_img[i, j] * 1000
+        ]
