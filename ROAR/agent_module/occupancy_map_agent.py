@@ -19,6 +19,7 @@ import cv2
 from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
 from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
 
+
 class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
@@ -32,36 +33,32 @@ class OccupancyMapAgent(Agent):
             controller=self.pid_controller,
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
-            closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
+            closeness_threshold=1.5
+        )
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=550,
                                               world_coord_resolution=1,
-                                              occu_prob=0.9)  # 1 m = 100 cm
-        # self.add_threaded_module(DepthToPointCloudDetector(agent=self,
-        #                                                    should_compute_global_pointcloud=True,
-        #                                                    threaded=True,
-        #                                                    scale_factor=1000))
-        # self.gpd = GroundPlaneDetector(self, threaded=True)
-        # self.add_threaded_module(self.gpd)
-        # self.obstacle_detector = ObstacleDetector(self, threaded=True)
-        # self.add_threaded_module(self.obstacle_detector)
+                                              occu_prob=0.99,
+                                              max_points_to_convert=5000)
         self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
                                                               threaded=True,
-                                                              max_detectable_distance=0.9)
+                                                              max_detectable_distance=0.3,
+                                                              max_points_to_convert=10000,
+                                                              min_obstacle_height=2)
         self.add_threaded_module(self.obstacle_from_depth_detector)
         self.vis = o3d.visualization.Visualizer()
         self.vis.create_window(width=500, height=500)
         self.pcd = o3d.geometry.PointCloud()
         self.points_added = False
-        # self.pointcloud_detector = PointCloudDetector(agent=self)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
-        option = "obstacle_coords" # ground_coords, point_cloud_obstacle_from_depth
+        option = "obstacle_coords"  # ground_coords, point_cloud_obstacle_from_depth
         if self.kwargs.get(option, None) is not None:
-            print("curr_transform", self.vehicle.transform)
+            # print("curr_transform", self.vehicle.transform)
             points = self.kwargs[option]
             self.occupancy_map.update(points)
+            self.occupancy_map.visualize()
             if self.points_added is False:
                 self.pcd = o3d.geometry.PointCloud()
                 point_means = np.mean(points, axis=0)
@@ -76,11 +73,4 @@ class OccupancyMapAgent(Agent):
                 self.vis.update_geometry(self.pcd)
                 self.vis.poll_events()
                 self.vis.update_renderer()
-
-
-        # points = self.pointcloud_detector.run_in_series()
-        # self.occupancy_map.update(points)
-
-        # if self.kwargs.get("obstacle_coords", None) is not None:
-
         return control

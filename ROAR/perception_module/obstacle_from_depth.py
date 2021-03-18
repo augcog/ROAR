@@ -12,13 +12,13 @@ class ObstacleFromDepth(Detector):
                  max_detectable_distance: float = 0.3,
                  max_points_to_convert: int = 10000,
                  max_incline_normal=0.5,
-                 vehicle_height: float = 3, ** kwargs):
+                 min_obstacle_height: float = 3, ** kwargs):
 
         super().__init__(agent, **kwargs)
         self.max_detectable_distance = kwargs.get("max_detectable_distance", max_detectable_distance)
         self.max_points_to_convert = kwargs.get("max_points_to_convert", max_points_to_convert)
         self.max_incline_normal = kwargs.get("max_incline_normal", max_incline_normal)
-        self.vehicle_height = kwargs.get("vehicle_height", vehicle_height)
+        self.min_obstacle_height = kwargs.get("max_obstacle_height", min_obstacle_height)
 
     def run_in_series(self, **kwargs) -> Any:
         if self.agent.front_depth_camera.data is not None:
@@ -39,7 +39,7 @@ class ObstacleFromDepth(Detector):
             cords_y_minus_z_x = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
             cords_xyz_1 = np.vstack([
                 cords_y_minus_z_x[0, :],
-                cords_y_minus_z_x[1, :],
+                -cords_y_minus_z_x[1, :],
                 -cords_y_minus_z_x[2, :],
                 np.ones((1, np.shape(cords_y_minus_z_x)[1]))
             ])
@@ -54,8 +54,8 @@ class ObstacleFromDepth(Detector):
             normals = np.asarray(pcd.normals)
             abs_normals = np.abs(normals)
             obstacles_mask = abs_normals[:, 1] < self.max_incline_normal
-            too_high_mask = points[:, 1] < self.agent.vehicle.transform.location.y + self.vehicle_height
-            mask = obstacles_mask & too_high_mask
+            obstacle_below_height_mask = points[:, 1] < self.agent.vehicle.transform.location.y + self.min_obstacle_height
+            mask = obstacles_mask & obstacle_below_height_mask
             self.agent.kwargs["point_cloud_obstacle_from_depth"] = points
             self.agent.kwargs["obstacle_coords"] = points[mask]
             self.agent.kwargs["ground_coords"] = points[~mask]
