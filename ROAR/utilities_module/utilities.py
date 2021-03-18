@@ -47,9 +47,9 @@ def img_to_world(scaled_depth_image: np.ndarray,
     # raw_p3d_padded = np.vstack([raw_p3d, ones])
 
     raw_p3d_padded = np.vstack([
-        raw_p3d[2,: ],
-        raw_p3d[0,:],
-        -raw_p3d[1,:],
+        raw_p3d[2, :],
+        raw_p3d[0, :],
+        -raw_p3d[1, :],
         ones
     ])
     points: np.ndarray = (veh_world_matrix @ cam_veh_matrix @ raw_p3d_padded)[:3, :].T
@@ -108,41 +108,21 @@ def rotation_matrix_from_euler(roll: float, pitch: float, yaw: float) -> np.ndar
     Returns:
         3 x 3 array rotation matrix
     """
-    alpha, beta, gamma = np.radians(yaw), np.radians(pitch), np.radians(roll)
-    c_a = np.cos(alpha)
-    s_a = np.sin(alpha)
-    c_b = np.cos(beta)
-    s_b = np.sin(beta)
-    c_y = np.cos(gamma)
-    s_y = np.sin(gamma)
+    ry, rx, rz = np.radians(yaw), np.radians(pitch), np.radians(roll)
+    Rx = np.array([
+        [1, 0, 0],
+        [0, np.cos(rx), -np.sin(rx)],
+        [0, np.sin(rx), np.cos(rx)]
+    ])
+    Ry = np.array([
+        [np.cos(ry), 0, np.sin(ry)],
+        [0, 1, 0],
+        [-np.sin(ry), 0, np.cos(ry)]
+    ])
+    Rz = np.array([
+        [np.cos(rz), -np.sin(rz), 0],
+        [np.sin(rz), np.cos(rz), 0],
+        [0, 0, 1]
+    ])
+    return Rx @ Ry @ Rz
 
-    return np.array([[c_a * c_b, c_a * s_b * s_y - s_a * c_y, c_a*s_b*c_y+s_a*s_y],
-                     [s_a*c_b, s_a*s_b*s_y+c_a*c_y, s_a*s_b*c_y-c_a*s_y],
-                     [-s_b, c_b*s_y, c_b*c_y]])
-
-
-
-
-    # c_y = np.cos(alpha)
-    # s_y = np.sin(alpha)
-    # c_r = np.cos(gamma)
-    # s_r = np.sin(gamma)
-    # c_p = c_b = np.cos(beta)
-    # s_p = np.sin(beta)
-    #
-    # R_roll = np.array([
-    #     [1, 0, 0],
-    #     [0, c_r, -s_r],
-    #     [0, s_r, c_r]
-    # ])
-    # R_pitch = np.array([
-    #     [c_p, 0, s_p],
-    #     [0, 1, 0],
-    #     [-s_p, 0, c_p]
-    # ])
-    # R_yaw = np.array([
-    #     [c_y, -s_y, 0],
-    #     [s_y, c_y, 0],
-    #     [0, 0, 1]
-    # ])
-    # return R_yaw @ R_pitch @ R_roll
