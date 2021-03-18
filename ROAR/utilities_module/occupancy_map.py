@@ -125,7 +125,7 @@ class OccupancyGridMap:
         self.map[occu_cords_y, occu_cords_x] = 1
         cv2.imshow("map", cv2.resize(self.map, dsize=(500,500)))
         cv2.waitKey(1)
-
+        #
         # tmp_map = np.zeros(shape=self.map.shape, dtype=np.float32)
         # tmp_map[occu_cords_y, occu_cords_x] = 1
         # cv2.imshow("tmp map", cv2.resize(tmp_map, dsize=(500,500)))

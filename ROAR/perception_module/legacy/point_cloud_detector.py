@@ -46,7 +46,7 @@ class PointCloudDetector(Detector):
         coords = (
             coords[0][indices_to_select],
             coords[1][indices_to_select]
-        )
+        ) # 600x800
         print(coords)
         raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=coords[0], j=coords[1]), (3, np.shape(coords)[1])).T
 

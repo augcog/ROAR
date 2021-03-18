@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 import cv2
 from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
-
+from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
 
 class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
@@ -33,49 +33,35 @@ class OccupancyMapAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=500,
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
                                               world_coord_resolution=1,
                                               occu_prob=0.9)  # 1 m = 100 cm
-        self.add_threaded_module(DepthToPointCloudDetector(agent=self,
-                                                           should_compute_global_pointcloud=True,
-                                                           threaded=True,
-                                                           scale_factor=1000))
+        # self.add_threaded_module(DepthToPointCloudDetector(agent=self,
+        #                                                    should_compute_global_pointcloud=True,
+        #                                                    threaded=True,
+        #                                                    scale_factor=1000))
         # self.gpd = GroundPlaneDetector(self, threaded=True)
         # self.add_threaded_module(self.gpd)
-        self.obstacle_detector = ObstacleDetector(self, threaded=True)
-        self.add_threaded_module(self.obstacle_detector)
+        # self.obstacle_detector = ObstacleDetector(self, threaded=True)
+        # self.add_threaded_module(self.obstacle_detector)
+        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
+                                                              threaded=True,
+                                                              max_detectable_distance=0.9)
+        self.add_threaded_module(self.obstacle_from_depth_detector)
         self.vis = o3d.visualization.Visualizer()
         self.vis.create_window(width=500, height=500)
         self.pcd = o3d.geometry.PointCloud()
         self.points_added = False
-        self.pointcloud_detector = PointCloudDetector(agent=self)
+        # self.pointcloud_detector = PointCloudDetector(agent=self)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
-        print("curr_transform", self.vehicle.transform)
-        # points = self.pointcloud_detector.run_in_series()
-        # self.occupancy_map.update(points)
-        # if self.points_added is False:
-        #     self.pcd = o3d.geometry.PointCloud()
-        #     point_means = np.mean(points, axis=0)
-        #     self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-        #     self.vis.add_geometry(self.pcd)
-        #     self.vis.poll_events()
-        #     self.vis.update_renderer()
-        #     self.points_added = True
-        # else:
-        #     point_means = np.mean(points, axis=0)
-        #     self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-        #     self.vis.update_geometry(self.pcd)
-        #     self.vis.poll_events()
-        #     self.vis.update_renderer()
-
-        if self.kwargs.get("obstacle_coords", None) is not None:
-            points = self.kwargs["obstacle_coords"]
-            print(self.vehicle.transform)
+        option = "obstacle_coords" # ground_coords, point_cloud_obstacle_from_depth
+        if self.kwargs.get(option, None) is not None:
+            print("curr_transform", self.vehicle.transform)
+            points = self.kwargs[option]
             self.occupancy_map.update(points)
-            # self.occupancy_map.visualize()
             if self.points_added is False:
                 self.pcd = o3d.geometry.PointCloud()
                 point_means = np.mean(points, axis=0)
@@ -90,5 +76,11 @@ class OccupancyMapAgent(Agent):
                 self.vis.update_geometry(self.pcd)
                 self.vis.poll_events()
                 self.vis.update_renderer()
+
+
+        # points = self.pointcloud_detector.run_in_series()
+        # self.occupancy_map.update(points)
+
+        # if self.kwargs.get("obstacle_coords", None) is not None:
 
         return control
