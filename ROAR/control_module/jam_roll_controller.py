@@ -17,7 +17,9 @@ class PIDController(Controller):
     def __init__(self, agent, steering_boundary: Tuple[float, float],
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
-        self.max_speed = self.agent.agent_settings.max_speed
+       #self.max_speed = self.agent.agent_settings.max_speed
+        self.max_speed = 150
+
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
@@ -51,8 +53,8 @@ class PIDController(Controller):
         print('pos z: ', veh_z)
 
         print('yaw: ', veh_yaw)
-        print('roll: ', veh_roll)
-        print('pitch: ', veh_pitch)
+        # print('roll: ', veh_roll)
+        # print('pitch: ', veh_pitch)
 
         return VehicleControl(throttle=throttle, steering=steering)
 
@@ -158,15 +160,19 @@ class LongPIDController(Controller):
         else:
             _de = 0.0
             _ie = 0.0
-        output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
-                               self.throttle_boundary[1]))
-        print(self.agent.vehicle.transform.rotation.roll)
+        #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+        #                       self.throttle_boundary[1]))
+        #print(self.agent.vehicle.transform.rotation.roll)
         vehroll=self.agent.vehicle.transform.rotation.roll
-        # output = np.exp(-0.048 * np.abs(vehroll))
-        if abs(self.agent.vehicle.transform.rotation.roll) <= .75:
-            output = 1
-            if abs(self.agent.vehicle.transform.rotation.roll) > .75:
-                  output = np.exp(-0.06 * np.abs(vehroll))
+        out = 2 * np.exp(-0.4 * np.abs(vehroll))
+        output = np.clip(out, a_min=0, a_max=1)
+        #print('throttle = ',output)
+        # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+        #     output = 1
+        #     if abs(self.agent.vehicle.transform.rotation.roll) > .35:
+        #           output = 1.2*np.exp(-0.07 * np.abs(vehroll))
+                  #output = 4 * np.exp(-0.06 * np.abs(vehroll))
+
         #         output = 0
         #         if abs(self.agent.vehicle.transform.rotation.roll) > .6:
         #             output = .8
@@ -211,18 +217,19 @@ class LatPIDController(Controller):
         """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
-        print(v_begin)
+        print('* v begin *', v_begin)
         print('next wp x: ', next_waypoint.location.x)
         print('next wp z: ', next_waypoint.location.z)
-        print('next wp y: ', next_waypoint.location.y)
+        #print('next wp y: ', next_waypoint.location.y)
 
 
         direction_vector = np.array([np.sin(np.radians(self.agent.vehicle.transform.rotation.yaw)),
                                      0,
                                      -np.cos(np.radians(self.agent.vehicle.transform.rotation.yaw))])
         v_end = v_begin + direction_vector
-
-        v_vec = np.array([v_end[0] - v_begin[0], 0, - (v_end[2] - v_begin[2])])
+        print ('* v end *', v_end)
+        v_vec = np.array([v_end[0] - v_begin[0], 0, (v_end[2] - v_begin[2])])
+        print ('v vec', v_vec)
         # calculate error projection
         w_vec = np.array(
             [
@@ -231,9 +238,11 @@ class LatPIDController(Controller):
                 next_waypoint.location.z - v_begin[2],
             ]
         )
-
+        print ('w vec', w_vec)
         _dot = math.acos(np.clip(np.dot(v_vec, w_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)), -1.0, 1.0))
         _cross = np.cross(v_vec, w_vec)
+        print('dot',_dot)
+        print('cross',_cross)
         if _cross[1] < 0:
             _dot *= -1
         self._error_buffer.append(_dot)

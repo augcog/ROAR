@@ -85,6 +85,32 @@ class LongPIDController(Controller):
         # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
 
+    # def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+    #     target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+    #     # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
+    #     current_speed = Vehicle.get_speed(self.agent.vehicle)
+    #
+    #     # k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
+    #     # error = target_speed - current_speed
+    #     #
+    #     # self._error_buffer.append(error)
+    #     #
+    #     # if len(self._error_buffer) >= 2:
+    #     #     # print(self._error_buffer[-1], self._error_buffer[-2])
+    #     #     _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
+    #     #     _ie = sum(self._error_buffer) * self._dt
+    #     # else:
+    #     #     _de = 0.0
+    #     #     _ie = 0.0
+    #     #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+    #     #                       self.throttle_boundary[1]))
+    #     print(self.agent.vehicle.transform.rotation.roll)
+    #     vehroll=self.agent.vehicle.transform.rotation.roll
+    #     out = 2 * np.exp(-0.4 * np.abs(vehroll))
+    #     output = np.clip(out, a_min=0, a_max=1)
+    #     print('throttle = ',output)
+    #     return output
+
 class BLatStanley_controller(Controller):
     def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
                  dt: float = 0.03, **kwargs):
@@ -183,7 +209,7 @@ class BLatStanley_controller(Controller):
         #                 [np.sin(theta_rad), np.cos(theta_rad), veh_z],
         #                 [0, 0, 1]])
 
-        gwv = np.array([[np.cos(theta_rad), np.sin(theta_rad), veh_x],
+        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
                         [-np.sin(theta_rad), np.cos(theta_rad), veh_z],
                         [0, 0, 1]])
 
@@ -298,7 +324,7 @@ class BLatStanley_controller(Controller):
         #***get heading if vehicle was at the correct spot on path**
         # vf_path_pitch = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
 
-        path_yaw_rad = (math.atan2((nx2 - next_waypoint.location.x), (nz2 - next_waypoint.location.z)))
+        path_yaw_rad = (math.atan2((nx1 - next_waypoint.location.x), (-nz1 - -next_waypoint.location.z)))
         path_yaw = path_yaw_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
@@ -310,6 +336,8 @@ class BLatStanley_controller(Controller):
             head_err = hd_err +360
         else:
             head_err = hd_err
+
+        # head_err = hd_err
 
 
 
@@ -341,7 +369,7 @@ class BLatStanley_controller(Controller):
         # print('next path z2 = ', nz2)
         #
         # print('**distance to path = ', dpath)
-        print('path pitch = ', path_yaw)
+        print('path yaw = ', path_yaw)
         # print('path_pitch_rad = ', path_pitch_rad)
         # # print('path queue 0 = ', self.agent.local_planner.way_points_queue[0])
         # # print('path queue 4 = ', self.agent.local_planner.way_points_queue[9])
