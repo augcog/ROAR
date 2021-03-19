@@ -81,7 +81,7 @@ class LongPIDController(Controller):
                                self.throttle_boundary[1]))
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
-              #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+              # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
 
 
@@ -105,18 +105,19 @@ class LatPIDController(Controller):
         """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
+
         print(v_begin)
         print('next wp x: ', next_waypoint.location.x)
         print('next wp z: ', next_waypoint.location.z)
         print('next wp y: ', next_waypoint.location.y)
 
-
-        direction_vector = np.array([np.sin(np.radians(self.agent.vehicle.transform.rotation.yaw)),
+        direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
                                      0,
-                                     -np.cos(np.radians(self.agent.vehicle.transform.rotation.yaw))])
+                                     -np.cos(np.deg2rad(self.agent.vehicle.transform.rotation.yaw))])
+
         v_end = v_begin + direction_vector
 
-        v_vec = np.array([v_end[0] - v_begin[0], 0, - (v_end[2] - v_begin[2])])
+        v_vec = np.array([(v_end[0] - v_begin[0]), 0, (v_end[2] - v_begin[2])])
         # calculate error projection
         w_vec = np.array(
             [
@@ -126,11 +127,13 @@ class LatPIDController(Controller):
             ]
         )
 
-        _dot = math.acos(np.clip(np.dot(v_vec, w_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)), -1.0, 1.0))
-        _cross = np.cross(v_vec, w_vec)
-        if _cross[1] < 0:
-            _dot *= -1
-        self._error_buffer.append(_dot)
+        v_vec_normed = v_vec / np.linalg.norm(v_vec)
+        w_vec_normed = w_vec / np.linalg.norm(w_vec)
+        error = np.arccos(v_vec_normed @ w_vec_normed.T)
+        _cross = np.cross(v_vec_normed, w_vec_normed)
+        if _cross[1] > 0:
+            error *= -1
+        self._error_buffer.append(error)
         if len(self._error_buffer) >= 2:
             _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
             _ie = sum(self._error_buffer) * self._dt
@@ -141,7 +144,11 @@ class LatPIDController(Controller):
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
         lat_control = float(
-            np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
+            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        print(f"lat_control: {round(lat_control, 3)} | v_vec = {v_vec} | w_vec = {w_vec}")
+        # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
+        # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
+        # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
+        # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
+        # print()
         return lat_control

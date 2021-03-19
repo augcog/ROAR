@@ -4,6 +4,7 @@ nav:
     - About:
       - Introduction: introduction.md
       - Architecture: architecture.md
+      - Coordinate: coordinate.md
     - Quick Start: quickstart.md
     - Code Documentations:
         - Bridges:

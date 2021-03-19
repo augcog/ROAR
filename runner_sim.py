@@ -26,6 +26,7 @@ from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointG
 from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.lqr_agent import LQRAgent
 
+
 def main():
     """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR_Sim/configurations/agent_configuration.json"))
@@ -37,14 +38,13 @@ def main():
     try:
         my_vehicle = carla_runner.set_carla_world()
 
-
         #agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        #agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = JAM1Agent_old(vehicle=my_vehicle, agent_settings=agent_config)  #roll controller
         #agent = JAM1Agent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = JAM2Agent(vehicle=my_vehicle, agent_settings=agent_config)
-        agent = JAM3Agent_old(vehicle=my_vehicle, agent_settings=agent_config) # bstanley
+        #agent = JAM3Agent_old(vehicle=my_vehicle, agent_settings=agent_config) # bstanley
         #agent = JAM3Agent(vehicle=my_vehicle, agent_settings=agent_config)
 
 

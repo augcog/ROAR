@@ -16,7 +16,7 @@ class ObstacleDetector(Detector):
                                                  self.agent.front_depth_camera.image_size_y))
         self.min_x, self.max_x = self.roi[0][0], self.roi[0][1]
         self.min_y, self.max_y = self.roi[1][0], self.roi[1][1]
-        self.threshold = 0.15
+        self.threshold = 0.01
         self.curr_mask = None
 
     def run_in_threaded(self, **kwargs):

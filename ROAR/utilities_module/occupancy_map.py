@@ -11,6 +11,7 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR.utilities_module.utilities import img_to_world
 import logging
 import time
+from scipy.sparse.dok import dok_matrix
 
 
 class OccupancyGridMap:
@@ -41,7 +42,8 @@ class OccupancyGridMap:
                  vehicle_height=5,
                  world_coord_resolution=1,
                  occu_prob: float = 0.95,
-                 free_prob: float = 0.05):
+                 free_prob: float = 0.05,
+                 max_points_to_convert: int = 1000):
         """
         Args:
             absolute_maximum_map_size: Absolute maximum size of the map, will be used to compute a square occupancy map
@@ -72,10 +74,13 @@ class OccupancyGridMap:
         self.occu_prob = np.log(occu_prob / (1 - occu_prob))
         self.free_prob = 1 - self.occu_prob
 
+        self._max_points_to_convert = max_points_to_convert
+
     def _initialize_map(self):
         x_total = self._max_x - self._min_x + 2 * self._map_additiona_padding
         y_total = self._max_y - self._min_y + 2 * self._map_additiona_padding
-        self.map = np.zeros([x_total, y_total])
+        self.map = np.zeros(shape=(x_total, y_total),
+                            dtype=np.float32)  # dok_matrix((x_total, y_total), dtype=np.float32)
         self.logger.debug(f"Occupancy Grid Map of size {x_total} x {y_total} "
                           f"initialized")
 
@@ -114,23 +119,16 @@ class OccupancyGridMap:
             None
         """
         # find occupancy map cords
-        # self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
+        self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
         occu_cords = self.cord_translation_from_world(
             world_cords_xy=world_cords_xy)
-        # self.logger.debug(f"Occupancy Grid Map Cord shape = {np.shape(occu_cords)}")
         occu_cords_x, occu_cords_y = occu_cords[:, 0], occu_cords[:, 1]
-        min_occu_cords_x, max_occu_cords_x = np.min(occu_cords_x), np.max(occu_cords_x)
-        min_occu_cords_y, max_occu_cords_y = np.min(occu_cords_y), np.max(occu_cords_y)
-
-        # tmp_map = np.zeros(shape=self.map.shape)
-        # tmp_map[occu_cords_y, occu_cords_x] = 1
-        # cv2.imshow("tmp_map", cv2.resize(tmp_map, dsize=(500,500)))
-        # cv2.waitKey(1)
-        self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] -= 0.01
+        # activate the below three line in real world due to sensor error
+        # min_occu_cords_x, max_occu_cords_x = np.min(occu_cords_x), np.max(occu_cords_x)
+        # min_occu_cords_y, max_occu_cords_y = np.min(occu_cords_y), np.max(occu_cords_y)
+        # self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x] += self.free_prob
         self.map[occu_cords_y, occu_cords_x] += self.occu_prob
-        self.map[min_occu_cords_y: max_occu_cords_y,
-        min_occu_cords_x:max_occu_cords_x] = \
-            self.map[min_occu_cords_y: max_occu_cords_y, min_occu_cords_x:max_occu_cords_x].clip(0, 1)
+        self.map = self.map.clip(0, 1)
 
     def visualize(self,
                   vehicle_location: Optional[Location] = None,
@@ -138,7 +136,6 @@ class OccupancyGridMap:
         if vehicle_location is None:
             cv2.imshow("Occupancy Grid Map", cv2.resize(self.map, dsize=(500, 500)))
         else:
-
             occu_cord = self.location_to_occu_cord(
                 location=vehicle_location)
             map_copy = self.map.copy()
@@ -158,9 +155,12 @@ class OccupancyGridMap:
         This is an easier to use update_grid_map method that can be directly called by an agent
         It will update grid map using the update_grid_map_from_world_cord method
         Args:
-            world_coords:
+            world_coords: N x 3 array of points
         Returns:
             None
         """
+        indices_to_select = np.random.choice(np.shape(world_coords)[0], size=min(self._max_points_to_convert,
+                                                                                 np.shape(world_coords)[0]))
+        world_coords = world_coords[indices_to_select]
         world_coords_xy = world_coords[:, [0, 2]] * self.world_coord_resolution
         self._update_grid_map_from_world_cord(world_cords_xy=world_coords_xy)
