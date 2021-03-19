@@ -38,8 +38,8 @@ def main():
     try:
         my_vehicle = carla_runner.set_carla_world()
 
-        #agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        #agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = JAM1Agent_old(vehicle=my_vehicle, agent_settings=agent_config)  #roll controller
         #agent = JAM1Agent(vehicle=my_vehicle, agent_settings=agent_config)
@@ -49,7 +49,7 @@ def main():
 
 
 
-        #carla_runner.start_game_loop(agent=agent, use_manual_control=True)#*******True for manual control, False auto
+       # carla_runner.start_game_loop(agent=agent, use_manual_control=True)#*******True for manual control, False auto
         carla_runner.start_game_loop(agent=agent, use_manual_control=False)  # *******True for manual control, False auto
 
         #*** use to record new waypoints ***
