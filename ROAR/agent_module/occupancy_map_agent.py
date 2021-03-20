@@ -24,7 +24,7 @@ class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
+        self.pid_controller = PIDController(agent=self, steering_boundary=(-.8, .8), throttle_boundary=(0, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
         self.behavior_planner = BehaviorPlanner(agent=self)

@@ -48,7 +48,7 @@ class CarlaBridge(Bridge):
             yaw = yaw - 270
 
 
-        return Rotation(roll=roll, pitch=pitch, yaw=yaw)
+        return Rotation(roll=roll, pitch=pitch, yaw=-yaw)
 
         #return Rotation(roll=roll, pitch=pitch, yaw=-yaw-90)
 

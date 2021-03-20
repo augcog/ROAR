@@ -54,7 +54,9 @@ class LongPIDController(Controller):
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
         self.config = config
-        self.max_speed = max_speed
+        self.max_speed = max_speed #******
+        #self.max_speed = 80 #***** for occupancy agent
+
         self.throttle_boundary = throttle_boundary
         self._error_buffer = deque(maxlen=10)
 

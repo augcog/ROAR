@@ -210,7 +210,7 @@ class BLatStanley_controller(Controller):
         #                 [0, 0, 1]])
 
         gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
-                        [-np.sin(theta_rad), np.cos(theta_rad), veh_z],
+                        [np.sin(theta_rad), np.cos(theta_rad), veh_z],
                         [0, 0, 1]])
 
         gvw = np.linalg.inv(gwv)
@@ -291,7 +291,7 @@ class BLatStanley_controller(Controller):
 
         # *** calculate crosstrack error ***
         # *** calculate front axle position error from path with positive error = turn to right, negative = turn to left
-        vf_cterad = 1*math.atan2(vf_npath0[0], vf_npath0[1])
+        vf_cterad = -1*math.atan2(vf_npath1[0], vf_npath1[1])
         vf_ctedeg = vf_cterad*180/math.pi
         vf_cte = vf_ctedeg
 
