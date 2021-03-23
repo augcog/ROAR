@@ -44,7 +44,7 @@ class PIDController(Controller):
     @staticmethod
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
-        k_p, k_d, k_i = .03, 0.9, 0
+        k_p, k_d, k_i = 1, 0, 0
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
@@ -119,41 +119,52 @@ class LatPIDController(Controller):
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
         self.config = config
-        #self.steering_boundary = steering_boundary
-        self.steering_boundary = (-.1, .1)
+        self.steering_boundary = steering_boundary
+        #self.steering_boundary = (-.1, .1)
 
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+        """
+        Calculates a vector that represent where you are going.
+        Args:
+            next_waypoint ():
+            **kwargs ():
+        Returns:
+            lat_control
+        """
         # calculate a vector that represent where you are going
-        v_begin = self.agent.vehicle.transform.location
-        v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-            y=v_begin.y,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
-        )
-        v_vec = np.array([v_end.x - v_begin.x,v_end.y - v_begin.y, v_end.z - v_begin.z])
+        v_begin = self.agent.vehicle.transform.location.to_array()
 
+        print(v_begin)
+        print('next wp x: ', next_waypoint.location.x)
+        print('next wp z: ', next_waypoint.location.z)
+        print('next wp y: ', next_waypoint.location.y)
+
+        direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
+                                     0,
+                                     -np.cos(np.deg2rad(self.agent.vehicle.transform.rotation.yaw))])
+
+        v_end = v_begin + direction_vector
+
+        v_vec = np.array([(v_end[0] - v_begin[0]), 0, (v_end[2] - v_begin[2])])
         # calculate error projection
         w_vec = np.array(
             [
-                next_waypoint.location.x - v_begin.x,
-                next_waypoint.location.y - v_begin.y,
-                next_waypoint.location.z - v_begin.z,
+                next_waypoint.location.x - v_begin[0],
+                0,
+                next_waypoint.location.z - v_begin[2],
             ]
         )
-        _dot = math.acos(
-            np.clip(
-                np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
-                -1.0,
-                1.0,
-            )
-        )
-        _cross = np.cross(v_vec, w_vec)
+
+        v_vec_normed = v_vec / np.linalg.norm(v_vec)
+        w_vec_normed = w_vec / np.linalg.norm(w_vec)
+        error = np.arccos(v_vec_normed @ w_vec_normed.T)
+        _cross = np.cross(v_vec_normed, w_vec_normed)
         if _cross[1] > 0:
-            _dot *= -1.0
-        self._error_buffer.append(_dot)
+            error *= -1
+        self._error_buffer.append(error)
         if len(self._error_buffer) >= 2:
             _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
             _ie = sum(self._error_buffer) * self._dt
@@ -161,13 +172,61 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        # print('_dot PIDcontroller = ', _dot)
-        k_p, k_d, k_i = PIDController.find_k_values(
-            config=self.config, vehicle=self.agent.vehicle)
+        k_p, k_d, k_i = LongPIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
         lat_control = float(
-            np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie),
-            self.steering_boundary[0], self.steering_boundary[1])
+            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        # print('lat_control = steering?', lat_control)
+        # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
+        # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
+        # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
+        # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
+        # print()
         return lat_control
+
+    # def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+    #     # calculate a vector that represent where you are going
+    #     v_begin = self.agent.vehicle.transform.location
+    #     v_end = v_begin + Location(
+    #         x=math.cos(math.radians(self.agent.vehicle.transform.rotation.yaw)),
+    #         y=v_begin.y,
+    #         z=math.sin(math.radians(self.agent.vehicle.transform.rotation.yaw)),
+    #     )
+    #     v_vec = np.array([v_end.x - v_begin.x,v_end.y - v_begin.y, v_end.z - v_begin.z])
+    #
+    #     # calculate error projection
+    #     w_vec = np.array(
+    #         [
+    #             next_waypoint.location.x - v_begin.x,
+    #             next_waypoint.location.y - v_begin.y,
+    #             next_waypoint.location.z - v_begin.z,
+    #         ]
+    #     )
+    #     _dot = math.acos(
+    #         np.clip(
+    #             np.dot(w_vec, v_vec) / (np.linalg.norm(w_vec) * np.linalg.norm(v_vec)),
+    #             -1.0,
+    #             1.0,
+    #         )
+    #     )
+    #     _cross = np.cross(v_vec, w_vec)
+    #     if _cross[1] > 0:
+    #         _dot *= -1.0
+    #     self._error_buffer.append(_dot)
+    #     if len(self._error_buffer) >= 2:
+    #         _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
+    #         _ie = sum(self._error_buffer) * self._dt
+    #     else:
+    #         _de = 0.0
+    #         _ie = 0.0
+    #
+    #     # print('_dot PIDcontroller = ', _dot)
+    #     k_p, k_d, k_i = LongPIDController.find_k_values(
+    #         config=self.config, vehicle=self.agent.vehicle)
+    #
+    #     lat_control = float(
+    #         np.clip((k_p * _dot) + (k_d * _de) + (k_i * _ie),
+    #         self.steering_boundary[0], self.steering_boundary[1])
+    #     )
+    #     # print('lat_control = steering?', lat_control)
+    #     return lat_control

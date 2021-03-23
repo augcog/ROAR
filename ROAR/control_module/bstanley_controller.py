@@ -141,16 +141,19 @@ class BLatStanley_controller(Controller):
         vel = self.agent.vehicle.velocity
         veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2) #*** m/s
 
-        k = 1 #control gain
+        k = 10 #control gain
+        kh = .1
+        kt = .08
 
         # veh_loc = self.agent.vehicle.transform.location
 
         pos_err, head_err = self.stan_calcs(next_waypoint)
 
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
-
+        print('cross error return: ',np.arctan((k * pos_err)/(veh_spd+.3)))
+        print('head err return',kh*head_err)
         lat_control = float(
-                    np.clip((.11*head_err + (np.arctan(k * pos_err/(veh_spd+.3))))/30, self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip(kt*(kh*head_err + (np.arctan(k * pos_err/(veh_spd+.3)))), self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
         print('-----------------------------------------')
 
@@ -209,8 +212,8 @@ class BLatStanley_controller(Controller):
         #                 [np.sin(theta_rad), np.cos(theta_rad), veh_z],
         #                 [0, 0, 1]])
 
-        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
-                        [np.sin(theta_rad), np.cos(theta_rad), veh_z],
+        gwv = np.array([[np.cos(theta_rad), np.sin(theta_rad), veh_x],
+                        [-np.sin(theta_rad), np.cos(theta_rad), veh_z],
                         [0, 0, 1]])
 
         gvw = np.linalg.inv(gwv)
@@ -291,9 +294,12 @@ class BLatStanley_controller(Controller):
 
         # *** calculate crosstrack error ***
         # *** calculate front axle position error from path with positive error = turn to right, negative = turn to left
-        vf_cterad = -1*math.atan2(vf_npath1[0], vf_npath1[1])
-        vf_ctedeg = vf_cterad*180/math.pi
-        vf_cte = vf_ctedeg
+        # vf_cterad = -math.atan2(vf_npath1[0], -vf_npath1[1])
+        # #vf_cterad = -1*math.atan2(npath1[1], npath1[0])
+        # vf_ctedeg = vf_cterad*180/math.pi-90
+        # vf_cte = vf_ctedeg
+        #vf_cte = (vf_nextwp[0]+vf_npath0[0])/vf_nextwp[1]/4
+        vf_cte = vf_nextwp[0]
 
         #vf_cte = vf_npath0[0]
 
@@ -322,14 +328,14 @@ class BLatStanley_controller(Controller):
         # e_front_axle_pos = np.dot([nx, ny], front_axle_vec)
 
         #***get heading if vehicle was at the correct spot on path**
-        # vf_path_pitch = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
+        # vf_path_yaw = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
 
-        path_yaw_rad = (math.atan2((nx1 - next_waypoint.location.x), (-nz1 - -next_waypoint.location.z)))
+        path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
         path_yaw = path_yaw_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
-        hd_err = path_yaw - veh_yaw
-        head_err = 0
+        hd_err = veh_yaw - path_yaw
+        #head_err = 0
         if hd_err > 180:
             head_err = hd_err-360
         elif hd_err < -180:
