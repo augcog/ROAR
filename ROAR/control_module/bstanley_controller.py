@@ -51,6 +51,41 @@ class BStanley_controller(Controller):
         return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
 
 
+# class LongPIDController(Controller):
+#     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
+#                  dt: float = 0.03, **kwargs):
+#         super().__init__(agent, **kwargs)
+#         self.config = config
+#         self.max_speed = max_speed
+#         self.throttle_boundary = throttle_boundary
+#         self._error_buffer = deque(maxlen=10)
+#
+#         self._dt = dt
+#
+#     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+#         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+#         current_speed = Vehicle.get_speed(self.agent.vehicle)
+#
+#         k_p, k_d, k_i = BStanley_controller.find_k_values(vehicle=self.agent.vehicle, config=self.config)
+#         error = target_speed - current_speed
+#
+#         self._error_buffer.append(error)
+#
+#         if len(self._error_buffer) >= 2:
+#             # print(self._error_buffer[-1], self._error_buffer[-2])
+#             _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
+#             _ie = sum(self._error_buffer) * self._dt
+#         else:
+#             _de = 0.0
+#             _ie = 0.0
+#         output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+#                                self.throttle_boundary[1]))
+#         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
+#         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
+#         # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+#         return output
+
+# *** original Roll ContRoller + v2 ***
 class LongPIDController(Controller):
     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
                  dt: float = 0.03, **kwargs):
@@ -64,6 +99,8 @@ class LongPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+        target_speed = 120
+        # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = BStanley_controller.find_k_values(vehicle=self.agent.vehicle, config=self.config)
@@ -78,38 +115,46 @@ class LongPIDController(Controller):
         else:
             _de = 0.0
             _ie = 0.0
-        output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
-                               self.throttle_boundary[1]))
+        #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+        #                       self.throttle_boundary[1]))
+        #print(self.agent.vehicle.transform.rotation.roll)
+        vehroll=self.agent.vehicle.transform.rotation.roll
+        if current_speed >= (target_speed+2):
+            out = 1-.1*(current_speed-target_speed)
+        else:
+            out = 2 * np.exp(-0.4 * np.abs(vehroll))
+
+        output = np.clip(out, a_min=0, a_max=1)
+        #print('throttle = ',output)
+        # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+        #     output = 1
+        #     if abs(self.agent.vehicle.transform.rotation.roll) > .35:
+        #           output = 1.2*np.exp(-0.07 * np.abs(vehroll))
+                  #output = 4 * np.exp(-0.06 * np.abs(vehroll))
+
+        #         output = 0
+        #         if abs(self.agent.vehicle.transform.rotation.roll) > .6:
+        #             output = .8
+        #             if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
+        #                 output = .7
+        #                 if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
+        #                     output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
+        #                     if abs(self.agent.vehicle.transform.rotation.roll) > 7:
+        #                         output = 0
+                    #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
+                    #         output = .7
+                    #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
+                    #             output = .4
+                    #             if abs(self.agent.vehicle.transform.rotation.roll) > 4:
+                    #                 output = .2
+                    #                 if abs(self.agent.vehicle.transform.rotation.roll) > 6:
+                    #                     output = 0
+
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
-        # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+              #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
-
-    # def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
-    #     target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
-    #     # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
-    #     current_speed = Vehicle.get_speed(self.agent.vehicle)
-    #
-    #     # k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
-    #     # error = target_speed - current_speed
-    #     #
-    #     # self._error_buffer.append(error)
-    #     #
-    #     # if len(self._error_buffer) >= 2:
-    #     #     # print(self._error_buffer[-1], self._error_buffer[-2])
-    #     #     _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
-    #     #     _ie = sum(self._error_buffer) * self._dt
-    #     # else:
-    #     #     _de = 0.0
-    #     #     _ie = 0.0
-    #     #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
-    #     #                       self.throttle_boundary[1]))
-    #     print(self.agent.vehicle.transform.rotation.roll)
-    #     vehroll=self.agent.vehicle.transform.rotation.roll
-    #     out = 2 * np.exp(-0.4 * np.abs(vehroll))
-    #     output = np.clip(out, a_min=0, a_max=1)
-    #     print('throttle = ',output)
-    #     return output
+# ***** end original version Roll ContRoller *****
 
 class BLatStanley_controller(Controller):
     def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
@@ -143,17 +188,18 @@ class BLatStanley_controller(Controller):
 
         k = 10 #control gain
         kh = .1
-        kt = .08
+        kt = .02
+        ks = .6
 
         # veh_loc = self.agent.vehicle.transform.location
 
         pos_err, head_err = self.stan_calcs(next_waypoint)
 
         #lat_control = head_err + k * pos_err #if angle > 30 then 1, otherwise angle/180 ************ what does 1 equate to?  30 degrees?
-        print('cross error return: ',np.arctan((k * pos_err)/(veh_spd+.3)))
+        print('cross error return: ',np.arctan((k * pos_err)/((ks*veh_spd)+.001)))
         print('head err return',kh*head_err)
         lat_control = float(
-                    np.clip(kt*(kh*head_err + (np.arctan(k * pos_err/(veh_spd+.3)))), self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
+                    np.clip(kt*(kh*head_err + (np.arctan(k * pos_err/(ks*veh_spd+.001)))), self.steering_boundary[0], self.steering_boundary[1])   #**** guessing steering of '1' equates to 30 degrees
                 )
         print('-----------------------------------------')
 
@@ -331,6 +377,8 @@ class BLatStanley_controller(Controller):
         # vf_path_yaw = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
 
         path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
+        path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
+        next_waypoint.location.x
         path_yaw = path_yaw_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***

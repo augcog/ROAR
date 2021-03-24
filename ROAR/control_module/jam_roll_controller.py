@@ -135,6 +135,7 @@ class PIDController(Controller):
 # ***** original version *****
 # **************************
 
+# *** original Roll ContRoller + v2 ***
 class LongPIDController(Controller):
     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
                  dt: float = 0.03, **kwargs):
