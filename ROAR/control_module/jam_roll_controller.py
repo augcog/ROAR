@@ -164,9 +164,9 @@ class LongPIDController(Controller):
         else:
             _de = 0.0
             _ie = 0.0
-        #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
-        #                       self.throttle_boundary[1]))
-        #print(self.agent.vehicle.transform.rotation.roll)
+        output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+                               self.throttle_boundary[1]))
+        print(self.agent.vehicle.transform.rotation.roll)
         vehroll=self.agent.vehicle.transform.rotation.roll
         if current_speed >= (target_speed+2):
             out = 1-.1*(current_speed-target_speed)
@@ -174,34 +174,155 @@ class LongPIDController(Controller):
             out = 2 * np.exp(-0.4 * np.abs(vehroll))
 
         output = np.clip(out, a_min=0, a_max=1)
-        #print('throttle = ',output)
-        # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
-        #     output = 1
-        #     if abs(self.agent.vehicle.transform.rotation.roll) > .35:
-        #           output = 1.2*np.exp(-0.07 * np.abs(vehroll))
-                  #output = 4 * np.exp(-0.06 * np.abs(vehroll))
+        print('throttle = ',output)
 
-        #         output = 0
-        #         if abs(self.agent.vehicle.transform.rotation.roll) > .6:
-        #             output = .8
-        #             if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
-        #                 output = .7
-        #                 if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
-        #                     output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
-        #                     if abs(self.agent.vehicle.transform.rotation.roll) > 7:
-        #                         output = 0
-                    #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
-                    #         output = .7
-                    #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
-                    #             output = .4
-                    #             if abs(self.agent.vehicle.transform.rotation.roll) > 4:
-                    #                 output = .2
-                    #                 if abs(self.agent.vehicle.transform.rotation.roll) > 6:
-                    #                     output = 0
+        #****************** implement look ahead *******************
+        vel = self.agent.vehicle.velocity
+        veh_spd = math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
+        pos_err, head_err = self.la_calcs(next_waypoint)
+
+        def la_calcs(self, next_waypoint: Transform, **kwargs):
+
+
+
+            # ************* convert points to vehicle reference *****************
+
+            theta_deg = veh_yaw
+            theta_rad = np.radians(theta_deg)
+            # gvw3d=np.array([[np.cos (theta_rad), 0, np.sin (theta_rad)],
+            #              [0,          1,        0 ],
+            #              [-np.sin (theta_rad), 0, np.cos (theta_rad)]])
+            # gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_x],
+            #                 [np.sin(theta_rad), np.cos(theta_rad), veh_z],
+            #                 [0, 0, 1]])
+
+            gwv = np.array([[np.cos(theta_rad), np.sin(theta_rad), veh_x],
+                            [-np.sin(theta_rad), np.cos(theta_rad), veh_z],
+                            [0, 0, 1]])
+
+            gvw = np.linalg.inv(gwv)
+            # *** define points in vehicle reference frame ***
+
+
+            # *** next waypoint ***
+
+            nextwp = np.transpose(np.array([next_waypoint.location.x, next_waypoint.location.z, 1]))
+            vf_nextwp = np.matmul(gvw, nextwp)
+
+            # nextwp = np.transpose(np.array([next_waypoint.location.x, next_waypoint.location.z, 1]))
+            # vf_nextwp = np.matmul(gvw, nextwp)
+
+            # *** next points on path
+            # *** averaging path points for smooth path vector ***
+            next_pathpoint1 = (self.agent.local_planner.way_points_queue[1])
+            next_pathpoint2 = (self.agent.local_planner.way_points_queue[2])
+            next_pathpoint3 = (self.agent.local_planner.way_points_queue[3])
+            next_pathpoint4 = (self.agent.local_planner.way_points_queue[17])
+            next_pathpoint5 = (self.agent.local_planner.way_points_queue[18])
+            next_pathpoint6 = (self.agent.local_planner.way_points_queue[19])
+            nx0 = next_pathpoint1.location.x
+            nz0 = next_pathpoint1.location.z
+            nx = (
+                             next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x + next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 6
+            nz = (
+                             next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z + next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 6
+            nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x) / 3
+            nz1 = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) / 3
+            nx2 = (next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 3
+            nz2 = (next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 3
+
+            npath0 = np.transpose(np.array([nx0, nz0, 1]))
+            npath = np.transpose(np.array([nx, nz, 1]))
+            npath1 = np.transpose(np.array([nx1, nz1, 1]))
+            npath2 = np.transpose(np.array([nx2, nz2, 1]))
+
+            vf_npath0 = np.matmul(gvw, npath0)
+            vf_npath = np.matmul(gvw, npath)
+            vf_npath1 = np.matmul(gvw, npath1)
+            vf_npath2 = np.matmul(gvw, npath2)
+
+            '''
+            # *** get in vehicle reference ***
+
+            path coordinates
+            next_wp
+
+            vehicle coordinates
+
+            '''
+
+            # # *** getting front axle coordinates ***
+            # frontx = veh_x + wb*np.cos(veh_pitch*180/np.pi)/2
+            # frontz = veh_z + wb*np.sin(veh_pitch*180/np.pi)/2
+
+            # # *** referencing next waypoint coordinates ***
+            # path_x = next_waypoint.location.x  #*** next waypoint: self.way_points_queue[0]
+            # path_z = next_waypoint.location.z  #** how get
+
+
+            path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
+            path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
+            next_waypoint.location.x
+            path_yaw = path_yaw_rad * 180 / np.pi
+
+            # ***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
+            hd_err = veh_yaw - path_yaw
+            # head_err = 0
+            if hd_err > 180:
+                head_err = hd_err - 360
+            elif hd_err < -180:
+                head_err = hd_err + 360
+            else:
+                head_err = hd_err
+
+            print('--------------------------------------')
+            print('veh yaw = ', veh_yaw)
+
+            print(f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}")
+            datarow = f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}"
+            self.waypointrecord.append(datarow.split(","))
+
+            print('path yaw = ', path_yaw)
+
+            print('** hd err **', hd_err)
+
+            print('** heading error **', head_err)
+            print('vf cross track error', vf_cte)
+
+
+            return vf_cte, head_err
+
+
+        #***********************************************************
+
+
+        if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+            output = 1
+            if abs(self.agent.vehicle.transform.rotation.roll) > .35:
+                  # output = 1.2*np.exp(-0.07 * np.abs(vehroll))
+                  # output = 4 * np.exp(-0.06 * np.abs(vehroll))
+
+                output = 0
+                if abs(self.agent.vehicle.transform.rotation.roll) > .6:
+                    output = .8
+                    if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
+                        output = .7
+                        if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
+                            output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
+                            if abs(self.agent.vehicle.transform.rotation.roll) > 7:
+                                output = 0
+                        if abs(self.agent.vehicle.transform.rotation.roll) > 1:
+                            output = .7
+                            if abs(self.agent.vehicle.transform.rotation.roll) > 3:
+                                output = .4
+                                if abs(self.agent.vehicle.transform.rotation.roll) > 4:
+                                    output = .2
+                                    if abs(self.agent.vehicle.transform.rotation.roll) > 6:
+                                        output = 0
 
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
-              #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+        #       f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
 # ***** end original version Roll ContRoller *****
 

@@ -8,6 +8,7 @@ from ROAR.agent_module.pure_pursuit_agent \
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from typing import Tuple
 from prettytable import PrettyTable
+from ROAR.agent_module.jAM1AgentOld import JAM1Agent_old
 
 
 def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,42])) -> Tuple[float, int, bool]:
@@ -58,7 +59,7 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path)
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = agent_class(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
         return compute_score(carla_runner)
     except Exception as e:
         print(f"something bad happened during initialization: {e}")
@@ -78,7 +79,7 @@ def suppress_warnings():
 
 def main():
     suppress_warnings()
-    agent_class = PurePursuitAgent
+    agent_class = JAM1Agent_old
     num_trials = 2
     total_score = 0
     table = PrettyTable()
