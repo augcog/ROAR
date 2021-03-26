@@ -42,10 +42,10 @@ def main():
         #agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = PurePursuitAgent(vehicle=my_vehicle, agent_settings=agent_config)
 
-        #agent = JAM1Agent_old(vehicle=my_vehicle, agent_settings=agent_config)  # *** roll controller
+        agent = JAM1Agent_old(vehicle=my_vehicle, agent_settings=agent_config)  # *** roll controller
         #agent = JAM1Agent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = JAM2Agent(vehicle=my_vehicle, agent_settings=agent_config)
-        agent = JAM3Agent_old(vehicle=my_vehicle, agent_settings=agent_config) # *** bstanley
+        #agent = JAM3Agent_old(vehicle=my_vehicle, agent_settings=agent_config) # *** bstanley
         #agent = JAM3Agent(vehicle=my_vehicle, agent_settings=agent_config)
 
 
