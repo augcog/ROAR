@@ -18,7 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
        #self.max_speed = self.agent.agent_settings.max_speed
-        self.max_speed = 120 #************************* MAX SPEED *********************************
+        self.max_speed = 160 #************************* MAX SPEED *********************************
 
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
@@ -151,9 +151,9 @@ class LongPIDController(Controller):
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
         # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
-        print("***************")
+
         print('max speed: ',self.max_speed)
-        print('***************')
+
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
@@ -178,10 +178,15 @@ class LongPIDController(Controller):
         if current_speed >= (target_speed + 2):
             out = 1 - .1 * (current_speed - target_speed)
         else:
-            out = 2 * np.exp(-0.4 * np.abs(vehroll))-(la_err/180)*current_speed*kla  # *****ALGORITHM*****
+            if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+                out = 6 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla
+            else:
+                out = 2 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla  # *****ALGORITHM*****
 
         output = np.clip(out, a_min=0, a_max=1)
+        print('*************')
         print('throttle = ', output)
+        print('*************')
 
         # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
         #     output = 1
@@ -214,17 +219,27 @@ class LongPIDController(Controller):
 
     def la_calcs(self, next_waypoint: Transform, **kwargs):
 
-        # ************* convert points to vehicle reference *****************
-
+        current_speed = int(Vehicle.get_speed(self.agent.vehicle))
+        cs = np.clip(current_speed, 80, 200)
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
-        next_pathpoint1 = (self.agent.local_planner.way_points_queue[21])
-        next_pathpoint2 = (self.agent.local_planner.way_points_queue[22])
-        next_pathpoint3 = (self.agent.local_planner.way_points_queue[23])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[32])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[33])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[34])
+
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[cs+1])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[cs+2])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[cs+3])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[2*cs+1])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[2*cs+2])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[2*cs+3])
+        # next_pathpoint4 = (self.agent.local_planner.way_points_queue[cs+43])
+        # next_pathpoint5 = (self.agent.local_planner.way_points_queue[cs+42])
+        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[cs+41])
+        # next_pathpoint1 = (self.agent.local_planner.way_points_queue[31])
+        # next_pathpoint2 = (self.agent.local_planner.way_points_queue[32])
+        # next_pathpoint3 = (self.agent.local_planner.way_points_queue[33])
+        # next_pathpoint4 = (self.agent.local_planner.way_points_queue[52])
+        # next_pathpoint5 = (self.agent.local_planner.way_points_queue[53])
+        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[54])
         nx0 = next_pathpoint1.location.x
         nz0 = next_pathpoint1.location.z
         nx = (
@@ -244,7 +259,11 @@ class LongPIDController(Controller):
         path_yaw_rad = -(math.atan2((nx2 - nx1), -(nz2 - nz1)))
         path_yaw = path_yaw_rad * 180 / np.pi
         veh_yaw = self.agent.vehicle.transform.rotation.yaw
-        la_err = abs(path_yaw-veh_yaw)
+        ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
+        if ahead_err < 34:
+            la_err = 0
+        else:
+            la_err = ahead_err
 
         # if la_err > 180:
         #     ahead_err = la_err - 360
@@ -260,6 +279,7 @@ class LongPIDController(Controller):
         # self.waypointrecord.append(datarow.split(","))
 
         print('** la err **', la_err)
+        print('--------------------------------------')
         #
         # print('** look ahead error **', ahead_err)
 
