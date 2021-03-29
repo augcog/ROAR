@@ -45,32 +45,32 @@ class OccupancyMapAgent(Agent):
                                                               max_points_to_convert=10000,
                                                               min_obstacle_height=2)
         self.add_threaded_module(self.obstacle_from_depth_detector)
-        self.vis = o3d.visualization.Visualizer()
-        self.vis.create_window(width=500, height=500)
-        self.pcd = o3d.geometry.PointCloud()
-        self.points_added = False
+        # self.vis = o3d.visualization.Visualizer()
+        # self.vis.create_window(width=500, height=500)
+        # self.pcd = o3d.geometry.PointCloud()
+        # self.points_added = False
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
         option = "obstacle_coords"  # ground_coords, point_cloud_obstacle_from_depth
         if self.kwargs.get(option, None) is not None:
-            # print("curr_transform", self.vehicle.transform)
+            print("curr_transform", self.vehicle.transform)
             points = self.kwargs[option]
             self.occupancy_map.update(points)
             self.occupancy_map.visualize()
-            if self.points_added is False:
-                self.pcd = o3d.geometry.PointCloud()
-                point_means = np.mean(points, axis=0)
-                self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-                self.vis.add_geometry(self.pcd)
-                self.vis.poll_events()
-                self.vis.update_renderer()
-                self.points_added = True
-            else:
-                point_means = np.mean(points, axis=0)
-                self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-                self.vis.update_geometry(self.pcd)
-                self.vis.poll_events()
-                self.vis.update_renderer()
+            # if self.points_added is False:
+            #     self.pcd = o3d.geometry.PointCloud()
+            #     point_means = np.mean(points, axis=0)
+            #     self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
+            #     self.vis.add_geometry(self.pcd)
+            #     self.vis.poll_events()
+            #     self.vis.update_renderer()
+            #     self.points_added = True
+            # else:
+            #     point_means = np.mean(points, axis=0)
+            #     self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
+            #     self.vis.update_geometry(self.pcd)
+            #     self.vis.poll_events()
+            #     self.vis.update_renderer()
         return control
