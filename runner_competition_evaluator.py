@@ -8,9 +8,11 @@ from ROAR.agent_module.pure_pursuit_agent \
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from typing import Tuple
 from prettytable import PrettyTable
+from ROAR.agent_module.pid_agent import PIDAgent
 
 
-def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,42])) -> Tuple[float, int, bool]:
+def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([0, -2, 30]),
+                  max_bounding_box=np.array([60, 2, 42])) -> Tuple[float, int, bool]:
     """
     Calculates the score of the vehicle upon completion of the track based on certain metrics
     Args:
@@ -34,7 +36,6 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,3
     lap_completed = all(lower_check) and all(upper_check)
 
     return time_elapsed, num_collision, lap_completed
-
 
 
 def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path) -> Tuple[float, int, bool]:
@@ -78,7 +79,7 @@ def suppress_warnings():
 
 def main():
     suppress_warnings()
-    agent_class = PurePursuitAgent
+    agent_class = PIDAgent
     num_trials = 2
     total_score = 0
     table = PrettyTable()
