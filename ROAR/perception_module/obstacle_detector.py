@@ -7,6 +7,9 @@ import time, cv2
 
 
 class ObstacleDetector(Detector):
+    def save(self, **kwargs):
+        pass
+
     def __init__(self, agent: Agent, knn: int = 200, roi: Optional[Tuple[Tuple[int, int]]] = None, **kwargs):
         super().__init__(agent, **kwargs)
         self.knn = knn

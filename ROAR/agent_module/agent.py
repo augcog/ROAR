@@ -14,6 +14,8 @@ from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlann
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 import threading
 from typing import Dict, Any
+from datetime import datetime
+
 
 class Agent(ABC):
     """
@@ -174,10 +176,11 @@ class Agent(ABC):
         Returns:
             None
         """
+        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
                 cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                             f"frame_{self.time_counter}.png").as_posix(),
+                             f"frame_{now}.png").as_posix(),
                             self.front_rgb_camera.data)
         except Exception as e:
             self.logger.error(
@@ -186,7 +189,7 @@ class Agent(ABC):
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
                 np.save((self.front_depth_camera_output_folder_path /
-                         f"frame_{self.time_counter}").as_posix(),
+                         f"frame_{now}").as_posix(),
                         self.front_depth_camera.data)
         except Exception as e:
             self.logger.error(
@@ -194,19 +197,19 @@ class Agent(ABC):
         try:
             if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
                 cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                             f"frame_{self.time_counter}.png").as_posix(),
+                             f"frame_{now}.png").as_posix(),
                             self.rear_rgb_camera.data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
-            transform_file = (Path(self.transform_output_folder_path) / f"frame_{self.time_counter}.txt").open('w')
+            transform_file = (Path(self.transform_output_folder_path) /
+                              f"frame_{now}.txt").open('w')
             transform_file.write(self.vehicle.transform.record())
             transform_file.close()
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
-
 
     def start_module_threads(self):
         for module in self.threaded_modules:

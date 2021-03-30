@@ -87,9 +87,7 @@ class CarlaBridge(Bridge):
             array = np.reshape(array, (source.height, source.width, 4))  # BGRA
             array = array[:, :, :3]  # BGR
             array = array[:, :, ::-1]  # RGB
-            # array = array.swapaxes(0, 1)
             array = png_to_depth(array)
-            # print(array[350][160], array[350][688])
             return DepthData(data=array)
         except:
             return None
