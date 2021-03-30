@@ -7,6 +7,9 @@ import time, cv2
 
 
 class ObstacleDetector(Detector):
+    def save(self, **kwargs):
+        pass
+
     def __init__(self, agent: Agent, knn: int = 200, roi: Optional[Tuple[Tuple[int, int]]] = None, **kwargs):
         super().__init__(agent, **kwargs)
         self.knn = knn
@@ -16,7 +19,7 @@ class ObstacleDetector(Detector):
                                                  self.agent.front_depth_camera.image_size_y))
         self.min_x, self.max_x = self.roi[0][0], self.roi[0][1]
         self.min_y, self.max_y = self.roi[1][0], self.roi[1][1]
-        self.threshold = 0.15
+        self.threshold = 0.01
         self.curr_mask = None
 
     def run_in_threaded(self, **kwargs):
@@ -89,7 +92,7 @@ class ObstacleDetector(Detector):
                 obstacle_coords = xyz[obstacle_mask == 1]
                 vehicle_location = self.agent.vehicle.transform.location.to_array()
                 dists = np.linalg.norm(obstacle_coords - vehicle_location, axis=1)
-                obstacle_coords = obstacle_coords[dists < 50]  # consider doing this filter early on
+                obstacle_coords = obstacle_coords[dists < 100]  # consider doing this filter early on
 
                 self.agent.kwargs["obstacle_coords"] = obstacle_coords
 

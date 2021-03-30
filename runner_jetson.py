@@ -29,9 +29,9 @@ def main():
             prepare(jetson_config=jetson_config)
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
-        agent = OccupancyMapAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=False)
+        jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
         print(f"Something bad happened {e}")
 
