@@ -16,6 +16,7 @@ from ROAR.utilities_module.module import Module
 import time
 from datetime import datetime
 from pathlib import Path
+from scipy import sparse
 
 
 class OccupancyGridMap(Module):
@@ -192,8 +193,9 @@ class OccupancyGridMap(Module):
             m = np.zeros(shape=self._map.shape)
             occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:, 1]
             m[occu_cords_y, occu_cords_x] = 1
-            np.save(f"{self.saving_dir_path}/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", m)
-
+            sA = sparse.csr_matrix(m)
+            # np.save(f"{self.saving_dir_path}/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", m)
+            sparse.save_npz(f"{self.saving_dir_path}/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", sA)
             meta_data_fpath = Path(f"{self.saving_dir_path}/meta_data.npy")
 
             if meta_data_fpath.exists() is False:

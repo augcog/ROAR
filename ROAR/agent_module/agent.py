@@ -15,6 +15,7 @@ from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 import threading
 from typing import Dict, Any
 from datetime import datetime
+import threading
 
 
 class Agent(ABC):
@@ -125,7 +126,7 @@ class Agent(ABC):
         self.time_counter += 1
         self.sync_data(sensors_data=sensors_data, vehicle=vehicle)
         if self.should_save_sensor_data:
-            self.save_sensor_data()
+            self.save_sensor_data_async()
         if self.local_planner is not None and self.local_planner.is_done():
             self.is_done = True
         return VehicleControl()
@@ -167,6 +168,10 @@ class Agent(ABC):
 
         if self.imu is not None:
             self.imu = sensors_data.imu_data
+
+    def save_sensor_data_async(self) -> None:
+        x = threading.Thread(target=self.save_sensor_data, args=())
+        x.start()
 
     def save_sensor_data(self) -> None:
         """

@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import glob
 import os
+from scipy import sparse
 
 
 def load_meta_data(f_path: Path) -> np.ndarray:
@@ -19,7 +20,8 @@ def create_global_occu_map(meta_data: np.ndarray, local_occu_map_dir_path: Path,
                         dtype=np.float16)
     file_paths = sorted(glob.glob((local_occu_map_dir_path.as_posix() + regex)), key=os.path.getmtime)
     for fpath in file_paths:
-        data = np.load(fpath)
+        data = sparse.load_npz(fpath).toarray()
+        # data = np.load(fpath)
         curr_map = np.logical_or(data, curr_map)
         visualize(curr_map)
     return curr_map
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     meta_data_file_path = meta_data_folder_path / "meta_data.npy"
     try:
         meta_data: np.ndarray = load_meta_data(meta_data_file_path)
-        global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/03_*.npy")
+        global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/03_*.npz")
         print("Press any key to exit")
         visualize(global_occu_map, wait_key=0)
     except Exception as e:
