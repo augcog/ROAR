@@ -11,7 +11,7 @@ from prettytable import PrettyTable
 from ROAR.agent_module.jAM1AgentOld import JAM1Agent_old
 
 
-def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,42])) -> Tuple[float, int, bool]:
+def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,60])) -> Tuple[float, int, bool]:
     """
     Calculates the score of the vehicle upon completion of the track based on certain metrics
     Args:
@@ -30,6 +30,9 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,3
 
     lower_diff = carla_runner.end_vehicle_position - min_bounding_box
     upper_diff = max_bounding_box - carla_runner.end_vehicle_position
+    print('lower diff = ',lower_diff)
+    print('upper diff = ',upper_diff)
+
     lower_check = [True if n > 0 else False for n in lower_diff]
     upper_check = [True if n > 0 else False for n in upper_diff]
     lap_completed = all(lower_check) and all(upper_check)
@@ -80,7 +83,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = JAM1Agent_old
-    num_trials = 2
+    num_trials = 1
     total_score = 0
     table = PrettyTable()
     table.field_names = ["time_elapsed (sec)", "num_collisions", "lap_completed (T/F)"]
