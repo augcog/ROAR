@@ -9,6 +9,8 @@ from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from typing import Tuple
 from prettytable import PrettyTable
 from ROAR.agent_module.jAM1AgentOld import JAM1Agent_old
+from ROAR.agent_module.jAM3AgentOld import JAM3Agent_old
+
 
 
 def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,30]), max_bounding_box = np.array([60,2,60])) -> Tuple[float, int, bool]:
@@ -82,7 +84,7 @@ def suppress_warnings():
 
 def main():
     suppress_warnings()
-    agent_class = JAM1Agent_old
+    agent_class = JAM3Agent_old
     num_trials = 1
     total_score = 0
     table = PrettyTable()

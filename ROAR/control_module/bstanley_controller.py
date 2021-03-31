@@ -18,7 +18,9 @@ class BStanley_controller(Controller):
     def __init__(self, agent, steering_boundary: Tuple[float, float],
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
-        self.max_speed = self.agent.agent_settings.max_speed
+        #self.max_speed = self.agent.agent_settings.max_speed
+        self.max_speed = 150  # ************************* MAX SPEED *********************************
+
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
@@ -85,7 +87,7 @@ class BStanley_controller(Controller):
 #         # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
 #         return output
 
-# *** original Roll ContRoller + v2 ***
+# *** Roll ContRoller v3 ***
 class LongPIDController(Controller):
     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
                  dt: float = 0.03, **kwargs):
@@ -99,14 +101,20 @@ class LongPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
-        #target_speed = 120
         # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
+
+        print('max speed: ',self.max_speed)
 
         k_p, k_d, k_i = BStanley_controller.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
+
+
+        #****************** implement look ahead *******************
+        la_err = self.la_calcs(next_waypoint)
+        kla = .03
 
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
@@ -115,23 +123,29 @@ class LongPIDController(Controller):
         else:
             _de = 0.0
             _ie = 0.0
-        #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
-        #                       self.throttle_boundary[1]))
-        #print(self.agent.vehicle.transform.rotation.roll)
-        vehroll=self.agent.vehicle.transform.rotation.roll
-        if current_speed >= (target_speed+2):
-            out = 1-.1*(current_speed-target_speed)
+        # output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+        #                        self.throttle_boundary[1]))
+        print(self.agent.vehicle.transform.rotation.roll)
+        vehroll = self.agent.vehicle.transform.rotation.roll
+        if current_speed >= (target_speed + 2):
+            out = 1 - .1 * (current_speed - target_speed)
         else:
-            out = 2 * np.exp(-0.4 * np.abs(vehroll))
+            if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+                out = 6 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla
+            else:
+                out = 2 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla  # *****ALGORITHM*****
 
         output = np.clip(out, a_min=0, a_max=1)
-        #print('throttle = ',output)
+        print('*************')
+        print('throttle = ', output)
+        print('*************')
+
         # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
         #     output = 1
         #     if abs(self.agent.vehicle.transform.rotation.roll) > .35:
-        #           output = 1.2*np.exp(-0.07 * np.abs(vehroll))
-                  #output = 4 * np.exp(-0.06 * np.abs(vehroll))
-
+        #           # output = 1.2*np.exp(-0.07 * np.abs(vehroll))
+        #           # output = 4 * np.exp(-0.06 * np.abs(vehroll))
+        #
         #         output = 0
         #         if abs(self.agent.vehicle.transform.rotation.roll) > .6:
         #             output = .8
@@ -141,20 +155,166 @@ class LongPIDController(Controller):
         #                     output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
         #                     if abs(self.agent.vehicle.transform.rotation.roll) > 7:
         #                         output = 0
-                    #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
-                    #         output = .7
-                    #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
-                    #             output = .4
-                    #             if abs(self.agent.vehicle.transform.rotation.roll) > 4:
-                    #                 output = .2
-                    #                 if abs(self.agent.vehicle.transform.rotation.roll) > 6:
-                    #                     output = 0
+        #                 if abs(self.agent.vehicle.transform.rotation.roll) > 1:
+        #                     output = .7
+        #                     if abs(self.agent.vehicle.transform.rotation.roll) > 3:
+        #                         output = .4
+        #                         if abs(self.agent.vehicle.transform.rotation.roll) > 4:
+        #                             output = .2
+        #                             if abs(self.agent.vehicle.transform.rotation.roll) > 6:
+        #                                 output = 0
 
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
-              #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+        #       f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
-# ***** end original version Roll ContRoller *****
+
+    def la_calcs(self, next_waypoint: Transform, **kwargs):
+
+        current_speed = int(Vehicle.get_speed(self.agent.vehicle))
+        cs = np.clip(current_speed, 80, 200)
+        # *** next points on path
+        # *** averaging path points for smooth path vector ***
+
+
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[cs+51])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[cs+52])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[cs+53])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[2*cs+51])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[2*cs+52])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[2*cs+53])
+        # next_pathpoint4 = (self.agent.local_planner.way_points_queue[cs+43])
+        # next_pathpoint5 = (self.agent.local_planner.way_points_queue[cs+42])
+        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[cs+41])
+        # next_pathpoint1 = (self.agent.local_planner.way_points_queue[31])
+        # next_pathpoint2 = (self.agent.local_planner.way_points_queue[32])
+        # next_pathpoint3 = (self.agent.local_planner.way_points_queue[33])
+        # next_pathpoint4 = (self.agent.local_planner.way_points_queue[52])
+        # next_pathpoint5 = (self.agent.local_planner.way_points_queue[53])
+        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[54])
+        nx0 = next_pathpoint1.location.x
+        nz0 = next_pathpoint1.location.z
+        nx = (
+                         next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x + next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 6
+        nz = (
+                         next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z + next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 6
+        nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x) / 3
+        nz1 = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) / 3
+        nx2 = (next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 3
+        nz2 = (next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 3
+
+        npath0 = np.transpose(np.array([nx0, nz0, 1]))
+        npath = np.transpose(np.array([nx, nz, 1]))
+        npath1 = np.transpose(np.array([nx1, nz1, 1]))
+        npath2 = np.transpose(np.array([nx2, nz2, 1]))
+
+        path_yaw_rad = -(math.atan2((nx2 - nx1), -(nz2 - nz1)))
+        path_yaw = path_yaw_rad * 180 / np.pi
+        veh_yaw = self.agent.vehicle.transform.rotation.yaw
+        ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
+        if ahead_err < 60:
+            la_err = 0
+        elif ahead_err > 80:
+            la_err = 2 * ahead_err
+        else:
+            la_err = ahead_err
+
+        # if la_err > 180:
+        #     ahead_err = la_err - 360
+        # elif la_err < -180:
+        #     ahead_err = la_err + 360
+        # else:
+        #     ahead_err = la_err
+
+        print('--------------------------------------')
+
+        # print(f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}")
+        # datarow = f"{veh_x},{veh_y},{veh_z},{veh_roll},{veh_pitch},{veh_yaw}"
+        # self.waypointrecord.append(datarow.split(","))
+
+        print('** la err **', la_err)
+        print('--------------------------------------')
+        #
+        # print('** look ahead error **', ahead_err)
+
+
+
+        return la_err
+
+
+        #***********************************************************
+
+# ***** end version Roll ContRoller v3*****
+# # *** original Roll ContRoller + v2 ***
+# class LongPIDController(Controller):
+#     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
+#                  dt: float = 0.03, **kwargs):
+#         super().__init__(agent, **kwargs)
+#         self.config = config
+#         self.max_speed = max_speed
+#         self.throttle_boundary = throttle_boundary
+#         self._error_buffer = deque(maxlen=10)
+#
+#         self._dt = dt
+#
+#     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+#         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+#         #target_speed = 120
+#         # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
+#         current_speed = Vehicle.get_speed(self.agent.vehicle)
+#
+#         k_p, k_d, k_i = BStanley_controller.find_k_values(vehicle=self.agent.vehicle, config=self.config)
+#         error = target_speed - current_speed
+#
+#         self._error_buffer.append(error)
+#
+#         if len(self._error_buffer) >= 2:
+#             # print(self._error_buffer[-1], self._error_buffer[-2])
+#             _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
+#             _ie = sum(self._error_buffer) * self._dt
+#         else:
+#             _de = 0.0
+#             _ie = 0.0
+#         #output = float(np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.throttle_boundary[0],
+#         #                       self.throttle_boundary[1]))
+#         #print(self.agent.vehicle.transform.rotation.roll)
+#         vehroll=self.agent.vehicle.transform.rotation.roll
+#         if current_speed >= (target_speed+2):
+#             out = 1-.1*(current_speed-target_speed)
+#         else:
+#             out = 2 * np.exp(-0.4 * np.abs(vehroll))
+#
+#         output = np.clip(out, a_min=0, a_max=1)
+#         #print('throttle = ',output)
+#         # if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
+#         #     output = 1
+#         #     if abs(self.agent.vehicle.transform.rotation.roll) > .35:
+#         #           output = 1.2*np.exp(-0.07 * np.abs(vehroll))
+#                   #output = 4 * np.exp(-0.06 * np.abs(vehroll))
+#
+#         #         output = 0
+#         #         if abs(self.agent.vehicle.transform.rotation.roll) > .6:
+#         #             output = .8
+#         #             if abs(self.agent.vehicle.transform.rotation.roll) > 1.2:
+#         #                 output = .7
+#         #                 if abs(self.agent.vehicle.transform.rotation.roll) > 1.5:
+#         #                     output = 1/(3.1**(self.agent.vehicle.transform.rotation.roll))
+#         #                     if abs(self.agent.vehicle.transform.rotation.roll) > 7:
+#         #                         output = 0
+#                     #     if abs(self.agent.vehicle.transform.rotation.roll) > 1:
+#                     #         output = .7
+#                     #         if abs(self.agent.vehicle.transform.rotation.roll) > 3:
+#                     #             output = .4
+#                     #             if abs(self.agent.vehicle.transform.rotation.roll) > 4:
+#                     #                 output = .2
+#                     #                 if abs(self.agent.vehicle.transform.rotation.roll) > 6:
+#                     #                     output = 0
+#
+#         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
+#         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
+#               #f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+#         return output
+# # ***** end original version Roll ContRoller *****
 
 class BLatStanley_controller(Controller):
     def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
