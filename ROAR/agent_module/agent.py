@@ -54,7 +54,7 @@ class Agent(ABC):
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
         self.transform_output_folder_path = self.output_folder_path / "transform"
-
+        self.vehicle_state_output_folder_path = self.output_folder_path / "vehicle_state"
         self.local_planner: Optional[LocalPlanner] = None
         self.behavior_planner: Optional[BehaviorPlanner] = None
         self.mission_planner: Optional[MissionPlanner] = None
@@ -76,7 +76,15 @@ class Agent(ABC):
                                                           exist_ok=True)
             self.transform_output_folder_path.mkdir(parents=True,
                                                     exist_ok=True)
+            self.vehicle_state_output_folder_path.mkdir(parents=True,
+                                                        exist_ok=True)
+            self.write_meta_data()
         self.kwargs: Dict[str, Any] = kwargs  # additional info
+
+    def write_meta_data(self):
+        vehicle_state_file = (self.vehicle_state_output_folder_path / "meta_data.txt").open(mode='w')
+        vehicle_state_file.write("vx,vy,vz,x,y,z,roll,pitch,yaw,throttle,steering")
+        vehicle_state_file.close()
 
     def add_threaded_module(self, module: Module):
         if module.threaded:
@@ -107,6 +115,7 @@ class Agent(ABC):
             self.rear_rgb_camera.intrinsics_matrix = (
                 self.rear_rgb_camera.calculate_default_intrinsics_matrix()
             )
+
 
     @abstractmethod
     def run_step(self, sensors_data: SensorsData,
@@ -212,6 +221,15 @@ class Agent(ABC):
                               f"frame_{now}.txt").open('w')
             transform_file.write(self.vehicle.transform.record())
             transform_file.close()
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
+        try:
+            if self.vehicle is not None:
+                data = self.vehicle.to_array()
+                np.save((Path(self.vehicle_state_output_folder_path) /
+                              f"frame_{now}").as_posix(), data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
