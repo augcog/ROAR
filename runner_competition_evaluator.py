@@ -11,8 +11,8 @@ from prettytable import PrettyTable
 from ROAR.agent_module.pid_agent import PIDAgent
 
 
-def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([0, -2, 30]),
-                  max_bounding_box=np.array([60, 2, 42])) -> Tuple[float, int, bool]:
+def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0]),
+                  max_bounding_box=np.array([13, 5, 50])) -> Tuple[float, int, bool]:
     """
     Calculates the score of the vehicle upon completion of the track based on certain metrics
     Args:
@@ -28,12 +28,8 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([0, -2, 3
     """
     time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
     num_collision: int = carla_runner.agent_collision_counter
-
-    lower_diff = carla_runner.end_vehicle_position - min_bounding_box
-    upper_diff = max_bounding_box - carla_runner.end_vehicle_position
-    lower_check = [True if n > 0 else False for n in lower_diff]
-    upper_check = [True if n > 0 else False for n in upper_diff]
-    lap_completed = all(lower_check) and all(upper_check)
+    lap_completed = all(np.logical_and(min_bounding_box < carla_runner.end_vehicle_position,
+                                       carla_runner.end_vehicle_position < max_bounding_box))
 
     return time_elapsed, num_collision, lap_completed
 
@@ -80,7 +76,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 2
+    num_trials = 1
     total_score = 0
     table = PrettyTable()
     table.field_names = ["time_elapsed (sec)", "num_collisions", "lap_completed (T/F)"]
