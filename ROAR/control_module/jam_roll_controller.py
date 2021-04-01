@@ -18,7 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
        #self.max_speed = self.agent.agent_settings.max_speed
-        self.max_speed = 200 #************************* MAX SPEED *********************************
+        self.max_speed = 170 #************************* MAX SPEED *********************************
 
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
@@ -61,7 +61,9 @@ class PIDController(Controller):
     @staticmethod
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
-        k_p, k_d, k_i = .03, 0.9, 0
+        k_p, k_d, k_i = .03, 0.9, 0  #original values
+        k_p, k_d, k_i = .1, 2, 0
+
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
@@ -162,7 +164,7 @@ class LongPIDController(Controller):
 
         #****************** implement look ahead *******************
         la_err = self.la_calcs(next_waypoint)
-        kla = .03
+        kla = .02
 
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
@@ -225,12 +227,18 @@ class LongPIDController(Controller):
         # *** averaging path points for smooth path vector ***
 
 
-        next_pathpoint1 = (self.agent.local_planner.way_points_queue[cs+51])
-        next_pathpoint2 = (self.agent.local_planner.way_points_queue[cs+52])
-        next_pathpoint3 = (self.agent.local_planner.way_points_queue[cs+53])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[2*cs+51])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[2*cs+52])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[2*cs+53])
+        # next_pathpoint1 = (self.agent.local_planner.way_points_queue[2*cs+1])
+        # next_pathpoint2 = (self.agent.local_planner.way_points_queue[2*cs+2])
+        # next_pathpoint3 = (self.agent.local_planner.way_points_queue[2*cs+3])
+        # next_pathpoint4 = (self.agent.local_planner.way_points_queue[2*cs+91])
+        # next_pathpoint5 = (self.agent.local_planner.way_points_queue[2*cs+92])
+        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[2*cs+93])
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[3*cs+1])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[3*cs+2])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[3*cs+3])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[3*cs+71])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[3*cs+72])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[3*cs+73])
         # next_pathpoint4 = (self.agent.local_planner.way_points_queue[cs+43])
         # next_pathpoint5 = (self.agent.local_planner.way_points_queue[cs+42])
         # next_pathpoint6 = (self.agent.local_planner.way_points_queue[cs+41])
@@ -260,12 +268,16 @@ class LongPIDController(Controller):
         path_yaw = path_yaw_rad * 180 / np.pi
         veh_yaw = self.agent.vehicle.transform.rotation.yaw
         ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
-        if ahead_err < 60:
+        if ahead_err < 70:
             la_err = 0
-        elif ahead_err > 80:
-            la_err = 2 * ahead_err
         else:
-            la_err = ahead_err
+            la_err =(.07 * ahead_err)**3
+        # if ahead_err < 75:
+        #     la_err = 0
+        # elif ahead_err > 86:
+        #     la_err = 3 * ahead_err
+        # else:
+        #     la_err = 2 * ahead_err
 
         # if la_err > 180:
         #     ahead_err = la_err - 360

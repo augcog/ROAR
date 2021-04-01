@@ -84,8 +84,8 @@ def suppress_warnings():
 
 def main():
     suppress_warnings()
-    agent_class = JAM3Agent_old
-    num_trials = 1
+    agent_class = JAM1Agent_old
+    num_trials = 3
     total_score = 0
     table = PrettyTable()
     table.field_names = ["time_elapsed (sec)", "num_collisions", "lap_completed (T/F)"]

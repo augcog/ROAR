@@ -19,7 +19,7 @@ class BStanley_controller(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
         #self.max_speed = self.agent.agent_settings.max_speed
-        self.max_speed = 150  # ************************* MAX SPEED *********************************
+        self.max_speed = 130  # ************************* MAX SPEED *********************************
 
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
@@ -537,8 +537,6 @@ class BLatStanley_controller(Controller):
         # vf_path_yaw = np.degrees(math.atan2((vf_npath2[1] - vf_nextwp[1]), (vf_npath2[0] - vf_nextwp[0])))
 
         path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
-        path_yaw_rad = -(math.atan2((nx - nx1), -(nz - nz1)))
-        next_waypoint.location.x
         path_yaw = path_yaw_rad*180/np.pi
 
         #***difference between correct heading and actual heading - pos error gives right steering, neg gives left ***
