@@ -7,7 +7,7 @@ from typing import List, Optional
 from ROAR.utilities_module.data_structures_models import Transform, Location,Rotation
 from collections import deque
 from ROAR.agent_module.agent import Agent
-
+import numpy as np
 
 class WaypointFollowingMissionPlanner(MissionPlanner):
     """
@@ -27,7 +27,6 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
             mission plan that start from the current vehicle location
         """
         super(WaypointFollowingMissionPlanner, self).run_in_series()
-        self.logger.debug("TO BE IMPLEMENTED")
         return self.produce_mission_plan()
 
     def __init__(self, agent: Agent):
@@ -42,9 +41,10 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         Generates a list of waypoints based on the input file path
         :return a list of waypoint
         """
-        mission_plan = deque()
         raw_path: List[List[float]] = self._read_data_file()
-        for coord in raw_path:
+        length = self.agent.agent_settings.num_laps * len(raw_path)
+        mission_plan = deque(maxlen=length)
+        for coord in np.tile(raw_path, (self.agent.agent_settings.num_laps, 1)):
             if len(coord) == 3 or len(coord) == 6:
                 mission_plan.append(self._raw_coord_to_transform(coord))
         self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
