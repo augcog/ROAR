@@ -32,8 +32,8 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box = np.array([0,-2,3
 
     lower_diff = carla_runner.end_vehicle_position - min_bounding_box
     upper_diff = max_bounding_box - carla_runner.end_vehicle_position
-    print('lower diff = ',lower_diff)
-    print('upper diff = ',upper_diff)
+    # print('lower diff = ',lower_diff)
+    # print('upper diff = ',upper_diff)
 
     lower_check = [True if n > 0 else False for n in lower_diff]
     upper_check = [True if n > 0 else False for n in upper_diff]

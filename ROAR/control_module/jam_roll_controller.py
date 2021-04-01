@@ -61,8 +61,8 @@ class PIDController(Controller):
     @staticmethod
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
-        k_p, k_d, k_i = .03, 0.9, 0  #original values
-        k_p, k_d, k_i = .1, 2, 0
+        #k_p, k_d, k_i = .03, 0.9, 0  #original values
+        k_p, k_d, k_i = .1, 4, 0
 
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
@@ -222,7 +222,7 @@ class LongPIDController(Controller):
     def la_calcs(self, next_waypoint: Transform, **kwargs):
 
         current_speed = int(Vehicle.get_speed(self.agent.vehicle))
-        cs = np.clip(current_speed, 80, 200)
+        cs = np.clip(current_speed, 70, 200)
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
@@ -264,14 +264,18 @@ class LongPIDController(Controller):
         npath1 = np.transpose(np.array([nx1, nz1, 1]))
         npath2 = np.transpose(np.array([nx2, nz2, 1]))
 
-        path_yaw_rad = -(math.atan2((nx2 - nx1), -(nz2 - nz1)))
+        path_yaw_rad = (math.atan2((nx2 - nx1), -(nz2 - nz1)))
+
         path_yaw = path_yaw_rad * 180 / np.pi
+        print(' !!! path yaw !!! ', path_yaw)
+
         veh_yaw = self.agent.vehicle.transform.rotation.yaw
+        print(' !!! veh yaw  !!! ', veh_yaw)
         ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
         if ahead_err < 70:
             la_err = 0
         else:
-            la_err =(.07 * ahead_err)**3
+            la_err =(.05 * ahead_err)**3
         # if ahead_err < 75:
         #     la_err = 0
         # elif ahead_err > 86:
@@ -324,6 +328,7 @@ class LatPIDController(Controller):
         Returns:
             lat_control
         """
+
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
 
@@ -362,10 +367,12 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
+        hed_err = self.hd_calc(next_waypoint)
+        kle = 0.1
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
         lat_control = float(
-            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
+            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0], self.steering_boundary[1])
         )
         # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
         # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
@@ -373,3 +380,69 @@ class LatPIDController(Controller):
         # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
         # print()
         return lat_control
+
+    def hd_calc(self, next_waypoint: Transform, **kwargs):
+
+        # *** get vehicle location info ***
+        veh_x = self.agent.vehicle.transform.location.x
+        veh_y = self.agent.vehicle.transform.location.y
+        veh_z = self.agent.vehicle.transform.location.z
+
+        # *** create world to veh transformation ***
+        veh_yaw = self.agent.vehicle.transform.rotation.yaw
+        theta_deg = veh_yaw
+        theta_rad = np.radians(theta_deg)
+        gwv = np.array([[np.cos(theta_rad), -np.sin(theta_rad), veh_z],
+                        [np.sin(theta_rad), np.cos(theta_rad), veh_x],
+                        [0, 0, 1]])
+
+        gvw = np.linalg.inv(gwv)
+
+        # *** next points on path
+        # *** averaging path points for smooth path vector ***
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[1])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[2])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[3])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[17])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[18])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[19])
+        nx0 = next_pathpoint1.location.x
+        nz0 = next_pathpoint1.location.z
+        nx = (
+                         next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x + next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 6
+        nz = (
+                         next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z + next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 6
+        nx1 = (next_pathpoint1.location.x + next_pathpoint2.location.x + next_pathpoint3.location.x) / 3
+        nz1 = (next_pathpoint1.location.z + next_pathpoint2.location.z + next_pathpoint3.location.z) / 3
+        nx2 = (next_pathpoint4.location.x + next_pathpoint5.location.x + next_pathpoint6.location.x) / 3
+        nz2 = (next_pathpoint4.location.z + next_pathpoint5.location.z + next_pathpoint6.location.z) / 3
+
+        # *** convert path points to veh frame ***
+        npath0 = np.transpose(np.array([nz0, nx0, 1]))
+        npath = np.transpose(np.array([nz, nx, 1]))
+        npath1 = np.transpose(np.array([nz1, nx1, 1]))
+        npath2 = np.transpose(np.array([nz2, nx2, 1]))
+
+        vf_npath0 = np.matmul(gvw, npath0)
+        vf_npath = np.matmul(gvw, npath)
+        vf_npath1 = np.matmul(gvw, npath1)
+        vf_npath2 = np.matmul(gvw, npath2)
+        print ('veh frame path z value: ',vf_npath[0])
+        print ('veh frame path x value: ',vf_npath[1])
+
+        # *** convert path points to yaw error in veh frame ***
+
+        path_yaw = math.atan2(-(vf_npath2[1]-vf_npath1[1]),-(vf_npath2[0]-vf_npath1[0]))
+        head_err = -np.rad2deg(path_yaw)/180 # - because we want positive yaw to to turn left which is negative vice versa
+        # hd_err = path_yaw * 180 / np.pi
+        # head_err = 0
+        # if hd_err > 180:
+        #     head_err = hd_err - 360
+        # elif hd_err < -180:
+        #     head_err = hd_err + 360
+        # else:
+        #     head_err = hd_err
+
+        print('** heading error **', head_err)
+
+        return head_err
