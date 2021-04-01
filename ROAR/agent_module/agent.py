@@ -116,7 +116,6 @@ class Agent(ABC):
                 self.rear_rgb_camera.calculate_default_intrinsics_matrix()
             )
 
-
     @abstractmethod
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
@@ -229,7 +228,7 @@ class Agent(ABC):
             if self.vehicle is not None:
                 data = self.vehicle.to_array()
                 np.save((Path(self.vehicle_state_output_folder_path) /
-                              f"frame_{now}").as_posix(), data)
+                         f"frame_{now}").as_posix(), data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
