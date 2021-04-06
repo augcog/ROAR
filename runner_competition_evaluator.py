@@ -12,7 +12,7 @@ from ROAR.agent_module.pid_agent import PIDAgent
 
 
 def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0]),
-                  max_bounding_box=np.array([13, 5, 50])) -> Tuple[float, int, bool]:
+                  max_bounding_box=np.array([13, 5, 50])) -> Tuple[float, int, int]:
     """
     Calculates the score of the vehicle upon completion of the track based on certain metrics
     Args:
@@ -28,7 +28,7 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0
     """
     time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
     num_collision: int = carla_runner.agent_collision_counter
-    laps_completed = carla_runner.completed_lap_count
+    laps_completed = min(0, carla_runner.completed_lap_count)
 
     return time_elapsed, num_collision, laps_completed
 
@@ -59,7 +59,7 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = agent_class(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
         return compute_score(carla_runner)
     except Exception as e:
         print(f"something bad happened during initialization: {e}")
