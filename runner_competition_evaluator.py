@@ -33,7 +33,7 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0
     return time_elapsed, num_collision, laps_completed
 
 
-def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path, num_laps:int=10) -> Tuple[
+def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path, num_laps: int = 10) -> Tuple[
     float, int, bool]:
     """
     Run the agent along the track and produce a score based on certain metrics

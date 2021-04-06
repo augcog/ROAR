@@ -4,10 +4,11 @@ from ROAR.planning_module.mission_planner.mission_planner import (
 from pathlib import Path
 import logging
 from typing import List, Optional
-from ROAR.utilities_module.data_structures_models import Transform, Location,Rotation
+from ROAR.utilities_module.data_structures_models import Transform, Location, Rotation
 from collections import deque
 from ROAR.agent_module.agent import Agent
 import numpy as np
+
 
 class WaypointFollowingMissionPlanner(MissionPlanner):
     """
@@ -50,11 +51,20 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
         return mission_plan
 
+    def produce_single_lap_mission_plan(self):
+        raw_path: List[List[float]] = self._read_data_file()
+        mission_plan = deque(maxlen=len(raw_path))
+        for coord in raw_path:
+            if len(coord) == 3 or len(coord) == 6:
+                mission_plan.append(self._raw_coord_to_transform(coord))
+        self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
+        return mission_plan
+
     def _read_data_file(self) -> List[List[float]]:
         """
         Read data file and generate a list of (x, y, z) where each of x, y, z is of type float
         Returns:
-            List of waypoints informat of [x, y, z]
+            List of waypoints in format of [x, y, z]
         """
         result = []
         with open(self.file_path.as_posix(), "r") as f:
