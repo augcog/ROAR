@@ -17,5 +17,5 @@ def saveImageAsNumpy(image_path="map_cleaned.png", output_path="easy_map_cleaned
 
 
 if __name__ == "__main__":
-    # saveNumpyAsImage()
+    # saveNumpyAsImage() # at this point, use your favorite image editing software to manually draw on it. use black and white ONLY!
     saveImageAsNumpy()
