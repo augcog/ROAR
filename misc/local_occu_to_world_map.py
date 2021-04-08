@@ -38,8 +38,10 @@ if __name__ == "__main__":
     meta_data_file_path = meta_data_folder_path / "meta_data.npy"
     try:
         meta_data: np.ndarray = load_meta_data(meta_data_file_path)
-        global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/03_*.npz")
-        print("Press any key to exit")
+        global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/04_*.npz")
+        path = Path("global_occu_map.npy")
+        np.save(path.as_posix(), global_occu_map)
+        print(f"Global Occu map saved at [{path}]. Press any key to exit")
         visualize(global_occu_map, wait_key=0)
     except Exception as e:
         meta_data = np.array([-550, -550, 550, 550, 40])
