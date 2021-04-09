@@ -78,6 +78,7 @@ class OccupancyGridMap(Module):
         self._max_points_to_convert = max_points_to_convert
         self.curr_obstacle_world_coords = None
         self._curr_obstacle_occu_coords = None
+        self._static_obstacles: Optional[np.ndarray] = None
 
     def _initialize_map(self):
         x_total = self._max_x - self._min_x + 2 * self._map_additiona_padding
@@ -149,30 +150,7 @@ class OccupancyGridMap(Module):
         Returns:
 
         """
-        if transform is None:
-            cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(self._map), dsize=(500, 500)))
-        else:
-            occu_cord = self.location_to_occu_cord(
-                location=transform.location)
-            map_copy = self._map.copy()
-            x, y = occu_cord[0]
-            map_copy[
-            y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
-            x - math.floor(self._vehicle_width / 2):x + math.ceil(self._vehicle_width / 2)] = 1
-            map_to_view = map_copy[y - view_size[1] // 2: y + view_size[1] // 2,
-                          x - view_size[0] // 2: x + view_size[0] // 2]
-
-            angle = np.deg2rad(transform.rotation.yaw)
-            rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)],
-                                        [np.sin(angle), np.cos(angle)]])
-            obstacles = np.where(map_to_view == 1)
-            obstacles: np.ndarray = np.vstack([obstacles[0], obstacles[1]]).T
-            obstacles = (obstacles @ rotation_matrix).astype(np.int)  # TODO will rotate it out of screen
-            map_to_view = np.zeros(shape=(1000, 1000))
-            map_to_view[obstacles[:, 0], obstacles[:, 1]] = 1
-            cv2.imshow("Occupancy Grid Map", cv2.resize(map_to_view, (500, 500)))
-
-            # cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(map_to_view), (500, 500)))
+        cv2.imshow("Occu map", cv2.resize(self.get_map(transform=transform, view_size=view_size), dsize=(500, 500)))
         cv2.waitKey(1)
 
     def update(self, world_coords: np.ndarray):
@@ -223,8 +201,21 @@ class OccupancyGridMap(Module):
                 meta_data = np.array([self._min_x, self._min_y, self._max_x, self._max_y, self._map_additiona_padding])
                 np.save(meta_data_fpath.as_posix(), meta_data)
 
-    def get_map(self):
-        return np.float32(self._map)
+    def get_map(self, transform: Optional[Transform] = None,
+                  view_size: Tuple[int, int] = (10, 10)):
+        if transform is None:
+            return np.float32(self._map)
+        else:
+            occu_cord = self.location_to_occu_cord(
+                location=transform.location)
+            map_to_view = self._map.copy()
+            x, y = occu_cord[0]
+            map_to_view[
+            y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
+            x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = 1
+            map_to_view = map_to_view[y - view_size[1] // 2: y + 10,
+                          x - view_size[0] // 2: x + view_size[0] // 2]
+            return map_to_view
 
     def load_from_file(self, file_path: Path):
         """
@@ -242,3 +233,4 @@ class OccupancyGridMap(Module):
         assert m.shape == self._map.shape, f"Loaded map is of shape [{m.shape}], " \
                                            f"does not match the expected shape [{self._map.shape}]"
         self._map = m
+        self._static_obstacles = np.vstack([np.where(self._map == 1)]).T

@@ -21,5 +21,5 @@ class OccuMapDemoDrivingAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(OccuMapDemoDrivingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
-        self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(100, 100))
+        self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200))
         return VehicleControl()
