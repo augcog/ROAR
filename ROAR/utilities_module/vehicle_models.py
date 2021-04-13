@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 import math
 from ROAR.utilities_module.data_structures_models import Transform, Vector3D
+import numpy as np
 
 
 class VehicleControl(BaseModel):
@@ -25,6 +26,9 @@ class VehicleControl(BaseModel):
         :return:
         """
         return self.clamp(self.steering, -1, 1)
+
+    def to_array(self) -> np.ndarray:
+        return np.array([self.throttle, self.steering])
 
 
 class Vehicle(BaseModel):
@@ -53,3 +57,5 @@ class Vehicle(BaseModel):
         vel = vehicle.velocity
         return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
+    def to_array(self):
+        return np.concatenate([self.velocity.to_array(), self.transform.to_array(), self.control.to_array()])

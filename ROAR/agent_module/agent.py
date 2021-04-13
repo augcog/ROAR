@@ -14,6 +14,9 @@ from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlann
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 import threading
 from typing import Dict, Any
+from datetime import datetime
+import threading
+
 
 class Agent(ABC):
     """
@@ -51,7 +54,7 @@ class Agent(ABC):
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
         self.transform_output_folder_path = self.output_folder_path / "transform"
-
+        self.vehicle_state_output_folder_path = self.output_folder_path / "vehicle_state"
         self.local_planner: Optional[LocalPlanner] = None
         self.behavior_planner: Optional[BehaviorPlanner] = None
         self.mission_planner: Optional[MissionPlanner] = None
@@ -73,7 +76,15 @@ class Agent(ABC):
                                                           exist_ok=True)
             self.transform_output_folder_path.mkdir(parents=True,
                                                     exist_ok=True)
+            self.vehicle_state_output_folder_path.mkdir(parents=True,
+                                                        exist_ok=True)
+            self.write_meta_data()
         self.kwargs: Dict[str, Any] = kwargs  # additional info
+
+    def write_meta_data(self):
+        vehicle_state_file = (self.vehicle_state_output_folder_path / "meta_data.txt").open(mode='w')
+        vehicle_state_file.write("vx,vy,vz,x,y,z,roll,pitch,yaw,throttle,steering")
+        vehicle_state_file.close()
 
     def add_threaded_module(self, module: Module):
         if module.threaded:
@@ -123,7 +134,7 @@ class Agent(ABC):
         self.time_counter += 1
         self.sync_data(sensors_data=sensors_data, vehicle=vehicle)
         if self.should_save_sensor_data:
-            self.save_sensor_data()
+            self.save_sensor_data_async()
         if self.local_planner is not None and self.local_planner.is_done():
             self.is_done = True
         return VehicleControl()
@@ -166,6 +177,10 @@ class Agent(ABC):
         if self.imu is not None:
             self.imu = sensors_data.imu_data
 
+    def save_sensor_data_async(self) -> None:
+        x = threading.Thread(target=self.save_sensor_data, args=())
+        x.start()
+
     def save_sensor_data(self) -> None:
         """
         Failure-safe saving function that saves all the sensor data of the
@@ -174,10 +189,11 @@ class Agent(ABC):
         Returns:
             None
         """
+        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
                 cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                             f"frame_{self.time_counter}.png").as_posix(),
+                             f"frame_{now}.png").as_posix(),
                             self.front_rgb_camera.data)
         except Exception as e:
             self.logger.error(
@@ -186,7 +202,7 @@ class Agent(ABC):
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
                 np.save((self.front_depth_camera_output_folder_path /
-                         f"frame_{self.time_counter}").as_posix(),
+                         f"frame_{now}").as_posix(),
                         self.front_depth_camera.data)
         except Exception as e:
             self.logger.error(
@@ -194,19 +210,28 @@ class Agent(ABC):
         try:
             if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
                 cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                             f"frame_{self.time_counter}.png").as_posix(),
+                             f"frame_{now}.png").as_posix(),
                             self.rear_rgb_camera.data)
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
-            transform_file = (Path(self.transform_output_folder_path) / f"frame_{self.time_counter}.txt").open('w')
+            transform_file = (Path(self.transform_output_folder_path) /
+                              f"frame_{now}.txt").open('w')
             transform_file.write(self.vehicle.transform.record())
             transform_file.close()
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
+        try:
+            if self.vehicle is not None:
+                data = self.vehicle.to_array()
+                np.save((Path(self.vehicle_state_output_folder_path) /
+                         f"frame_{now}").as_posix(), data)
+        except Exception as e:
+            self.logger.error(
+                f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
     def start_module_threads(self):
         for module in self.threaded_modules:

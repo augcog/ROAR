@@ -9,12 +9,12 @@ import cv2
 from typing import Optional
 from ROAR_Jetson.vive.models import ViveTrackerMessage
 from ROAR_Jetson.jetson_vehicle import Vehicle as JetsonVehicle
-from ROAR_Jetson.camera import RS_T265
-from ROAR_Jetson.camera_d_t import RS_D_T
+from ROAR_Jetson.camera_d_t import RealsenseD435iAndT265
 from typing import Union
 
+
 class JetsonBridge(Bridge):
-    def convert_location_from_source_to_agent(self, source) -> Location:
+    def convert_location_from_source_to_agent(self, source:np.ndarray) -> Location:
         """
         Convert Location data from Jetson Vehicle to Agent's location data type.
         Args:
@@ -23,9 +23,9 @@ class JetsonBridge(Bridge):
         Returns:
             Location(x, y, z)
         """
-        return Location(x=source.x, y=source.y, z=-source.z)
+        return Location(x=source[0], y=source[1], z=source[2])
 
-    def convert_rotation_from_source_to_agent(self, source) -> Rotation:
+    def convert_rotation_from_source_to_agent(self, source: np.ndarray) -> Rotation:
         """
         Convert a Jetson raw rotation to Rotation(pitch=float,yaw=float,roll=float).
         Args:
@@ -34,7 +34,7 @@ class JetsonBridge(Bridge):
         Returns:
             Rotation(pitch, yaw, roll)
         """
-        return Rotation(pitch=source.pitch, yaw=source.yaw, roll=source.roll)
+        return Rotation(roll=source[0], pitch=source[1], yaw=source[2])
 
     def convert_transform_from_source_to_agent(self, source) -> Transform:
         """
@@ -136,24 +136,13 @@ class JetsonBridge(Bridge):
             imu_data=self.convert_imu_from_source_to_agent(
                 source=source.get("imu", None)
             ),
-            tracking_data=self.convert_t265_to_agent(t265=source.get("t265_tracking")),
-            vive_tracker_data=self.convert_vive_tracker_data_from_source_to_agent(
-                source=source.get("vive_tracking", None))
+            location=self.convert_location_from_source_to_agent(
+                source=source.get("location", None)),
+            rotation=self.convert_rotation_from_source_to_agent(
+                source=source.get("rotation", None)),
+            velocity=self.convert_location_from_source_to_agent(
+                source=source.get("velocity", None))
         )
-
-    def convert_t265_to_agent(self, t265: Union[RS_T265, RS_D_T]) -> Optional[TrackingData]:
-        if t265 is not None:
-            location = t265.location
-            rotation = t265.rotation  # pitch yaw roll
-            velocity = t265.velocity
-            return TrackingData(
-                transform=Transform(
-                    location=Location(x=location[0], y=-location[1], z=-location[2]),
-                    rotation=Rotation(pitch=rotation[0], yaw=rotation[1], roll=rotation[2])
-                ),
-                velocity=Vector3D(x=velocity[0], y=velocity[1], z=velocity[2])
-            )
-        return None
 
     def convert_vive_tracker_data_from_source_to_agent(self, source: Optional[ViveTrackerMessage]) -> \
             Optional[ViveTrackerData]:
@@ -195,13 +184,8 @@ class JetsonBridge(Bridge):
         Returns:
             Vehicle(Transform, Velocity, Wheel_Base, Control)
         """
-        return Vehicle(transform=Transform(
-            location=Location(x=-source.location[0], y=source.location[1], z=-source.location[2]),
-            rotation=Rotation(roll=-source.rotation[2], pitch=source.rotation[0], yaw=-source.rotation[1]),
-        ),
-            velocity=Vector3D(x=-source.velocity[0], y=source.velocity[1], z=-source.velocity[2]),
-            wheel_base=0.26,
-            control=self.convert_control_from_source_to_agent(source=source)
+        return Vehicle(wheel_base=0.26,
+                       control=self.convert_control_from_source_to_agent(source=source)
         )
 
     def convert_control_from_agent_to_source(self, control: VehicleControl) -> Tuple:

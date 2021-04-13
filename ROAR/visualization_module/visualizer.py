@@ -195,16 +195,16 @@ class Visualizer:
             if focus_on_vehicle:
                 occu_cord = self.occupancy_grid_map.location_to_occu_cord(
                     location=self.agent.vehicle.transform.location)
-                map_copy = self.occupancy_grid_map.map.copy()
+                map_copy = self.occupancy_grid_map._map.copy()
                 x, y = occu_cord[0]
                 map_copy[
-                y - self.occupancy_grid_map.vehicle_height // 2: y + self.occupancy_grid_map.vehicle_height // 2,
-                x - self.occupancy_grid_map.vehicle_width // 2:x + self.occupancy_grid_map.vehicle_width // 2] = 0
+                y - self.occupancy_grid_map._vehicle_height // 2: y + self.occupancy_grid_map._vehicle_height // 2,
+                x - self.occupancy_grid_map._vehicle_width // 2:x + self.occupancy_grid_map._vehicle_width // 2] = 0
                 cv2.imshow("Occupancy Grid Map", map_copy[
                                                  y - view_size // 2: y + view_size // 2:,
                                                  x - view_size // 2: x + view_size // 2
                                                  ])
 
             else:
-                cv2.imshow("Occupancy Grid Map", self.occupancy_grid_map.map)
+                cv2.imshow("Occupancy Grid Map", self.occupancy_grid_map._map)
             cv2.waitKey(1)

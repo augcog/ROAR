@@ -9,6 +9,7 @@
 * If you are new to the project visit [Quick Start](#quick-start)
 * If you are curious about ROAR Competition at Berkeley visit [Berkeley ROAR](https://vivecenter.berkeley.edu/research1/roar/)
 * If you are curious about Carla visit [Carla Simulator](https://carla.org)
+* Joining the competition? Read our [competition instruction](#competition_instruction)!
 * For more information regarding DeCal Course visit [Roar Decal](https://roar-decal.github.io/ROAR.html).
 
 

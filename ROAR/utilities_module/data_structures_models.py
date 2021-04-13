@@ -5,6 +5,7 @@ from typing import Union, Optional
 from typing import List
 from ROAR.utilities_module.utilities import rotation_matrix_from_euler
 
+
 class Location(BaseModel):
     x: float = Field(
         ...,
@@ -113,7 +114,6 @@ class Transform(BaseModel):
         return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch,
                          self.rotation.yaw])
 
-
     @staticmethod
     def from_array(array):
         return Transform(location=Location.from_array(array[:3]), rotation=Rotation.from_array(array[3:]))
@@ -176,16 +176,20 @@ class ViveTrackerData(BaseModel):
     velocity: Vector3D = Field()
     tracker_name: str = Field(default="Tracker")
 
+
 class TrackingData(BaseModel):
     transform: Transform = Field(default=Transform())
     velocity: Vector3D = Field()
 
+
 class SensorsData(BaseModel):
-    front_rgb: Union[RGBData, None] = Field(default=None)
-    rear_rgb: Union[RGBData, None] = Field(default=None)
-    front_depth: Union[DepthData, None] = Field(default=None)
-    imu_data: Union[IMUData, None] = Field(default=None)
-    vive_tracker_data: Optional[ViveTrackerData] = Field(default=None)
+    front_rgb: Optional[RGBData] = Field(default=None)
+    rear_rgb: Optional[RGBData] = Field(default=None)
+    front_depth: Optional[DepthData] = Field(default=None)
+    imu_data: Optional[IMUData] = Field(default=None)
+    location: Optional[Location] = Field(default=None)
+    rotation: Optional[Rotation] = Field(default=None)
+    velocity: Optional[Vector3D] = Field(default=None)
 
 
 class MapEntry(BaseModel):
