@@ -41,7 +41,7 @@ class OccupancyGridMap(Module):
         9. Fixed map size for enhanced performance
     """
 
-    def __init__(self, absolute_maximum_map_size=10000, map_padding: int = 40, vehicle_width=5, vehicle_height=5,
+    def __init__(self, absolute_maximum_map_size=10000, map_padding: int = 40, vehicle_width=2, vehicle_height=2,
                  world_coord_resolution=1, occu_prob: float = 0.95, free_prob: float = 0.05,
                  max_points_to_convert: int = 1000, **kwargs):
         """
@@ -135,23 +135,44 @@ class OccupancyGridMap(Module):
         # self.map = self.map.clip(0, 1)
 
     def visualize(self,
-                  vehicle_location: Optional[Location] = None,
-                  view_size=200):
-        if vehicle_location is None:
+                  transform: Optional[Transform] = None,
+                  view_size: Tuple[int, int] = (10, 10)):
+        """
+        if transform is None:
+            Visualize the entire map, output size constraint to (500,500)
+        else:
+            Visualize an ego centric view, output size constraint to (500,500)
+        Args:
+            transform: vehicle transform
+            view_size: size of the view
+
+        Returns:
+
+        """
+        if transform is None:
             cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(self._map), dsize=(500, 500)))
         else:
             occu_cord = self.location_to_occu_cord(
-                location=vehicle_location)
+                location=transform.location)
             map_copy = self._map.copy()
             x, y = occu_cord[0]
             map_copy[
             y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
             x - math.floor(self._vehicle_width / 2):x + math.ceil(self._vehicle_width / 2)] = 1
-            # cv2.imshow("Occupancy Grid Map", map_copy[
-            #                                  y - view_size // 2: y + view_size // 2:,
-            #                                  x - view_size // 2: x + view_size // 2
-            #                                  ])
-            cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(map_copy), (500, 500)))
+            map_to_view = np.float32(map_copy[y - view_size[1] // 2: y + view_size[1] // 2,
+                          x - view_size[0] // 2: x + view_size[0] // 2])
+
+            # angle = np.deg2rad(transform.rotation.yaw)
+            # rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)],
+            #                             [np.sin(angle), np.cos(angle)]])
+            # obstacles = np.where(map_to_view == 1)
+            # obstacles: np.ndarray = np.vstack([obstacles[0], obstacles[1]]).T
+            # obstacles = (obstacles @ rotation_matrix).astype(np.int)  # TODO will rotate it out of screen
+            # map_to_view = np.zeros(shape=(1000, 1000))
+            # map_to_view[obstacles[:, 0], obstacles[:, 1]] = 1
+            cv2.imshow("Occupancy Grid Map", cv2.resize(map_to_view, (500, 500)))
+
+            # cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(map_to_view), (500, 500)))
         cv2.waitKey(1)
 
     def update(self, world_coords: np.ndarray):
@@ -201,3 +222,23 @@ class OccupancyGridMap(Module):
             if meta_data_fpath.exists() is False:
                 meta_data = np.array([self._min_x, self._min_y, self._max_x, self._max_y, self._map_additiona_padding])
                 np.save(meta_data_fpath.as_posix(), meta_data)
+
+    def get_map(self):
+        return np.float32(self._map)
+
+    def load_from_file(self, file_path: Path):
+        """
+        Load a map from file_path.
+
+        Expected to be the same size as the map
+
+        Args:
+            file_path: a npy file that stores the static map
+
+        Returns:
+
+        """
+        m = np.load(file_path.as_posix())
+        assert m.shape == self._map.shape, f"Loaded map is of shape [{m.shape}], " \
+                                           f"does not match the expected shape [{self._map.shape}]"
+        self._map = m

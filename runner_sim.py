@@ -6,6 +6,8 @@ from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.pid_agent import PIDAgent
+from ROAR.agent_module.occu_map_demo_driving_agent import OccuMapDemoDrivingAgent
+
 
 def main():
     """Starts game loop"""
@@ -18,7 +20,7 @@ def main():
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = RecordingAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()
@@ -28,7 +30,7 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s - %(asctime)s - %(name)s '
                                '- %(message)s',
-                        datefmt="%h:%m:%s",
+                        datefmt="%H:%M:%S",
                         level=logging.DEBUG)
     import warnings
     warnings.filterwarnings("ignore", module="carla")
