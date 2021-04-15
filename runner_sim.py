@@ -19,7 +19,7 @@ def main():
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-        agent = OccuMapDemoDrivingAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        agent = RecordingAgent(vehicle=my_vehicle, agent_settings=agent_config)
         carla_runner.start_game_loop(agent=agent, use_manual_control=True)
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
@@ -30,7 +30,7 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(format='%(levelname)s - %(asctime)s - %(name)s '
                                '- %(message)s',
-                        datefmt="%h:%m:%s",
+                        datefmt="%H:%M:%S",
                         level=logging.DEBUG)
     import warnings
     warnings.filterwarnings("ignore", module="carla")
