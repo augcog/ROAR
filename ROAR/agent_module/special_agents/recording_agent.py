@@ -37,7 +37,7 @@ class RecordingAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=550,
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1500,
                                               world_coord_resolution=1,
                                               occu_prob=0.99,
                                               max_points_to_convert=5000,
@@ -65,5 +65,5 @@ class RecordingAgent(Agent):
         if self.kwargs.get(self.option, None) is not None:
             points = self.kwargs[self.option]
             self.occupancy_map.update_async(points)
-            self.occupancy_map.visualize()
+            self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200))
         return control

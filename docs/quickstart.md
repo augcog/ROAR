@@ -18,7 +18,8 @@
         - `cd ROAR_Sim`
         - `pip install -r requirements.txt`
         - Download Simulator distribution for your OS
-            - [GDrive Link](https://drive.google.com/drive/folders/13JSejJED31cZHBbfIz_gyxxPmiqABOJj?usp=sharing)
+            - [Easy map Link](https://drive.google.com/drive/folders/13JSejJED31cZHBbfIz_gyxxPmiqABOJj?usp=sharing)
+            - [Berkeley Minor Link](https://drive.google.com/drive/folders/1ejKIOp8_vXaTroA7prcCDrfQet9WL-oD?usp=sharing)
     - For actual vehicle wired to your computer
         - `cd ROAR_Jetson`
         - `pip install -r requirements.txt`
