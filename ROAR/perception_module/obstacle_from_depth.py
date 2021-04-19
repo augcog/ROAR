@@ -8,6 +8,9 @@ import open3d
 
 
 class ObstacleFromDepth(Detector):
+    def save(self, **kwargs):
+        pass
+
     def __init__(self, agent: Agent,
                  max_detectable_distance: float = 0.3,
                  max_points_to_convert: int = 10000,
@@ -28,7 +31,6 @@ class ObstacleFromDepth(Detector):
             indices_to_select = np.random.choice(np.shape(coords)[1],
                                                  size=min([self.max_points_to_convert, np.shape(coords)[1]]),
                                                  replace=False)
-
             coords = (
                 coords[0][indices_to_select],
                 coords[1][indices_to_select]
@@ -60,10 +62,6 @@ class ObstacleFromDepth(Detector):
             self.agent.kwargs["obstacle_coords"] = points[mask]
             self.agent.kwargs["ground_coords"] = points[~mask]
             return self.agent.kwargs["obstacle_coords"]
-
-    def run_in_threaded(self, **kwargs):
-        while True:
-            self.run_in_series()
 
     @staticmethod
     def _pix2xyz(depth_img, i, j):

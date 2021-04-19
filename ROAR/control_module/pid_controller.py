@@ -23,7 +23,8 @@ class PIDController(Controller):
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
-                                                     max_speed=self.max_speed, config=self.config["longitudinal_controller"])
+                                                     max_speed=self.max_speed,
+                                                     config=self.config["longitudinal_controller"])
         self.lat_pid_controller = LatPIDController(
             agent=agent,
             config=self.config["latitudinal_controller"],
@@ -64,7 +65,6 @@ class LongPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
-        # self.logger.debug(f"Target_Speed: {target_speed} | max_speed = {self.max_speed}")
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)

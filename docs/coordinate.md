@@ -6,7 +6,7 @@ We are using Aruco Marker for defining center of the world. We are using Aruco M
 A printable PDF version can be found at [https://drive.google.com/file/d/1QtufqHznFYSQKumHuKppixglUSEPIFkc/view?usp=sharing](https://drive.google.com/file/d/1QtufqHznFYSQKumHuKppixglUSEPIFkc/view?usp=sharing).
 
 A cleaner version (recommended) is
-![](../images/0_marker.png)
+![](../images/0_marker.jpg)
 
 ---
 

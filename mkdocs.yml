@@ -6,6 +6,7 @@ nav:
       - Architecture: architecture.md
       - Coordinate: coordinate.md
     - Quick Start: quickstart.md
+    - Competition Instruction: competition_instruction.md
     - Code Documentations:
         - Bridges:
             - Bridge: code_documentations/Bridges/bridges.md
@@ -31,7 +32,6 @@ nav:
                   - World: code_documentations/ROAR_Sim/world.md
             - Configurations: code_documentations/ROAR_Sim/conf.md
         - Runner Sim: code_documentations/runner_sim.md
-        - Runner Competition Evaluator: code_documentations/runcompeval.md
 
 
 markdown_extensions:

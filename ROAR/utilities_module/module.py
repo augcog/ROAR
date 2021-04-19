@@ -1,9 +1,18 @@
 from abc import ABC, abstractmethod
+import time
+from pathlib import Path
 
 
 class Module(ABC):
-    def __init__(self, threaded=False):
+    def __init__(self, threaded=False, update_interval: float = 0.5,
+                 should_save: bool = False, name: str = "module", **kwargs):
         self.threaded = threaded
+        self.update_interval = update_interval
+        self.should_continue_threaded = True
+        self.should_save = should_save
+        self.saving_dir_path: Path = Path(f"data/output/{name}")
+        if should_save and self.saving_dir_path.exists() is False:
+            self.saving_dir_path.mkdir(exist_ok=True, parents=True)
 
     @abstractmethod
     def run_in_series(self, **kwargs):
@@ -17,7 +26,6 @@ class Module(ABC):
         """
         pass
 
-    @abstractmethod
     def run_in_threaded(self, **kwargs):
         """
         This is the threaded function.
@@ -27,7 +35,15 @@ class Module(ABC):
         Returns:
 
         """
-        pass
+        while self.should_continue_threaded:
+            self.run_in_series()
+            if self.should_save:
+                self.save()
+            time.sleep(self.update_interval)
 
     def shutdown(self):
+        self.should_continue_threaded = False
+
+    @abstractmethod
+    def save(self, **kwargs):
         pass

@@ -28,3 +28,6 @@ class Controller(Module):
 
     def run_in_threaded(self, **kwargs):
         pass
+
+    def save(self, **kwargs):
+        pass
