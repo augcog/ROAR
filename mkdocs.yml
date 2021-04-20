@@ -6,7 +6,6 @@ nav:
       - Architecture: architecture.md
       - Coordinate: coordinate.md
     - Quick Start: quickstart.md
-    - Competition Instruction: competition_instruction.md
     - Code Documentations:
         - Bridges:
             - Bridge: code_documentations/Bridges/bridges.md
@@ -24,14 +23,16 @@ nav:
             - Carla Client:
                 - Carla Runner: code_documentations/ROAR_Sim/carla_client.md
                 - Util:
-                  - Camera Manager: code_documentations/ROAR_Sim/camera.md
-                  - Hud: code_documentations/ROAR_Sim/hud.md
-                  - Keyboard Controls: code_documentations/ROAR_Sim/kbc.md
-                  - Sensors: code_documentations/ROAR_Sim/sensors.md
-                  - Utilities: code_documentations/ROAR_Sim/util.md
-                  - World: code_documentations/ROAR_Sim/world.md
+                    - Camera Manager: code_documentations/ROAR_Sim/camera.md
+                    - Hud: code_documentations/ROAR_Sim/hud.md
+                    - Keyboard Controls: code_documentations/ROAR_Sim/kbc.md
+                    - Sensors: code_documentations/ROAR_Sim/sensors.md
+                    - Utilities: code_documentations/ROAR_Sim/util.md
+                    - World: code_documentations/ROAR_Sim/world.md
             - Configurations: code_documentations/ROAR_Sim/conf.md
         - Runner Sim: code_documentations/runner_sim.md
+    - Competition Instruction: competition_instruction.md
+    - FAQ: faq.md
 
 
 markdown_extensions:

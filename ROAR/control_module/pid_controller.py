@@ -125,6 +125,7 @@ class LatPIDController(Controller):
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
+
         if _cross[1] > 0:
             error *= -1
         self._error_buffer.append(error)
@@ -140,9 +141,4 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
-        # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
-        # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
-        # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
-        # print()
         return lat_control

@@ -11,4 +11,3 @@ For quick start documentation, please visit our documentation site: [https://aug
 
 ### Enter the Competition
 Visit [https://augcog.github.io/ROAR/competition_instruction/](https://augcog.github.io/ROAR/competition_instruction/)
-
