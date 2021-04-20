@@ -4,7 +4,7 @@ from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
-<<<<<<< HEAD
+
 
 from ROAR.agent_module.jAM1AgentOld import JAM1Agent_old
 #from ROAR.agent_module.jAM1Agent import JAM1Agent
@@ -17,11 +17,10 @@ from ROAR.agent_module.special_agents.json_waypoint_generating_agent import JSON
 from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.lqr_agent import LQRAgent
-=======
+
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
-from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.occu_map_demo_driving_agent import OccuMapDemoDrivingAgent
->>>>>>> da1778d4717bc1a321604e6f2e03ea39eb468f70
+
 
 
 def main():
@@ -34,7 +33,7 @@ def main():
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-<<<<<<< HEAD
+
 
         #agent = PIDAgent(vehicle=my_vehicle, agent_settings=agent_config)
         #agent = OccupancyMapAgent(vehicle=my_vehicle, agent_settings=agent_config)
@@ -46,21 +45,18 @@ def main():
         agent = JAM3Agent_old(vehicle=my_vehicle, agent_settings=agent_config) # *** bstanley
         #agent = JAM3Agent(vehicle=my_vehicle, agent_settings=agent_config)
 
+        # *** use to record new waypoints ***
+        # waypointrecord = agent.bstanley_controller.blat_stanley_controller.waypointrecord
+        # np.save("James_waypoints", np.array(waypointrecord))
 
+        agent = RecordingAgent(vehicle=my_vehicle, agent_settings=agent_config)
 
         #carla_runner.start_game_loop(agent=agent, use_manual_control=True)#*******True for manual control, False auto
         carla_runner.start_game_loop(agent=agent, use_manual_control=False)  # *******True for manual control, False auto
 
-        #*** use to record new waypoints ***
-        #waypointrecord = agent.bstanley_controller.blat_stanley_controller.waypointrecord
-        #np.save("James_waypoints", np.array(waypointrecord))
 
-        #carla_runner.start_game_loop(agent=agent, use_manual_control=True)
 
-=======
-        agent = RecordingAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
->>>>>>> da1778d4717bc1a321604e6f2e03ea39eb468f70
+
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()
