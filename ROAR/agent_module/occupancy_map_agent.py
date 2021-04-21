@@ -35,14 +35,14 @@ class OccupancyMapAgent(Agent):
             behavior_planner=self.behavior_planner,
             closeness_threshold=1.5
         )
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=550,
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=800,
                                               world_coord_resolution=1,
                                               occu_prob=0.99,
-                                              max_points_to_convert=5000)
+                                              max_points_to_convert=10000)
         self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
                                                               threaded=True,
-                                                              max_detectable_distance=0.3,
-                                                              max_points_to_convert=10000,
+                                                              max_detectable_distance=0.5,
+                                                              max_points_to_convert=20000,
                                                               min_obstacle_height=2)
         self.add_threaded_module(self.obstacle_from_depth_detector)
         # self.vis = o3d.visualization.Visualizer()
@@ -55,10 +55,12 @@ class OccupancyMapAgent(Agent):
         control = self.local_planner.run_in_series()
         option = "obstacle_coords"  # ground_coords, point_cloud_obstacle_from_depth
         if self.kwargs.get(option, None) is not None:
-            print("curr_transform", self.vehicle.transform)
             points = self.kwargs[option]
             self.occupancy_map.update(points)
-            self.occupancy_map.visualize()
+            m = self.occupancy_map.get_rl_reward_map(waypoints=self.local_planner.way_points_queue,
+                                                     transform=self.vehicle.transform, view_size=(200, 200))
+            cv2.imshow("map", cv2.resize(m, dsize=(500, 500)))
+            cv2.waitKey(1)
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()
             #     point_means = np.mean(points, axis=0)
@@ -73,4 +75,9 @@ class OccupancyMapAgent(Agent):
             #     self.vis.update_geometry(self.pcd)
             #     self.vis.poll_events()
             #     self.vis.update_renderer()
+
+        if self.local_planner.is_done():
+            self.mission_planner.restart()
+            self.local_planner.restart()
+
         return control

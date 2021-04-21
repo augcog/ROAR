@@ -131,3 +131,6 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             if curr_speed < speed_upper_bound:
                 self.closeness_threshold = closeness_threshold
                 break
+
+    def restart(self):
+        self.set_mission_plan()

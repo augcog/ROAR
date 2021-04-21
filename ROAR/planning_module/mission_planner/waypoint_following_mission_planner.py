@@ -35,6 +35,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         self.logger = logging.getLogger(__name__)
         self.file_path: Path = Path(self.agent.agent_settings.waypoint_file_path)
         self.mission_plan = self.produce_mission_plan()
+        self._mission_plan_backup = self.mission_plan.copy()
         self.logger.debug("Path Following Mission Planner Initiated.")
 
     def produce_mission_plan(self) -> deque:
@@ -49,6 +50,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
             if len(coord) == 3 or len(coord) == 6:
                 mission_plan.append(self._raw_coord_to_transform(coord))
         self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
+
         return mission_plan
 
     def produce_single_lap_mission_plan(self):
@@ -112,3 +114,6 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         except:
             x, y, z, roll, pitch, yaw = line.split(",")
             return [float(x), float(y), float(z), float(roll), float(pitch), float(yaw)]
+
+    def restart(self):
+        self.mission_plan = self._mission_plan_backup.copy()
