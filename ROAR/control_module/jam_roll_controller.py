@@ -226,19 +226,22 @@ class LongPIDController(Controller):
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
-
+        la_indx = 60
+        #la_indx = 1 # old ROAR map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # next_pathpoint1 = (self.agent.local_planner.way_points_queue[2*cs+1])
         # next_pathpoint2 = (self.agent.local_planner.way_points_queue[2*cs+2])
         # next_pathpoint3 = (self.agent.local_planner.way_points_queue[2*cs+3])
         # next_pathpoint4 = (self.agent.local_planner.way_points_queue[2*cs+91])
         # next_pathpoint5 = (self.agent.local_planner.way_points_queue[2*cs+92])
         # next_pathpoint6 = (self.agent.local_planner.way_points_queue[2*cs+93])
-        next_pathpoint1 = (self.agent.local_planner.way_points_queue[3*cs+1])
-        next_pathpoint2 = (self.agent.local_planner.way_points_queue[3*cs+2])
-        next_pathpoint3 = (self.agent.local_planner.way_points_queue[3*cs+3])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[3*cs+71])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[3*cs+72])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[3*cs+73])
+
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+1)/la_indx)])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+2)/la_indx)])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+3)/la_indx)])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+71)/la_indx)])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+72)/la_indx)])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+73)/la_indx)])
+        # ******************************
         # next_pathpoint4 = (self.agent.local_planner.way_points_queue[cs+43])
         # next_pathpoint5 = (self.agent.local_planner.way_points_queue[cs+42])
         # next_pathpoint6 = (self.agent.local_planner.way_points_queue[cs+41])
@@ -367,7 +370,8 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        hed_err = self.hd_calc(next_waypoint)
+        #hed_err = self.hd_calc(next_waypoint) # old carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        hed_err = 0
         kle = 0.1
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
 
@@ -397,15 +401,17 @@ class LatPIDController(Controller):
                         [0, 0, 1]])
 
         gvw = np.linalg.inv(gwv)
+        lat_indx=5
+        #lat_indx=1 # old ROAR carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # *** next points on path
         # *** averaging path points for smooth path vector ***
-        next_pathpoint1 = (self.agent.local_planner.way_points_queue[1])
-        next_pathpoint2 = (self.agent.local_planner.way_points_queue[2])
-        next_pathpoint3 = (self.agent.local_planner.way_points_queue[3])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[17])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[18])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[19])
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[math.ceil(1/lat_indx)])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[math.ceil(2/lat_indx)])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[math.ceil(3/lat_indx)])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[math.ceil(17/lat_indx)])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[math.ceil(18/lat_indx)])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil(19/lat_indx)])
         nx0 = next_pathpoint1.location.x
         nz0 = next_pathpoint1.location.z
         nx = (
