@@ -135,6 +135,8 @@ class OccupancyGridMap(Module):
         # find occupancy map cords
         try:
             self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
+            print(f"Updating Grid Map: {np.shape(world_cords_xy)}")
+
             self._curr_obstacle_occu_coords = self.cord_translation_from_world(
                 world_cords_xy=world_cords_xy)
             occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:, 1]

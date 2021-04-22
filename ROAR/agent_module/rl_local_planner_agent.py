@@ -48,7 +48,7 @@ class RLLocalPlannerAgent(Agent):
                                                               max_points_to_convert=20000,
                                                               min_obstacle_height=2)
         self.add_threaded_module(self.obstacle_from_depth_detector)
-        self.add_threaded_module(self.occupancy_map)
+        # self.add_threaded_module(self.occupancy_map)
         self.logger.debug(
             f"Waypoint Following Agent Initiated. Reading f"
             f"rom {self.route_file_path.as_posix()}")
@@ -66,6 +66,6 @@ class RLLocalPlannerAgent(Agent):
             option = "obstacle_coords"  # ground_coords, point_cloud_obstacle_from_depth
             if self.kwargs.get(option, None) is not None:
                 points = self.kwargs[option]
-                self.occupancy_map.update_async(points)
+                self.occupancy_map.update(points)
             control = self.local_planner.run_in_series()
         return control
