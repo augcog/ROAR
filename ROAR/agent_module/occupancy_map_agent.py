@@ -18,6 +18,7 @@ import open3d as o3d
 import cv2
 from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
 from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
+import time
 
 
 class OccupancyMapAgent(Agent):
@@ -38,13 +39,15 @@ class OccupancyMapAgent(Agent):
         self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=800,
                                               world_coord_resolution=1,
                                               occu_prob=0.99,
-                                              max_points_to_convert=10000)
+                                              max_points_to_convert=10000,
+                                              threaded=True)
         self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
                                                               threaded=True,
                                                               max_detectable_distance=0.5,
                                                               max_points_to_convert=20000,
                                                               min_obstacle_height=2)
         self.add_threaded_module(self.obstacle_from_depth_detector)
+        self.add_threaded_module(self.occupancy_map)
         # self.vis = o3d.visualization.Visualizer()
         # self.vis.create_window(width=500, height=500)
         # self.pcd = o3d.geometry.PointCloud()
@@ -56,11 +59,14 @@ class OccupancyMapAgent(Agent):
         option = "obstacle_coords"  # ground_coords, point_cloud_obstacle_from_depth
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
-            self.occupancy_map.update(points)
-            m = self.occupancy_map.get_rl_reward_map(waypoints=self.local_planner.way_points_queue,
-                                                     transform=self.vehicle.transform, view_size=(200, 200))
-            cv2.imshow("map", cv2.resize(m, dsize=(500, 500)))
-            cv2.waitKey(1)
+            self.occupancy_map.update_async(points)
+            # m = self.occupancy_map.get_map(transform=self.vehicle.transform, view_size=(200, 200))
+            # truth_cropped_occu_map_coord = list(zip(*np.where(m == np.min(m))))[0]
+            # coord = self.occupancy_map.cropped_occu_to_world(cropped_occu_coord=np.array(truth_cropped_occu_map_coord),
+            #                                                  vehicle_transform=self.vehicle.transform,
+            #                                                  occu_vehicle_center=np.array(
+            #                                                      list(zip(*np.where(m == np.min(m))))[0]))
+
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()
             #     point_means = np.mean(points, axis=0)

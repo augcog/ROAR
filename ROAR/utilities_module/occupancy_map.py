@@ -20,6 +20,7 @@ from scipy import sparse
 from scipy.ndimage import rotate
 from collections import deque
 import itertools
+import time
 
 
 class OccupancyGridMap(Module):
@@ -132,14 +133,17 @@ class OccupancyGridMap(Module):
             None
         """
         # find occupancy map cords
-        self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
-        self._curr_obstacle_occu_coords = self.cord_translation_from_world(
-            world_cords_xy=world_cords_xy)
-        occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:, 1]
-        min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
-                                     np.min(occu_cords_y), np.max(occu_cords_y)
-        self._map[min_y:max_y, min_x:max_x] = 0  # free
-        self._map[occu_cords_y, occu_cords_x] = 1  # occupied
+        try:
+            self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
+            self._curr_obstacle_occu_coords = self.cord_translation_from_world(
+                world_cords_xy=world_cords_xy)
+            occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:, 1]
+            min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
+                                         np.min(occu_cords_y), np.max(occu_cords_y)
+            self._map[min_y:max_y, min_x:max_x] = 0  # free
+            self._map[occu_cords_y, occu_cords_x] = 1  # occupied
+        except Exception as e:
+            self.logger.error(f"Unable to update: {e}")
         # activate the below three line in real world due to sensor error
         # min_occu_cords_x, max_occu_cords_x = np.min(occu_cords_x), np.max(occu_cords_x)
         # min_occu_cords_y, max_occu_cords_y = np.min(occu_cords_y), np.max(occu_cords_y)
@@ -218,8 +222,10 @@ class OccupancyGridMap(Module):
             print(np.shape(curr_map))
             print(e)
 
-    def get_map(self, transform: Optional[Transform] = None,
-                view_size: Tuple[int, int] = (100, 100)):
+    def get_map(self,
+                transform: Optional[Transform] = None,
+                view_size: Tuple[int, int] = (100, 100),
+                boundary_size: Tuple[int, int] = (100, 100)):
         """
         Return global occu map if transform is None
         Otherwise, return ego centric map
@@ -234,43 +240,39 @@ class OccupancyGridMap(Module):
         if transform is None:
             return np.float32(self._map.copy())
         else:
+
             occu_cord = self.location_to_occu_cord(
                 location=transform.location)
             map_to_view = np.float32(self._map.copy())
             x, y = occu_cord[0]
-            map_to_view[
-            y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
-            x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = 1
-            map_to_view = map_to_view[
-                          max(0, y - view_size[1] // 2): y + view_size[1] // 2,
-                          max(0, x - view_size[0] // 2): x + view_size[0] // 2]
-            map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw)
+            map_to_view[y, x] = -10
+            # map_to_view[
+            # y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
+            # x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = -1
+
+            first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
+            map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
+                          x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
+            map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw, reshape=False)
+            x_extra, y_extra = (np.shape(map_to_view)[0] - boundary_size[0] * 2) // 2, \
+                               (np.shape(map_to_view)[1] - boundary_size[1] * 2) // 2
+            map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,
+                          x_extra: map_to_view.shape[0] - x_extra]
             return map_to_view
 
-    def get_rl_reward_map(self,
-                          waypoints: deque,
-                          transform,
-                          view_size=(200, 200), N=10,
-                          vehicle_symbol=-1,
-                          waypoint_symbol=-100
-                          ) -> np.ndarray:
-        occu_cord = self.location_to_occu_cord(
-            location=transform.location)
-        map_to_view = np.float32(self._map.copy())
-        x, y = occu_cord[0]
-        map_to_view[
-        y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
-        x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = vehicle_symbol
+    def cropped_occu_to_world(self,
+                              cropped_occu_coord: np.ndarray,
+                              vehicle_transform: Transform,
+                              occu_vehicle_center: np.ndarray):
 
-        locations = [waypoint.location for waypoint in itertools.islice(waypoints, 0, N)]
-        occu_coords = self.locations_to_occu_cord(locations=locations)
-        for occ_waypoint_coord in occu_coords:
-            w_x, w_y = occ_waypoint_coord
-            map_to_view[w_y, w_x] = waypoint_symbol
-        map_to_view = map_to_view[y - view_size[1] // 2: y + view_size[1] // 2,
-                      x - view_size[0] // 2: x + view_size[0] // 2]
-        map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw)
-        return map_to_view
+        diff = cropped_occu_coord - occu_vehicle_center
+        vehicle_occu_coord = self.location_to_occu_cord(
+            location=vehicle_transform.location)
+        x, y = vehicle_occu_coord[0]
+        coord = np.array([y, x]) + diff
+        coord = coord + [self._min_y, self._min_x]
+        return Transform(location=Location(x=coord[1], y=0, z=coord[0]))
+        # return self.occu_to_world(occu_coord=np.array([coord[1], coord[0]]), transform=vehicle_transform)
 
     def load_from_file(self, file_path: Path):
         """
