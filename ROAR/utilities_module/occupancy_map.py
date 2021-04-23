@@ -227,12 +227,13 @@ class OccupancyGridMap(Module):
     def get_map(self,
                 transform: Optional[Transform] = None,
                 view_size: Tuple[int, int] = (100, 100),
-                boundary_size: Tuple[int, int] = (100, 100)):
+                boundary_size: Tuple[int, int] = (100, 100)) -> np.ndarray:
         """
         Return global occu map if transform is None
         Otherwise, return ego centric map
 
         Args:
+            boundary_size:
             transform: Current vehicle Transform
             view_size: Size of the view window
 
@@ -246,8 +247,10 @@ class OccupancyGridMap(Module):
             occu_cord = self.location_to_occu_cord(
                 location=transform.location)
             map_to_view = np.float32(self._map.copy())
+
             x, y = occu_cord[0]
             map_to_view[y, x] = -10
+
             # map_to_view[
             # y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
             # x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = -1
@@ -256,6 +259,8 @@ class OccupancyGridMap(Module):
             map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
                           x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
             map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw, reshape=False)
+            map_to_view = np.rint(map_to_view)
+
             x_extra, y_extra = (np.shape(map_to_view)[0] - boundary_size[0] * 2) // 2, \
                                (np.shape(map_to_view)[1] - boundary_size[1] * 2) // 2
             map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,

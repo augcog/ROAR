@@ -60,7 +60,10 @@ class OccupancyMapAgent(Agent):
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
             self.occupancy_map.update_async(points)
-            # m = self.occupancy_map.get_map(transform=self.vehicle.transform, view_size=(200, 200))
+            m = self.occupancy_map.get_map(transform=self.vehicle.transform, view_size=(200, 200))
+            print(np.shape(np.where(m == 1)))
+            cv2.imshow("m", m)
+            cv2.waitKey(1)
             # truth_cropped_occu_map_coord = list(zip(*np.where(m == np.min(m))))[0]
             # coord = self.occupancy_map.cropped_occu_to_world(cropped_occu_coord=np.array(truth_cropped_occu_map_coord),
             #                                                  vehicle_transform=self.vehicle.transform,
