@@ -80,7 +80,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 1
+    num_trials = 10
     total_score = 0
     num_laps = 2
     table = PrettyTable()
