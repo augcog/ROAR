@@ -18,7 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
        #self.max_speed = self.agent.agent_settings.max_speed
-        self.max_speed = 170 #************************* MAX SPEED *********************************
+        self.max_speed = 130 #************************* MAX SPEED *********************************
 
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
@@ -62,7 +62,7 @@ class PIDController(Controller):
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
         #k_p, k_d, k_i = .03, 0.9, 0  #original values
-        k_p, k_d, k_i = .1, 4, 0
+        k_p, k_d, k_i = .1, 9, 0
 
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
