@@ -44,7 +44,9 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         """
         raw_path: List[List[float]] = self._read_data_file()
         length = self.agent.agent_settings.num_laps * len(raw_path)
-        mission_plan = deque(maxlen=length)
+        #mission_plan = deque(maxlen=length)
+        mission_plan = deque(maxlen=11*length)
+
         for coord in np.tile(raw_path, (self.agent.agent_settings.num_laps, 1)):
             if len(coord) == 3 or len(coord) == 6:
                 mission_plan.append(self._raw_coord_to_transform(coord))

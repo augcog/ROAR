@@ -18,7 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
        #self.max_speed = self.agent.agent_settings.max_speed
-        self.max_speed = 130 #************************* MAX SPEED *********************************
+        self.max_speed = 180 #************************* MAX SPEED *********************************
 
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
@@ -62,7 +62,7 @@ class PIDController(Controller):
     def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
         #k_p, k_d, k_i = .03, 0.9, 0  #original values
-        k_p, k_d, k_i = .1, 9, 0
+        k_p, k_d, k_i,  = .1, 0, 0
 
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
@@ -226,7 +226,7 @@ class LongPIDController(Controller):
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
-        la_indx = 60
+        la_indx = 40
         #la_indx = 1 # old ROAR map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # next_pathpoint1 = (self.agent.local_planner.way_points_queue[2*cs+1])
         # next_pathpoint2 = (self.agent.local_planner.way_points_queue[2*cs+2])
@@ -267,7 +267,7 @@ class LongPIDController(Controller):
         npath1 = np.transpose(np.array([nx1, nz1, 1]))
         npath2 = np.transpose(np.array([nx2, nz2, 1]))
 
-        path_yaw_rad = (math.atan2((nx2 - nx1), -(nz2 - nz1)))
+        path_yaw_rad = -(math.atan2((nx2 - nx1), -(nz2 - nz1)))
 
         path_yaw = path_yaw_rad * 180 / np.pi
         print(' !!! path yaw !!! ', path_yaw)
@@ -275,7 +275,7 @@ class LongPIDController(Controller):
         veh_yaw = self.agent.vehicle.transform.rotation.yaw
         print(' !!! veh yaw  !!! ', veh_yaw)
         ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
-        if ahead_err < 70:
+        if ahead_err < 50:
             la_err = 0
         else:
             la_err =(.05 * ahead_err)**3
@@ -370,19 +370,40 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        #hed_err = self.hd_calc(next_waypoint) # old carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        hed_err = 0
-        kle = 0.1
-        k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
+        #hed_err = .1*self.hd_calc(next_waypoint) # old carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #hed_err = self.hd_calc(next_waypoint)*(47**(abs(self.hd_calc(next_waypoint)))) **2
+        hed_err = self.hd_calc(next_waypoint)/(1+(abs(error))**3)
+        #hed_err = 0
 
+        kle = .2
+        #k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
+        k_p, k_d, k_i = (.2,0,0)
+
+        print('--lat head error--: ',hed_err)
+        print('--error-- = ',error)
+        print('--derivative error--: ',_de)
+        print('--integral error--: ',_ie)
+        print('kp', k_p)
+
+
+        # lat_control = float(
+        #     np.clip((k_p * error) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0], self.steering_boundary[1])
+        # )
         lat_control = float(
-            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0], self.steering_boundary[1])
+            np.clip((k_p * error**3) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
+                    self.steering_boundary[1])
         )
+        # lat_control = float(
+        #     np.clip((k_p * error ** 3) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
+        #             self.steering_boundary[1])
+        # ) #smooth path but not enough turning
+
         # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
         # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
         # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
         # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
         # print()
+        print ('--lateral control--: ', lat_control)
         return lat_control
 
     def hd_calc(self, next_waypoint: Transform, **kwargs):
