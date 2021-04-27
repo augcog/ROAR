@@ -288,9 +288,7 @@ def plot_results(hist, metrics, xlb, ylb, title, leg, fsize=(10, 5)):
 
 
 def generate_train_test_split(X, y, test_size):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
-    X_train, X_test, y_train, y_test = tf.stack(X_train), tf.stack(X_test), tf.stack(y_train), tf.stack(y_test)
-    return X_train, X_test, y_train, y_test
+    return train_test_split(X, y, test_size=test_size)
 
 
 def tf_setup():
@@ -314,22 +312,4 @@ if __name__ == "__main__":
     print("Data Loaded")
     # batch_size = 20
     X_train, X_test, y_train, y_test = generate_train_test_split(X, y, test_size=0.33)
-    print("Data Split Done")
-    m = nvidia_model()
-    m.fit(x=X_train, y=y_train, epochs=50, verbose=1)
-
-    # gen = generate_images(X=X_train, y=y_train, batch_size=20)
-    # m = simple_model()
-    # m.summary()
-    # print(np.shape(X_train), np.shape(y_train), np.shape(X_test), np.shape(y_test))
-    history = m.fit(X_train, y_train, verbose=0,
-                    epochs=50)
-    # plot_results(history, ["acc", "val_acc"], "epoch", "accuracy",
-    #              "Accuracy vs Epochs", ["Training", "Validation"])
-    # plot_results(history, ["loss", "val_loss"], "epoch", "loss",
-    #              "Loss vs Epochs", ["Training", "Validation"])
-
-    # plot_steering_hist(y)
-    # show_sample_images(X, y)
-    # model = nvidia_model(input_shape=(600, 800, 3))
-    # model.summary()
+    show_sample_images(X_train, y_train)
