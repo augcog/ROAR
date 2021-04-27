@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
+from ROAR.planning_module.local_planner.loop_simple_waypoint_following_local_planner import LoopSimpleWaypointFollowingLocalPlanner
 
 
 class RecordingAgent(Agent):
@@ -31,13 +32,13 @@ class RecordingAgent(Agent):
         # initiated right after mission plan
 
         self.behavior_planner = BehaviorPlanner(agent=self)
-        self.local_planner = SimpleWaypointFollowingLocalPlanner(
+        self.local_planner = LoopSimpleWaypointFollowingLocalPlanner(
             agent=self,
             controller=self.pid_controller,
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1500,
+        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
                                               world_coord_resolution=1,
                                               occu_prob=0.99,
                                               max_points_to_convert=5000,
@@ -51,16 +52,13 @@ class RecordingAgent(Agent):
         self.add_threaded_module(self.obstacle_from_depth_detector)
         self.add_threaded_module(self.occupancy_map)
         self.option = "obstacle_coords"
+        self.lap_count = 0
 
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
         super(RecordingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
         self.transform_history.append(self.vehicle.transform)
-        if self.is_done:
-            control = VehicleControl()
-            self.logger.debug("Recording Agent is Done. Idling.")
-        else:
-            control = self.local_planner.run_in_series()
+        control = self.local_planner.run_in_series()
 
         if self.kwargs.get(self.option, None) is not None:
             points = self.kwargs[self.option]

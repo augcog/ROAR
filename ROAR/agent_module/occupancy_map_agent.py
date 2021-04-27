@@ -60,15 +60,28 @@ class OccupancyMapAgent(Agent):
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
             self.occupancy_map.update_async(points)
-            m = self.occupancy_map.get_map(transform=self.vehicle.transform, view_size=(200, 200))
-            print(np.shape(np.where(m == 1)))
-            cv2.imshow("m", m)
-            cv2.waitKey(1)
-            # truth_cropped_occu_map_coord = list(zip(*np.where(m == np.min(m))))[0]
-            # coord = self.occupancy_map.cropped_occu_to_world(cropped_occu_coord=np.array(truth_cropped_occu_map_coord),
-            #                                                  vehicle_transform=self.vehicle.transform,
-            #                                                  occu_vehicle_center=np.array(
-            #                                                      list(zip(*np.where(m == np.min(m))))[0]))
+            print(self.front_depth_camera.data.shape)
+            # m = self.occupancy_map.get_map(transform=self.vehicle.transform,
+            #                                view_size=(100, 100),
+            #                                vehicle_value=-10)
+
+            # occu_map_vehicle_center = np.array(list(zip(*np.where(m == np.min(m))))[0])
+            # correct_next_waypoint_world = self.local_planner.way_points_queue[0]
+            # diff = np.array([correct_next_waypoint_world.location.x,
+            #                  correct_next_waypoint_world.location.z]) - \
+            #        np.array([self.vehicle.transform.location.x,
+            #                  self.vehicle.transform.location.z])
+            # correct_next_waypoint_occu = occu_map_vehicle_center + diff
+            # correct_next_waypoint_occu = np.array([49.97, 44.72596359])
+            # estimated_world_coord = self.occupancy_map.cropped_occu_to_world(
+            #     cropped_occu_coord=correct_next_waypoint_occu, vehicle_transform=self.vehicle.transform,
+            #     occu_vehicle_center=occu_map_vehicle_center)
+            # print(f"correct o-> {correct_next_waypoint_occu}"
+            #       f"correct w-> {correct_next_waypoint_world.location} | "
+            #       f"estimated = {estimated_world_coord.location.x}")
+            # cv2.imshow("m", m)
+            # cv2.waitKey(1)
+            # print()
 
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()

@@ -134,7 +134,7 @@ class OccupancyGridMap(Module):
         """
         # find occupancy map cords
         try:
-            self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
+            # self.logger.debug(f"Updating Grid Map: {np.shape(world_cords_xy)}")
             # print(f"Updating Grid Map: {np.shape(world_cords_xy)}")
 
             self._curr_obstacle_occu_coords = self.cord_translation_from_world(
@@ -194,7 +194,7 @@ class OccupancyGridMap(Module):
             m[occu_cords_y, occu_cords_x] = 1
             sA = sparse.csr_matrix(m)
             # np.save(f"{self.saving_dir_path}/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", m)
-            sparse.save_npz(f"{self.saving_dir_path}/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", sA)
+            sparse.save_npz(f"{self.saving_dir_path}/frame_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}", sA)
             meta_data_fpath = Path(f"{self.saving_dir_path}/meta_data.npy")
 
             if meta_data_fpath.exists() is False:
@@ -227,12 +227,14 @@ class OccupancyGridMap(Module):
     def get_map(self,
                 transform: Optional[Transform] = None,
                 view_size: Tuple[int, int] = (100, 100),
-                boundary_size: Tuple[int, int] = (100, 100)) -> np.ndarray:
+                boundary_size: Tuple[int, int] = (100, 100),
+                vehicle_value:Optional[int]=None) -> np.ndarray:
         """
         Return global occu map if transform is None
         Otherwise, return ego centric map
 
         Args:
+            vehicle_value:
             boundary_size:
             transform: Current vehicle Transform
             view_size: Size of the view window
@@ -243,17 +245,12 @@ class OccupancyGridMap(Module):
         if transform is None:
             return np.float32(self._map.copy())
         else:
-
+            map_to_view = np.float32(self._map.copy())
             occu_cord = self.location_to_occu_cord(
                 location=transform.location)
-            map_to_view = np.float32(self._map.copy())
-
             x, y = occu_cord[0]
-            map_to_view[y, x] = -10
-
-            # map_to_view[
-            # y - math.floor(self._vehicle_height / 2): y + math.ceil(self._vehicle_height / 2),
-            # x - math.floor(self._vehicle_width / 2): x + math.ceil(self._vehicle_width / 2)] = -1
+            if vehicle_value is not None:
+                map_to_view[y, x] = vehicle_value
 
             first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
             map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
@@ -261,10 +258,10 @@ class OccupancyGridMap(Module):
             map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw, reshape=False)
             map_to_view = np.rint(map_to_view)
 
-            x_extra, y_extra = (np.shape(map_to_view)[0] - boundary_size[0] * 2) // 2, \
-                               (np.shape(map_to_view)[1] - boundary_size[1] * 2) // 2
+            x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
+
             map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,
-                          x_extra: map_to_view.shape[0] - x_extra]
+                                      x_extra: map_to_view.shape[0] - x_extra]
             return map_to_view
 
     def cropped_occu_to_world(self,
@@ -275,10 +272,9 @@ class OccupancyGridMap(Module):
         diff = cropped_occu_coord - occu_vehicle_center
         vehicle_occu_coord = self.location_to_occu_cord(
             location=vehicle_transform.location)
-        x, y = vehicle_occu_coord[0]
-        coord = np.array([y, x]) + diff
-        coord = coord + [self._min_y, self._min_x]
-        return Transform(location=Location(x=coord[1], y=0, z=coord[0]))
+        coord = np.array(vehicle_occu_coord[0]) + diff
+        coord = coord + [self._min_x, self._min_y]
+        return Transform(location=Location(x=coord[0], y=0, z=coord[1]))
         # return self.occu_to_world(occu_coord=np.array([coord[1], coord[0]]), transform=vehicle_transform)
 
     def load_from_file(self, file_path: Path):
