@@ -81,7 +81,8 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
         curr_closest_dist = float("inf")
         while True:
             if len(self.way_points_queue) == self._curr_waypoint_index:
-                self._curr_waypoint_index = 0
+                self._curr_waypoint_index = 0 + 10  # this is so that i don't actually just look at the zeroth one
+                # when i loop back
             waypoint: Transform = self.way_points_queue[self._curr_waypoint_index]
             curr_dist = vehicle_transform.location.distance(waypoint.location)
             if curr_dist < curr_closest_dist:
@@ -93,8 +94,8 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
                 self._curr_waypoint_index += 1
             else:
                 break
-
         target_waypoint = self.way_points_queue[self._curr_waypoint_index]
+        print(target_waypoint)
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         return control
 
@@ -105,3 +106,5 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
             if curr_speed < speed_upper_bound:
                 self.closeness_threshold = closeness_threshold
                 break
+    def get_curr_waypoint_index(self):
+        return self._curr_waypoint_index

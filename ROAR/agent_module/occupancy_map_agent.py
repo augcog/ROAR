@@ -60,11 +60,15 @@ class OccupancyMapAgent(Agent):
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
             self.occupancy_map.update_async(points)
-            print(self.front_depth_camera.data.shape)
-            # m = self.occupancy_map.get_map(transform=self.vehicle.transform,
-            #                                view_size=(100, 100),
-            #                                vehicle_value=-10)
-
+            arb_points = [self.local_planner.way_points_queue[0].location]
+            m = self.occupancy_map.get_map(transform=self.vehicle.transform,
+                                           view_size=(200, 200),
+                                           vehicle_value=-1,
+                                           arbitrary_locations=arb_points,
+                                           arbitrary_point_value=-5)
+            # print(np.where(m == -5))
+            # cv2.imshow("m", m)
+            # cv2.waitKey(1)
             # occu_map_vehicle_center = np.array(list(zip(*np.where(m == np.min(m))))[0])
             # correct_next_waypoint_world = self.local_planner.way_points_queue[0]
             # diff = np.array([correct_next_waypoint_world.location.x,

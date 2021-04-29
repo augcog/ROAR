@@ -228,12 +228,16 @@ class OccupancyGridMap(Module):
                 transform: Optional[Transform] = None,
                 view_size: Tuple[int, int] = (100, 100),
                 boundary_size: Tuple[int, int] = (100, 100),
-                vehicle_value:Optional[int]=None) -> np.ndarray:
+                vehicle_value: Optional[int] = None,
+                arbitrary_locations: Optional[List[Location]] = None,
+                arbitrary_point_value: Optional[float] = None) -> np.ndarray:
         """
         Return global occu map if transform is None
         Otherwise, return ego centric map
 
         Args:
+            arbitrary_point_value:
+            arbitrary_locations:
             vehicle_value:
             boundary_size:
             transform: Current vehicle Transform
@@ -252,16 +256,23 @@ class OccupancyGridMap(Module):
             if vehicle_value is not None:
                 map_to_view[y, x] = vehicle_value
 
+            if arbitrary_point_value is not None and arbitrary_locations is not None:
+                for location in arbitrary_locations:
+                    coord = self.location_to_occu_cord(location=location)[0]
+                    map_to_view[coord[1], coord[0]] = arbitrary_point_value
+
             first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
             map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
                           x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
+            # print(np.where(map_to_view == -5))
             map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw, reshape=False)
             map_to_view = np.rint(map_to_view)
-
+            # print(np.where(map_to_view == -5))
             x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
 
             map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,
-                                      x_extra: map_to_view.shape[0] - x_extra]
+                          x_extra: map_to_view.shape[0] - x_extra]
+            # print()
             return map_to_view
 
     def cropped_occu_to_world(self,
