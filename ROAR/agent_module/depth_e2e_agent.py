@@ -23,6 +23,6 @@ class DepthE2EAgent(Agent):
         if self.front_depth_camera.data is not None:
             depth_image = self.front_depth_camera.data.copy()
             data = np.expand_dims(np.expand_dims(depth_image, 2), 0)
-            steering = float(self.model.predict_step(data).numpy()[0][0])
-            control.steering = float(steering)
+            output = self.model.predict_step(data).numpy()
+            print(output)
         return control
