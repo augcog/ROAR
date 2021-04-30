@@ -226,7 +226,7 @@ class LongPIDController(Controller):
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
-        la_indx = 30
+        la_indx = 40
         #la_indx = 1 # old ROAR map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # next_pathpoint1 = (self.agent.local_planner.way_points_queue[2*cs+1])
         # next_pathpoint2 = (self.agent.local_planner.way_points_queue[2*cs+2])
@@ -376,7 +376,7 @@ class LatPIDController(Controller):
 
         kle = .2
         #k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        k_p, k_d, k_i = (100,0,0)
+        k_p, k_d, k_i = (1,0,0)
 
         print('--lat head error--: ',hed_err)
         print('--error-- = ',error)
@@ -389,7 +389,7 @@ class LatPIDController(Controller):
         #     np.clip((k_p * error) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0], self.steering_boundary[1])
         # )
         lat_control = float(
-            np.clip((k_p * error**9) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
+            np.clip((k_p * error**3) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
                     self.steering_boundary[1])
         )
         # lat_control = float(

@@ -164,7 +164,7 @@ class LongPIDController(Controller):
 
         #****************** implement look ahead *******************
         la_err = self.la_calcs(next_waypoint)
-        kla = .09
+        kla = .02
 
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
@@ -183,7 +183,7 @@ class LongPIDController(Controller):
             if abs(self.agent.vehicle.transform.rotation.roll) <= .35:
                 out = 6 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla
             else:
-                out = 2 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla # *****ALGORITHM*****
+                out = 2 * np.exp(-0.05 * np.abs(vehroll))-(la_err/180)*current_speed*kla  # *****ALGORITHM*****
 
         output = np.clip(out, a_min=0, a_max=1)
         print('*************')
@@ -226,7 +226,7 @@ class LongPIDController(Controller):
         # *** next points on path
         # *** averaging path points for smooth path vector ***
 
-        la_indx = 30
+        la_indx = 40
         #la_indx = 1 # old ROAR map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # next_pathpoint1 = (self.agent.local_planner.way_points_queue[2*cs+1])
         # next_pathpoint2 = (self.agent.local_planner.way_points_queue[2*cs+2])
@@ -238,9 +238,9 @@ class LongPIDController(Controller):
         next_pathpoint1 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+1)/la_indx)])
         next_pathpoint2 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+2)/la_indx)])
         next_pathpoint3 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+3)/la_indx)])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+51)/la_indx)])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+52)/la_indx)])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+53)/la_indx)])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+71)/la_indx)])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+72)/la_indx)])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil((3*cs+73)/la_indx)])
         # ******************************
         # next_pathpoint4 = (self.agent.local_planner.way_points_queue[cs+43])
         # next_pathpoint5 = (self.agent.local_planner.way_points_queue[cs+42])
@@ -275,7 +275,7 @@ class LongPIDController(Controller):
         veh_yaw = self.agent.vehicle.transform.rotation.yaw
         print(' !!! veh yaw  !!! ', veh_yaw)
         ahead_err = abs(abs(path_yaw)-abs(veh_yaw))
-        if ahead_err < 60:
+        if ahead_err < 50:
             la_err = 0
         else:
             la_err =(.05 * ahead_err)**3
@@ -304,7 +304,10 @@ class LongPIDController(Controller):
         #
         # print('** look ahead error **', ahead_err)
 
+
+
         return la_err
+
 
         #***********************************************************
 
@@ -367,16 +370,14 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-
-
         #hed_err = .1*self.hd_calc(next_waypoint) # old carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #hed_err = self.hd_calc(next_waypoint)*(47**(abs(self.hd_calc(next_waypoint)))) **2
-        hed_err = self.hd_calc(next_waypoint)/(1+(abs(error))**4)
+        hed_err = self.hd_calc(next_waypoint)/(1+(abs(error))**3)
         #hed_err = 0
 
         kle = .2
         #k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        k_p, k_d, k_i = (100,0,0)
+        k_p, k_d, k_i = (.2,0,0)
 
         print('--lat head error--: ',hed_err)
         print('--error-- = ',error)
@@ -389,7 +390,7 @@ class LatPIDController(Controller):
         #     np.clip((k_p * error) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0], self.steering_boundary[1])
         # )
         lat_control = float(
-            np.clip((k_p * error**9) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
+            np.clip((k_p * error**3) + (k_d * _de) + (k_i * _ie) + (kle * hed_err), self.steering_boundary[0],
                     self.steering_boundary[1])
         )
         # lat_control = float(
@@ -421,19 +422,17 @@ class LatPIDController(Controller):
                         [0, 0, 1]])
 
         gvw = np.linalg.inv(gwv)
-        # lat_indx=5
+        lat_indx=5
         #lat_indx=1 # old ROAR carla %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # *** next points on path
         # *** averaging path points for smooth path vector ***
-        next_pathpoint1 = (self.agent.local_planner.way_points_queue[0])
-        next_pathpoint2 = (self.agent.local_planner.way_points_queue[0])
-        next_pathpoint3 = (self.agent.local_planner.way_points_queue[1])
-        next_pathpoint4 = (self.agent.local_planner.way_points_queue[0])
-        next_pathpoint5 = (self.agent.local_planner.way_points_queue[1])
-        next_pathpoint6 = (self.agent.local_planner.way_points_queue[2])
-        # next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil(11/lat_indx)])
-
+        next_pathpoint1 = (self.agent.local_planner.way_points_queue[math.ceil(1/lat_indx)])
+        next_pathpoint2 = (self.agent.local_planner.way_points_queue[math.ceil(2/lat_indx)])
+        next_pathpoint3 = (self.agent.local_planner.way_points_queue[math.ceil(3/lat_indx)])
+        next_pathpoint4 = (self.agent.local_planner.way_points_queue[math.ceil(17/lat_indx)])
+        next_pathpoint5 = (self.agent.local_planner.way_points_queue[math.ceil(18/lat_indx)])
+        next_pathpoint6 = (self.agent.local_planner.way_points_queue[math.ceil(19/lat_indx)])
         nx0 = next_pathpoint1.location.x
         nz0 = next_pathpoint1.location.z
         nx = (

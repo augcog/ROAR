@@ -1,0 +1,16 @@
+[
+  {
+      "name": "npc_0",
+      "waypoint_file_path": "./ROAR_Sim/data/location_0.txt",
+      "enable_autopilot": true,
+      "spawn_point_id": 0,
+      "target_speed": 80
+  },
+    {
+      "name": "npc_2",
+      "waypoint_file_path": "./ROAR_Sim/data/location_2.txt",
+      "enable_autopilot": true,
+      "spawn_point_id": 2,
+      "target_speed": 80
+  }
+]

@@ -1,0 +1,14 @@
+imageio==2.8.0
+imageio-ffmpeg==0.4.2
+moviepy==1.0.3
+numpy==1.19.0
+open3d==0.10.0.0
+opencv-contrib-python==4.4.0.42
+opencv-python==4.4.0.42
+pandas==1.0.5
+pydantic==1.5.1
+pygame==1.9.6
+pyrealsense2==2.38.1.2225
+pyserial==3.4
+scipy==1.5.2
+

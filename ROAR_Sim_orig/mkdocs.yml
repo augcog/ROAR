@@ -1,0 +1,50 @@
+site_name: ROAR
+site_description: Robot Autonomous Racing DeCal is a course dedicated to teaching students to gain a holistic view and hands-on(virtual) experiences about building a high-performance fully-autonomous 1/10 scale RC car from scratch.
+site_url: https://roar-decal.github.io/Carla/
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Project Overview:
+      - Project Module TAD: project_overview/project_module_TADs.md
+      - Code Layout: project_overview/code_layout.md
+  - Code Documentations:
+      - Bridges: code_documentations/bridges.md
+      - ROAR Autonomous System:
+          - Agents: code_documentations/roar_autonomous_system/agents.md
+          - Control: code_documentations/roar_autonomous_system/controls.md
+          - Perception: code_documentations/roar_autonomous_system/perceptions.md
+          - Visualization: code_documentations/roar_autonomous_system/visualizations.md
+          - Planning:
+              - Mission Planner: code_documentations/roar_autonomous_system/planning/mission_planners.md
+              - Behavior Planner: code_documentations/roar_autonomous_system/planning/behavior_planners.md
+              - Local Planner: code_documentations/roar_autonomous_system/planning/local_planners.md
+          - Utilities:
+              - Camera: code_documentations/roar_autonomous_system/utilities/cameras.md
+              - Data Structures: code_documentations/roar_autonomous_system/utilities/data_structures.md
+              - Vehicle: code_documentations/roar_autonomous_system/utilities/vehicles.md
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - pymdownx.emoji
+  - pymdownx.tabbed
+  - toc:
+      permalink: "¤"
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          rendering:
+            show_root_heading: no
+            show_category_heading: false
+            show_if_no_docstring: yes
+            show_source: true
+            show_root_toc_entry: false
+            show_object_full_path: no
