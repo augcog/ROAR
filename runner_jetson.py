@@ -9,6 +9,7 @@ from ROAR.agent_module.pid_agent import PIDAgent
 from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.agent_module.lane_detection_agent import LaneDetectionAgent
 from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
+from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from pathlib import Path
 import logging
 import warnings
@@ -29,7 +30,7 @@ def main():
             prepare(jetson_config=jetson_config)
         except Exception as e:
             logging.error(f"Ignoring Error during setup: {e}")
-        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
+        agent = RecordingAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
         jetson_runner.start_game_loop(use_manual_control=True)
     except Exception as e:
