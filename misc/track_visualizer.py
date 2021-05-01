@@ -98,4 +98,4 @@ if __name__ == "__main__":
     # track_data: List[List[float]] = read_txt(Path("trajectory_log1.txt"))
     # visualize_track_data(track_data=track_data)
     # visualize_tracks(regex="trajectory_log*")
-    visualize_tracks_together(regex="trajectory_log_*.txt")
+    visualize_tracks_together(regex="rfs_waypoints.txt")
