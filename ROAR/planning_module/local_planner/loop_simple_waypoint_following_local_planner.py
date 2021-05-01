@@ -95,7 +95,6 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
             else:
                 break
         target_waypoint = self.way_points_queue[self._curr_waypoint_index]
-        print(target_waypoint)
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
         return control
 
