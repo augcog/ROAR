@@ -59,7 +59,6 @@ class RecordingAgent(Agent):
         super(RecordingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
         self.transform_history.append(self.vehicle.transform)
         control = self.local_planner.run_in_series()
-
         if self.kwargs.get(self.option, None) is not None:
             points = self.kwargs[self.option]
             self.occupancy_map.update_async(points)
