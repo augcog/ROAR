@@ -15,7 +15,7 @@ class DepthE2EAgent(Agent):
         super().__init__(**kwargs)
         model_file_path: Path = Path("./ROAR_Sim/data/weights/depth_model_1.h5")
         print(model_file_path.exists(), model_file_path)
-        self.model:keras.models.Model = keras.models.load_model(model_file_path.as_posix())
+        self.model: keras.models.Model = keras.models.load_model(model_file_path.as_posix())
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(DepthE2EAgent, self).run_step(sensors_data, vehicle)
@@ -26,4 +26,5 @@ class DepthE2EAgent(Agent):
             output = self.model.predict(data)
             throttle, steering = output[0]
             control.throttle, control.steering = float(throttle), float(steering)
+            print(steering)
         return control
