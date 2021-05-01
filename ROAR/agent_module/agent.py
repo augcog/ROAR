@@ -194,7 +194,7 @@ class Agent(ABC):
         Returns:
             None
         """
-        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
+        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f')
         print(f"Saving sensor data -> {now}")
 
         try:
