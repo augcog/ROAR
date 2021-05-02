@@ -106,5 +106,6 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
             if curr_speed < speed_upper_bound:
                 self.closeness_threshold = closeness_threshold
                 break
+
     def get_curr_waypoint_index(self):
         return self._curr_waypoint_index
