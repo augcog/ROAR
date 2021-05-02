@@ -195,7 +195,7 @@ class Agent(ABC):
             None
         """
         now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f')
-        print(f"Saving sensor data -> {now}")
+        # print(f"Saving sensor data -> {now}")
 
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
@@ -225,6 +225,7 @@ class Agent(ABC):
         try:
             transform_file = (Path(self.transform_output_folder_path) /
                               f"frame_{now}.txt").open('w')
+            print(f"Recording -> {self.vehicle.transform.record()}")
             transform_file.write(self.vehicle.transform.record())
             transform_file.close()
         except Exception as e:
