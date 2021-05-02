@@ -3,12 +3,14 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR_Jetson.configurations.configuration import Configuration as JetsonConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 # from ROAR.agent_module.floodfill_based_lane_follower import FloodfillBasedLaneFollower
-from ROAR.agent_module.pid_agent import PIDAgent
+# from ROAR.agent_module.michael_pid_agent import PIDAgent
 # from ROAR.agent_module.jetson_pure_pursuit_agent import PurePursuitAgent
 # from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
-from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
-from ROAR.agent_module.lane_detection_agent import LaneDetectionAgent
-from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
+# from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
+# from ROAR.agent_module.lane_detection_agent import LaneDetectionAgent
+# from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
+# from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.michael_pid_agent import PIDAgent
 from pathlib import Path
 import logging
 import warnings
@@ -20,7 +22,7 @@ import serial
 import argparse
 
 
-def main():
+def main(auto=False):
     try:
         agent_config = AgentConfig.parse_file(Path("./ROAR_Jetson/configurations/agent_configuration.json"))
         jetson_config = JetsonConfig.parse_file(Path("./ROAR_Jetson/configurations/configuration.json"))
@@ -31,7 +33,7 @@ def main():
             logging.error(f"Ignoring Error during setup: {e}")
         agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=True)
+        jetson_runner.start_game_loop(use_manual_control=not auto)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -72,6 +74,7 @@ def str2bool(v):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", default=False, help="debug flag", type=str2bool)
+    parser.add_argument("--auto", default=False, help="enable or disable auto drive", type=str2bool)
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         datefmt="%H:%M:%S", level=logging.DEBUG if args.debug is True else logging.INFO)
@@ -79,4 +82,4 @@ if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
-    main()
+    main(args.auto)

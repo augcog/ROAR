@@ -18,8 +18,12 @@ def generate_track(root_dir: Path, regex: str = "/*") -> np.ndarray:
     file_paths = sorted(glob(root_dir.as_posix() + regex), key=os.path.getmtime)
     track = []
     for fpath in file_paths:
-        data = read_txt(Path(fpath))
-        track.append(data)
+        try:
+            data = read_txt(Path(fpath))
+            track.append(data)
+        except Exception as e:
+            print(f"Skipping {fpath}: {e}.")
+
     track = np.array(track, dtype=np.float64)
     return track
 
@@ -29,16 +33,15 @@ def visualize_track(track: np.ndarray):
     plt.show()
 
 
-def save_track_as_txt(track: np.ndarray, output_file_path:Path):
+def save_track_as_txt(track: np.ndarray, output_file_path: Path):
     output_file = output_file_path.open('w')
-    for x,y,z in track:
+    for x, y, z in track:
         output_file.write(f"{x},{y},{z}\n")
     output_file.close()
     print(f"[{len(track)}] waypoints written to [{output_file_path}]")
 
 
-
 if __name__ == "__main__":
-    track = generate_track(root_dir=Path("../data/output/transform"), regex="/*")
+    track = generate_track(root_dir=Path("../output/transform"), regex="/*")
     # visualize_track(track=track)
-    save_track_as_txt(track=track, output_file_path=Path("../ROAR_Sim/data/berkeley_minor_waypoints.txt"))
+    save_track_as_txt(track=track, output_file_path=Path("./rfs_waypoints_4.txt"))
