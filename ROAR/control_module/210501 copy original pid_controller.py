@@ -17,7 +17,7 @@ class PIDController(Controller):
     def __init__(self, agent, steering_boundary: Tuple[float, float],
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
-        self.max_speed = math.ceil(1.2*self.agent.agent_settings.max_speed)
+        self.max_speed = self.agent.agent_settings.max_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
@@ -45,7 +45,7 @@ class PIDController(Controller):
         for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
-                k_p, k_d, k_i = kvalues["Kp"]*.9, kvalues["Kd"]*.5, kvalues["Ki"]*.5
+                k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
         return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
 
@@ -69,7 +69,7 @@ class LongPIDController(Controller):
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
-        print('Speed limit:', target_speed)
+
         self._error_buffer.append(error)
 
         if len(self._error_buffer) >= 2:
@@ -113,9 +113,6 @@ class LatPIDController(Controller):
         print('next wp z: ', next_waypoint.location.z)
         print('next wp y: ', next_waypoint.location.y)
 
-
-
-
         direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
                                      0,
                                      -np.cos(np.deg2rad(self.agent.vehicle.transform.rotation.yaw))])
@@ -148,18 +145,13 @@ class LatPIDController(Controller):
             _ie = 0.0
 
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        print ('kp, kd, ki: ', k_p, k_d, k_i)
-        # lat_control = float(
-        #     np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
-        # )
+
         lat_control = float(
-            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), -.9, .9)
+            np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
         # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
         # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
         # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
         # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
         # print()
-        # print('steering boundary:', self.steering_boundary)
-        print('lateral control:',lat_control)
         return lat_control
