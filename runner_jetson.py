@@ -22,7 +22,7 @@ import serial
 import argparse
 
 
-def main():
+def main(auto=False):
     try:
         agent_config = AgentConfig.parse_file(Path("./ROAR_Jetson/configurations/agent_configuration.json"))
         jetson_config = JetsonConfig.parse_file(Path("./ROAR_Jetson/configurations/configuration.json"))
@@ -33,7 +33,7 @@ def main():
             logging.error(f"Ignoring Error during setup: {e}")
         agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=False)
         jetson_runner = JetsonRunner(agent=agent, jetson_config=jetson_config)
-        jetson_runner.start_game_loop(use_manual_control=True)
+        jetson_runner.start_game_loop(use_manual_control=not auto)
     except Exception as e:
         print(f"Something bad happened {e}")
 
@@ -74,6 +74,7 @@ def str2bool(v):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", default=False, help="debug flag", type=str2bool)
+    parser.add_argument("--auto", default=False, help="enable or disable auto drive", type=str2bool)
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         datefmt="%H:%M:%S", level=logging.DEBUG if args.debug is True else logging.INFO)
@@ -81,4 +82,4 @@ if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     warnings.simplefilter("ignore")
     np.set_printoptions(suppress=True)
-    main()
+    main(args.auto)
