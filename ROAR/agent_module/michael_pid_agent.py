@@ -37,6 +37,4 @@ class PIDAgent(Agent):
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         control = self.local_planner.run_in_series()
-        # control.steering = control.steering * -1 # hard fix for jetson???
-        self.logger.debug(f"control -> {control}")
         return control
