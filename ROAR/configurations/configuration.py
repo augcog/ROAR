@@ -76,6 +76,9 @@ class Configuration(BaseModel):
     target_speed: int = 80
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")
+    occu_map_config_path: str = Field(default="./ROAR_Sim/configurations/occu_map_config.json")
+    obstacle_from_depth_config_path: str = Field(default="./ROAR_Sim/configurations/obstacle_from_depth_config.json")
+
     
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")

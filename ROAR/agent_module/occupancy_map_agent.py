@@ -36,16 +36,9 @@ class OccupancyMapAgent(Agent):
             behavior_planner=self.behavior_planner,
             closeness_threshold=1.5
         )
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=800,
-                                              world_coord_resolution=1,
-                                              occu_prob=0.99,
-                                              max_points_to_convert=10000,
-                                              threaded=True)
-        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
-                                                              threaded=True,
-                                                              max_detectable_distance=0.5,
-                                                              max_points_to_convert=20000,
-                                                              min_obstacle_height=2)
+
+        self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
+        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self, threaded=True)
         self.add_threaded_module(self.obstacle_from_depth_detector)
         self.add_threaded_module(self.occupancy_map)
         # self.vis = o3d.visualization.Visualizer()
@@ -60,32 +53,8 @@ class OccupancyMapAgent(Agent):
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
             self.occupancy_map.update_async(points)
-            arb_points = [self.local_planner.way_points_queue[0].location]
-            m = self.occupancy_map.get_map(transform=self.vehicle.transform,
-                                           view_size=(200, 200),
-                                           vehicle_value=-1,
-                                           arbitrary_locations=arb_points,
-                                           arbitrary_point_value=-5)
-            # print(np.where(m == -5))
-            # cv2.imshow("m", m)
-            # cv2.waitKey(1)
-            # occu_map_vehicle_center = np.array(list(zip(*np.where(m == np.min(m))))[0])
-            # correct_next_waypoint_world = self.local_planner.way_points_queue[0]
-            # diff = np.array([correct_next_waypoint_world.location.x,
-            #                  correct_next_waypoint_world.location.z]) - \
-            #        np.array([self.vehicle.transform.location.x,
-            #                  self.vehicle.transform.location.z])
-            # correct_next_waypoint_occu = occu_map_vehicle_center + diff
-            # correct_next_waypoint_occu = np.array([49.97, 44.72596359])
-            # estimated_world_coord = self.occupancy_map.cropped_occu_to_world(
-            #     cropped_occu_coord=correct_next_waypoint_occu, vehicle_transform=self.vehicle.transform,
-            #     occu_vehicle_center=occu_map_vehicle_center)
-            # print(f"correct o-> {correct_next_waypoint_occu}"
-            #       f"correct w-> {correct_next_waypoint_world.location} | "
-            #       f"estimated = {estimated_world_coord.location.x}")
-            # cv2.imshow("m", m)
-            # cv2.waitKey(1)
-            # print()
+            self.occupancy_map.visualize()
+            # self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200), vehicle_value=1)
 
             # if self.points_added is False:
             #     self.pcd = o3d.geometry.PointCloud()

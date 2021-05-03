@@ -36,10 +36,13 @@ class Module(ABC):
 
         """
         while self.should_continue_threaded:
+            start = time.time()
             self.run_in_series()
             if self.should_save:
                 self.save()
-            time.sleep(self.update_interval)
+            end = time.time()
+            if end - start < self.update_interval * 1000:
+                time.sleep((end-start)*0.001)
 
     def shutdown(self):
         self.should_continue_threaded = False
