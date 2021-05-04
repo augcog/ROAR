@@ -24,6 +24,8 @@ import time
 from ROAR.agent_module.agent import Agent
 from pydantic import BaseModel, Field
 import json
+from PIL import Image
+
 
 
 class OccupancyGridMap(Module):
@@ -122,29 +124,16 @@ class OccupancyGridMap(Module):
             if world_cords_xy is not None and len(world_cords_xy) > 0:
                 self._curr_obstacle_occu_coords = self.cord_translation_from_world(
                     world_cords_xy=world_cords_xy)
-                occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], \
-                                             self._curr_obstacle_occu_coords[:, 1]
-                # simulation
-                # real life -> fake log odd update
-                view_width, view_height = 100, 100
-                occu_loc = self.location_to_occu_cord(self._agent.vehicle.transform.location)[0]
-                x, y = occu_loc
-                min_x, min_y, max_x, max_y = np.array([x - view_width // 2, y - view_height // 2,
-                                                       x + view_width // 2, y + view_height // 2])
-                # print(self._free_prob, self._occu_prob)
-                # self._map[min_y: max_y, min_x: max_x] += self._free_prob
+
+                occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:,
+                                                                                    1]
+                min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
+                                             np.min(occu_cords_y), np.max(occu_cords_y)
+                self._map[min_y:max_y, min_x:max_x] = 0 # free
                 self._map[occu_cords_y, occu_cords_x] += self._occu_prob
                 # self._map = self._map.clip(0, 1)
         except Exception as e:
             self.logger.error(f"Unable to update: {e}")
-
-    def _get_rot_matrix(self) -> np.ndarray:
-        yaw = np.deg2rad(self._agent.vehicle.transform.rotation.yaw)
-        R = np.array([
-            [np.cos(yaw), -np.sin(yaw)],
-            [np.sin(yaw), np.cos(yaw)]
-        ])
-        return R
 
     def update(self, world_coords: np.ndarray):
         """
@@ -254,15 +243,13 @@ class OccupancyGridMap(Module):
             first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
             map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
                           x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
-            # print(np.where(map_to_view == -5))
-            map_to_view = rotate(map_to_view, angle=-transform.rotation.yaw, reshape=False)
-            map_to_view = np.rint(map_to_view)
-            # print(np.where(map_to_view == -5))
+            image = Image.fromarray(map_to_view)
+            image = image.rotate(-transform.rotation.yaw)
+            map_to_view = np.asarray(image)
+            # # map_to_view = np.rint(map_to_view)
             x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
-
             map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,
                           x_extra: map_to_view.shape[0] - x_extra]
-            # print()
             return map_to_view
 
     def cropped_occu_to_world(self,

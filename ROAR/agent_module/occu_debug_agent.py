@@ -29,16 +29,8 @@ class OccuDebugAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
-                                              world_coord_resolution=1,
-                                              occu_prob=0.99,
-                                              max_points_to_convert=10000,
-                                              threaded=True)
-        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
-                                                              threaded=True,
-                                                              max_detectable_distance=0.5,
-                                                              max_points_to_convert=20000,
-                                                              min_obstacle_height=2)
+        self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
+        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self, threaded=True)
         self.add_threaded_module(self.obstacle_from_depth_detector)
         self.add_threaded_module(self.occupancy_map)
 
