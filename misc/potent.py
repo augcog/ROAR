@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 
 # Parameters
 KP = 5.0  # attractive potential gain
-ETA = 800  # repulsive potential gain
-AREA_WIDTH = 1  # potential area width [m]
+ETA = 100.0  # repulsive potential gain
+AREA_WIDTH = 30.0  # potential area width [m]
 # the number of previous positions used to check oscillations
 OSCILLATIONS_DETECTION_LENGTH = 3
 
@@ -37,8 +37,6 @@ def calc_potential_field(gx, gy, ox, oy, reso, rr, sx, sy):
             y = iy * reso + miny
             ug = calc_attractive_potential(x, y, gx, gy)
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
-            if uo > 0:
-                print(uo, ix, iy)
             uf = ug + uo
             pmap[ix][iy] = uf
 
@@ -102,6 +100,7 @@ def oscillations_detection(previous_ids, ix, iy):
 
 
 def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
+
     # calc potential field
     pmap, minx, miny = calc_potential_field(gx, gy, ox, oy, reso, rr, sx, sy)
 
@@ -116,7 +115,7 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
         draw_heatmap(pmap)
         # for stopping simulation with the esc key.
         plt.gcf().canvas.mpl_connect('key_release_event',
-                                     lambda event: [exit(0) if event.key == 'escape' else None])
+                lambda event: [exit(0) if event.key == 'escape' else None])
         plt.plot(ix, iy, "*k")
         plt.plot(gix, giy, "*m")
 
@@ -168,12 +167,12 @@ def draw_heatmap(data):
 def main():
     print("potential_field_planning start")
 
-    sx = 0  # start x position [m]
-    sy = 30  # start y positon [m]
-    gx = 30.0  # goal x position [m]
-    gy = 30.0  # goal y position [m]
-    grid_size = 1  # potential grid size [m]
-    robot_radius = 10  # robot radius [m]
+    sx = 25  # start x position [m]
+    sy = 25  # start y positon [m]
+    gx = 0  # goal x position [m]
+    gy = 0  # goal y position [m]
+    grid_size = 2 # potential grid size [m]
+    robot_radius = 1  # robot radius [m]
 
     # ox = [15.0, 5.0, 20.0, 25.0]  # obstacle x position list [m]
     # oy = [25.0, 15.0, 26.0, 25.0]  # obstacle y position list [m]
@@ -189,12 +188,13 @@ def main():
           61, 60, 61, 60, 61, 60, 61, 41, 60, 61, 41, 60, 61, 41, 60, 61, 41,
           60, 61, 41, 60, 61, 41, 60, 61, 41, 60, 61, 41, 60, 61, 41, 60, 61,
           41, 41, 41]
+
     if show_animation:
         plt.grid(True)
         plt.axis("equal")
 
     # path generation
-    path_xs, path_ys = potential_field_planning(
+    _, _ = potential_field_planning(
         sx, sy, gx, gy, ox, oy, grid_size, robot_radius)
 
     if show_animation:
@@ -205,3 +205,4 @@ if __name__ == '__main__':
     print(__file__ + " start!!")
     main()
     print(__file__ + " Done!!")
+

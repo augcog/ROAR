@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
 import time
+from typing import Tuple
 from ROAR.planning_module.local_planner.loop_simple_waypoint_following_local_planner import \
     LoopSimpleWaypointFollowingLocalPlanner
 
@@ -19,7 +20,8 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         self.KP = 5.0  # attractive potential gain
         self.ETA = 1000  # repulsive potential gain
         # the number of previous positions used to check oscillations
-        self.OSCILLATIONS_DETECTION_LENGTH = 5
+        self.OSCILLATIONS_DETECTION_LENGTH = 3
+        self.AREA_WIDTH = 0
 
     def is_done(self):
         return False
@@ -36,14 +38,15 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         obstacle_coords = np.where(m > 0.5)
         me_coord = np.where(m == -10)
         sx, sy = me_coord[0][0], me_coord[1][0]
-        gx, gy = self._view_size // 2 + gx, 0 + gy  # TODO find goal pos using loop waypoint planner
+        gx, gy = self._view_size // 2 + gx, 0 + gy
         ox, oy = obstacle_coords
 
-        rx, ry = self.potential_field_planning(sx=sx, sy=sy, gx=gx, gy=gy, ox=ox, oy=oy, reso=1, rr=0.5,
+        rx, ry = self.potential_field_planning(sx=sx, sy=sy, gx=gx, gy=gy, ox=ox, oy=oy, reso=1, rr=1,
                                                world_size=m.shape)
         waypoints = np.array(list(zip(rx, ry)))
-        for x, y in waypoints:
-            m = cv2.circle(m, (x,y), radius=1, color=(255,255,255))
+        # m = m.copy()
+        # for x, y in waypoints:
+        #     print(x, y)
         x, y = rx[-1], ry[-1]
         waypoint = self.occu_map.cropped_occu_to_world(
             cropped_occu_coord=np.array([x, y]),
@@ -51,60 +54,76 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
             occu_vehicle_center=np.array([self._view_size // 2, self._view_size // 2])
         )
         # print(f"curr: -> {self.agent.vehicle.transform.location} waypoint.location -> {waypoint.location}")
-        cv2.imshow("m", cv2.resize(m, dsize=(500,500)))
-        cv2.waitKey(1)
+        # print()
+        # cv2.imshow("m", cv2.resize(m, dsize=(500,500)))
+        # cv2.waitKey(1)
         control = self.controller.run_in_series(next_waypoint=waypoint)
         return control
 
     def potential_field_planning(self,
-                                 sx: float, sy: float, gx: float, gy: float,
-                                 ox: List[float], oy: List[float], reso: float = 1,
-                                 world_size=(100, 100),
-                                 rr: int = 5, show_animation=True):
+                                 sx, sy, gx, gy, ox, oy, reso, rr, world_size):
 
         # calc potential field
         # print(len(ox))
-        start = time.time()
-        pmap = self.calc_potential_field(gx, gy, ox, oy, world_size=world_size, rr=rr)
+        # calc potential field
+        pmap = self.calc_potential_field(gx, gy, ox, oy, reso, rr, sx, sy, world_size=world_size)
 
-        rx, ry = [sx], [sy]
-        motion = self.get_motion_model()
-        previous_ids = deque()
-        start = time.time()
+        # search path
         d = np.hypot(sx - gx, sy - gy)
-        ix = sx
-        iy = sy
+        ix = sx  # where i am now
+        iy = sy  # where i am now
+        rx, ry = [sx], [sy]
+        previous_ids = deque()
 
-        while d >= reso:
-            minp = float("inf")
-            minix, miniy = -1, -1
-            for i, _ in enumerate(motion):
-                inx, iny = int(ix + motion[i][0]), int(iy + motion[i][1])
-                if inx >= len(pmap) or iny >= len(pmap[0]) or inx < 0 or iny < 0:
-                    continue
-                else:
-                    p = pmap[inx][iny]
-                if minp > p:
-                    minp = p
-                    minix = inx
-                    miniy = iny
-            ix = minix
-            iy = miniy
-            xp = ix * reso
-            yp = iy * reso
-            d = np.hypot(gx - xp, gy - yp)
-            rx.append(xp)
-            ry.append(yp)
+        count = 0
+        while d > rr and count < 30:
+            ix, iy = self.find_curr_min_action(pmap, ix, iy, step_size=1)
+            d = np.hypot(gx - ix, gy - iy)
+            rx.append(ix)
+            ry.append(iy)
             if self.oscillations_detection(previous_ids, ix, iy):
                 break
+            count += 1
 
-        # self.draw_heatmap(pmap, rx, ry)
+        # while d >= reso:
+        # minp = float("inf")
+        # minix, miniy = -1, -1
+        # for i, _ in enumerate(motion):
+        #     inx, iny = int(ix + motion[i][0]), int(iy + motion[i][1])
+        #     if inx >= len(pmap) or iny >= len(pmap[0]) or inx < 0 or iny < 0:
+        #         continue
+        #     else:
+        #         p = pmap[iny][inx]
+        #     if minp > p:
+        #         minp = p
+        #         minix = inx
+        #         miniy = iny
+        # ix = minix
+        # iy = miniy
+        # xp = ix * reso + minx
+        # yp = iy * reso + miny
+        # d = np.hypot(gx - xp, gy - yp)
+        # rx.append(xp)
+        # ry.append(yp)
+        # if self.oscillations_detection(previous_ids, ix, iy):
+        #     break
+
+        self.draw_heatmap(pmap, rx, ry)
         return rx, ry
 
-    def calc_potential_field(self, gx, gy, ox, oy, world_size, rr=1):
+    def find_curr_min_action(self, world, ix, iy, step_size=2) -> Tuple[int, int]:
+        min_x, max_x, min_y, max_y = max(0, ix - step_size), min(world.shape[0], ix + step_size + 1), \
+                                     max(0, iy - step_size), iy
+        world_sub = world[min_y: iy, min_x: max_x]
+        indicies = np.where(world_sub == np.min(world_sub))
+        min_ix, min_iy = indicies[0][0], indicies[1][0]
+        world_ix, world_iy = ix-min_ix, iy - min_iy
+        return world_ix, world_iy
+
+    def calc_potential_field(self, gx, gy, ox, oy, reso, rr, sx, sy, world_size):
         world = np.zeros(shape=world_size)
         world = self.calc_attractive_potential_vec(world=world, gx=gx, gy=gy)
-        world = self.calc_repulsive_potential_vec(world=world, ox=ox, oy=oy, rr=rr)
+        # world = self.calc_repulsive_potential_vec(world=world, ox=ox, oy=oy, rr=rr)
         return world
 
     def calc_repulsive_potential_vec(self, world: np.ndarray, ox: np.ndarray, oy: np.ndarray, rr) -> np.ndarray:
@@ -122,7 +141,7 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
     def calc_attractive_potential_vec(self, world: np.ndarray, gx, gy, KP=5, res=1):
         indices = np.indices(world.shape)
         world = 0.5 * KP * np.hypot(indices[0, :, :] - gx, indices[1, :, :] - gy)
-        return world
+        return world.T
 
     def calc_attractive_potential(self, x, y, gx, gy):
         return 0.5 * self.KP * np.hypot(x - gx, y - gy)
@@ -152,7 +171,7 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
                   [-1, -1],
                   [-1, 1],
                   [1, -1],
-                  [1, 1]] * 2
+                  [1, 1]]
 
         return motion
 
@@ -172,13 +191,13 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         return False
 
     @staticmethod
-    def draw_heatmap(data: np.ndarray, rx: np.ndarray = np.array([]), ry: np.ndarray = np.array([])):
+    def draw_heatmap(data: np.ndarray, rx=None, ry=None):
         heatmapshow = None
         heatmapshow = cv2.normalize(data, heatmapshow, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         heatmapshow = cv2.applyColorMap(heatmapshow, cv2.COLORMAP_JET)
-        # waypoints = np.array(list(zip(rx, ry)))
-        # for x, y in waypoints:
-        #     heatmapshow = cv2.circle(heatmapshow, (x,y), radius=1, color=(255,255,255))
 
+        if rx is not None and ry is not None:
+            for x, y, in zip(rx, ry):
+                heatmapshow[int(y)][int(x)] = (255, 255, 255)
         cv2.imshow("heatmap", cv2.resize(heatmapshow, dsize=(500, 500)))
         cv2.waitKey(1)
