@@ -22,7 +22,7 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         # the number of previous positions used to check oscillations
         self.OSCILLATIONS_DETECTION_LENGTH = 3
         self.AREA_WIDTH = 0
-        self.step_actions = np.array([[0,-1], [-1,-1], [1,-1]])
+        self.step_actions = np.array([[0, -1], [-1, -1], [1, -1]])
 
     def is_done(self):
         return False
@@ -40,8 +40,8 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
             obstacle_coords = np.where(m > 0.5)
             me_coord = np.where(m == -10)
             sx, sy = me_coord[0][0], me_coord[1][0]
-            gx, gy = np.clip(self._view_size // 2 + gx, 0, self._view_size-1), \
-                     np.clip(0 + gy, 0, self._view_size-1)
+            gx, gy = np.clip(self._view_size // 2 + gx, 0, self._view_size - 1), \
+                     np.clip(0 + gy, 0, self._view_size - 1)
             ox, oy = obstacle_coords
 
             rx, ry = self.potential_field_planning(sx=sx, sy=sy, gx=gx, gy=gy, ox=ox, oy=oy,
@@ -116,9 +116,8 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
             o_s = 2
             for x, y in zip(ox, oy):
                 # increase potential value of points around obstacles
-                world[x-o_s:x+o_s, y-o_s:y+o_s] += 0.5 * self.ETA * (1 / 1.13 - 1 / rr) ** 2
+                world[x - o_s:x + o_s, y - o_s:y + o_s] += 0.5 * self.ETA * (1 / 1.13 - 1 / rr) ** 2
                 world[x][y] += 0.5 * self.ETA * (1 / 0.1 - 1 / rr) ** 2
-
 
             # obstacle_coords = np.array(list(zip(ox, oy)))
             # indices = indices.reshape((2, indices.shape[1] * indices.shape[2])).T
@@ -150,19 +149,6 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         else:
             return 0.0
 
-    @staticmethod
-    def get_motion_model():
-        # dx, dy
-        motion = [[1, 0],
-                  [0, 1],
-                  [-1, 0],
-                  [0, -1],
-                  [-1, -1],
-                  [-1, 1],
-                  [1, -1],
-                  [1, 1]]
-
-        return motion
 
     def oscillations_detection(self, previous_ids, ix, iy):
         previous_ids.append((ix, iy))

@@ -56,7 +56,7 @@ class Configuration(BaseModel):
 
     json_qr_code_file_path: str = Field(default=(Path(
         os.getcwd()) / "ROAR_Jetson" / "data" / "track_1.json"
-    ).as_posix())
+                                                 ).as_posix())
 
     output_data_folder_path: str = Field(
         default=(Path(os.getcwd()) / "data" / "output"))
@@ -79,7 +79,6 @@ class Configuration(BaseModel):
     occu_map_config_path: str = Field(default="./ROAR_Sim/configurations/occu_map_config.json")
     obstacle_from_depth_config_path: str = Field(default="./ROAR_Sim/configurations/obstacle_from_depth_config.json")
 
-    
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
     max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at")
