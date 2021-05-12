@@ -32,6 +32,7 @@ class PotentialFieldAgent(Agent):
         # occu_map_file_path = Path("./ROAR_Sim/data/easy_map_cleaned_global_occu_map.npy")
         # self.occupancy_map.load_from_file(occu_map_file_path)
 
+
         self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
@@ -45,5 +46,6 @@ class PotentialFieldAgent(Agent):
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         if self.kwargs.get("obstacle_coords") is not None:
             self.occupancy_map.update_async(self.kwargs.get("obstacle_coords"))
+
         control = self.local_planner.run_in_series()
         return control

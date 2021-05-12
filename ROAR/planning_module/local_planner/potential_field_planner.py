@@ -151,19 +151,6 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         else:
             return 0.0
 
-    @staticmethod
-    def get_motion_model():
-        # dx, dy
-        motion = [[1, 0],
-                  [0, 1],
-                  [-1, 0],
-                  [0, -1],
-                  [-1, -1],
-                  [-1, 1],
-                  [1, -1],
-                  [1, 1]]
-
-        return motion
 
     def oscillations_detection(self, previous_ids, ix, iy):
         previous_ids.append((ix, iy))

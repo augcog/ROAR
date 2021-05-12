@@ -6,6 +6,7 @@ from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.potential_field_agent import PotentialFieldAgent
+from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.michael_pid_agent import PIDAgent
 # from ROAR.agent_module.depth_e2e_agent import DepthE2EAgent
 
