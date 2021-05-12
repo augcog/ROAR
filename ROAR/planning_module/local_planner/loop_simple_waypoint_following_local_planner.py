@@ -42,7 +42,7 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
                          mission_planner=mission_planner,
                          behavior_planner=behavior_planner,
                          )
-        self.logger = logging.getLogger("SimplePathFollowingLocalPlanner")
+        self.logger = logging.getLogger("LoopSimplePathFollowingLocalPlanner")
 
         self.closeness_threshold = closeness_threshold
         self.closeness_threshold_config = json.load(Path(

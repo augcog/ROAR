@@ -25,9 +25,12 @@ class PotentialFieldAgent(Agent):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
 
-        self.occupancy_map = OccupancyGridMap(agent=self)
-        occu_map_file_path = Path("./ROAR_Sim/data/easy_map_cleaned_global_occu_map.npy")
-        self.occupancy_map.load_from_file(occu_map_file_path)
+        self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
+        self.depth_to_obstacle = ObstacleFromDepth(agent=self, threaded=True)
+        self.add_threaded_module(self.occupancy_map)
+        self.add_threaded_module(self.depth_to_obstacle)
+        # occu_map_file_path = Path("./ROAR_Sim/data/easy_map_cleaned_global_occu_map.npy")
+        # self.occupancy_map.load_from_file(occu_map_file_path)
 
         self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
@@ -40,5 +43,7 @@ class PotentialFieldAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
+        if self.kwargs.get("obstacle_coords") is not None:
+            self.occupancy_map.update_async(self.kwargs.get("obstacle_coords"))
         control = self.local_planner.run_in_series()
         return control
