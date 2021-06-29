@@ -13,10 +13,15 @@ import logging
 class PIDAgent(Agent):
     def __init__(self, target_speed=40, **kwargs):
         super().__init__(**kwargs)
-        self.target_speed = target_speed
+        # self.target_speed = target_speed # ROAR Academy: Original Code by Michael
+        self.target_speed = self.agent_settings.target_speed # ROAR Academy
         self.logger = logging.getLogger("PID Agent")
         self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
+        # self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1)) # ROAR Academy: Original Code by Michael
+        self.pid_controller = PIDController(agent=self, 
+                                    steering_boundary=self.agent_settings.steering_boundary, 
+                                    throttle_boundary=self.agent_settings.throttle_boundary) # ROAR Academy
+        # ROAR Academy: pwm signals
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
         # initiated right after mission plan
 
@@ -42,4 +47,7 @@ class PIDAgent(Agent):
             self.logger.debug("Path Following Agent is Done. Idling.")
         else:
             control = self.local_planner.run_in_series()
+        # control.steering = 1 # ROAR Academy
+        # control.throttle = 1 # ROAR Academy
+        
         return control
