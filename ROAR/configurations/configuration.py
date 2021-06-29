@@ -79,5 +79,36 @@ class Configuration(BaseModel):
     
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
-    max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at")
+    max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at") 
     num_laps: int = Field(default=1, description="Number of laps to run for")
+
+    steering_boundary: tuple = Field(default=(-1,1), description="maximum and minimum boundary for steering") # ROAR Academy:
+    throttle_boundary: tuple = Field(default=(0,1), description="maximum and minimum boundary for steering") # ROAR Academy:
+    waypoints_look_ahead_values: dict = Field(default={"60": 5, "80": 10, "120": 20, "180": 50}) # ROAR Academy:
+    pid_values: dict = Field(default={
+                                        'longitudinal_controller': {
+                                            '40': {
+                                                'Kp': 0.8, 'Kd': 0.2, 'Ki': 0
+                                            }, 
+                                            '60': {
+                                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0
+                                            }, 
+                                            '150': {
+                                                'Kp': 0.2, 'Kd': 0.1, 'Ki': 0.1
+                                            }
+                                        },   
+                                        'latitudinal_controller': {
+                                            '60': {
+                                                'Kp': 0.8, 'Kd': 0.1, 'Ki': 0.1
+                                            }, 
+                                            '100': {
+                                                'Kp': 0.6, 'Kd': 0.2, 'Ki': 0.1
+                                            }, 
+                                            '150': {
+                                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0.1
+                                            }
+                                        }
+                                    }
+                            ) # ROAR Academy 
+
+                          

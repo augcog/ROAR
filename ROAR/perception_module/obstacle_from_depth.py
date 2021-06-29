@@ -18,6 +18,7 @@ class ObstacleFromDepth(Detector):
                  min_obstacle_height: float = 3, ** kwargs):
 
         super().__init__(agent, **kwargs)
+        # ROAR Academy: Tune-able. Depth image into obstacles. planner 
         self.max_detectable_distance = kwargs.get("max_detectable_distance", max_detectable_distance)
         self.max_points_to_convert = kwargs.get("max_points_to_convert", max_points_to_convert)
         self.max_incline_normal = kwargs.get("max_incline_normal", max_incline_normal)
