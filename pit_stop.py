@@ -143,14 +143,3 @@ class PitStop:
         self.agent_config.pid_values = values
 
     # def set_lqr_values(self, ):
-    
-   
-# class AgentPITSTOP(pidAgent: PIDAgent):
-#      # PIDAgent # add these to config files
-#     target_speed = 40
-#     steering_boundary = (-1, 1)
-#     throttle_boundary = (0, 1)
-#     # 6 pid values
-#     longitudinal_controller = {
-        
-#     }
