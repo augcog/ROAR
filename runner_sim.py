@@ -17,7 +17,7 @@ from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent # immediatel
 from ROAR.agent_module.rl_pid_agent import RLPIDAgent # for rl agent training using Gym and Stable baseline.
 # from ROAR.agent_module.rl_testing_pid_agent import RLTestingAgent # rl pid agent demo, requires stable_baselines
 
-from PitStop import PitStop as PitStop
+from pit_stop import PitStop as PitStop
 
 def main():
     """Starts game loop"""
