@@ -72,10 +72,7 @@ class PitStop:
     
     """
     Set Carla Version.
-
-    Tips:
-        If carla does not open normally, try different version number.
-    
+        
     Examples:
         version = "0.9.10" 
         version = "0.9.9" 
@@ -102,12 +99,48 @@ class PitStop:
     """
     Set waypoints look-ahead values.
 
+    Tips:
+        - You can add thresholds.
+        - You can change values for each threshold.
+
     Examples:
+        dict = {"50": 4, "60": 6, "70": 7, "80": 11, "100": 15, "120": 20, "150": 35, "180": 50}
     """
-    # def set_simple_waypoint_local_planner_values(self,):
+    def set_waypoints_look_ahead_values(self, values: dict={"60": 5, "80": 10, "120": 20, "180": 50}):
+        self.agent_config.waypoints_look_ahead_values = values
 
+    
+    """
+    Set 6 Pid Values.
 
-    # def set_pid_values(self, ):
+    Examples:
+        PID Values = {
+                        'longitudinal_controller': {
+                            '40': {
+                                'Kp': 0.8, 'Kd': 0.2, 'Ki': 0
+                            }, 
+                            '60': {
+                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0
+                            }, 
+                            '150': {
+                                'Kp': 0.2, 'Kd': 0.1, 'Ki': 0.1
+                            }
+                        },   
+                        'latitudinal_controller': {
+                            '60': {
+                                'Kp': 0.8, 'Kd': 0.1, 'Ki': 0.1
+                            }, 
+                            '100': {
+                                'Kp': 0.6, 'Kd': 0.2, 'Ki': 0.1
+                            }, 
+                            '150': {
+                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0.1
+                            }
+                        }
+                    }
+    """
+    def set_pid_values(self, values=dict):
+        self.agent_config.pid_values = values
 
     # def set_lqr_values(self, ):
     
@@ -120,11 +153,4 @@ class PitStop:
 #     # 6 pid values
 #     longitudinal_controller = {
         
-#     }
-#     # waypoint
-#     simple_waypoint_local_planner_config = {
-#         "60": 5, 
-#         "80": 10, 
-#         "120": 20, 
-#         "180": 50
 #     }

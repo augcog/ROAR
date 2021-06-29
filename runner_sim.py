@@ -33,12 +33,36 @@ def main():
     pitstop.set_autopilot_mode(True)
     pitstop.set_car_color(CarlaCarColor(r = 255,g = 200,b = 10,a = 255))
     pitstop.set_carla_version(version = "0.9.9")
-    pitstop.set_max_speed(speed = 100)
+    pitstop.set_max_speed(speed = 77)
     pitstop.set_target_speed(speed = 40)
     pitstop.set_steering_boundary(boundary = (-0.1, 0.1))
     pitstop.set_throttle_boundary(boundary = (0, 0.5))
-    # pitstop.set_simple_waypoint_local_planner_values
-    # pitstop.set_pid_values()
+    pitstop.set_waypoints_look_ahead_values(values={"10":50, "20": 50, "30": 50, "50": 50, "60": 50, "70": 50, "80": 50, "100": 50, "120": 50, "150": 50, "180": 50})
+    pid_value = {
+                    'longitudinal_controller': {
+                        '40': {
+                            'Kp': 0.1, 'Kd': 0.2, 'Ki': 0
+                        }, 
+                        '60': {
+                            'Kp': 0.1, 'Kd': 0.2, 'Ki': 0
+                        }, 
+                        '150': {
+                            'Kp': 0.1, 'Kd': 0.1, 'Ki': 0.1
+                        }
+                    },   
+                    'latitudinal_controller': {
+                        '60': {
+                            'Kp': 0.1, 'Kd': 0.1, 'Ki': 0.1
+                        }, 
+                        '100': {
+                            'Kp': 0.1, 'Kd': 0.2, 'Ki': 0.1
+                        }, 
+                        '150': {
+                            'Kp': 0.1, 'Kd': 0.2, 'Ki': 0.1
+                        }
+                    }
+                }
+    pitstop.set_pid_values(pid_value)
 
 
 
