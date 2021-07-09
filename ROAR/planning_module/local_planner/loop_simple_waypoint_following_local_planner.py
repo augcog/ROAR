@@ -13,9 +13,13 @@ from ROAR.utilities_module.errors import (
 from ROAR.agent_module.agent import Agent
 import json
 from pathlib import Path
+from typing import List
 
 
-class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
+class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
+    def is_done(self):
+        return False
+
     def __init__(
             self,
             agent: Agent,
@@ -38,12 +42,15 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                          mission_planner=mission_planner,
                          behavior_planner=behavior_planner,
                          )
-        self.logger = logging.getLogger("SimplePathFollowingLocalPlanner")
-        self.set_mission_plan()
-        self.logger.debug("Simple Path Following Local Planner Initiated")
+        self.logger = logging.getLogger("LoopSimplePathFollowingLocalPlanner")
+
         self.closeness_threshold = closeness_threshold
         self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
+        self.way_points_queue: List = []
+        self._curr_waypoint_index = 0
+        self.set_mission_plan()
+        self.logger.debug("Simple Path Following Local Planner Initiated")
 
     def set_mission_plan(self) -> None:
         """
@@ -60,68 +67,16 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         ):  # this actually clears the mission plan!!
             self.way_points_queue.append(self.mission_planner.mission_plan.popleft())
 
-    def is_done(self) -> bool:
-        """
-        If there are nothing in self.way_points_queue,
-        that means you have finished a lap, you are done
-
-        Returns:
-            True if Done, False otherwise
-        """
-        return len(self.way_points_queue) == 0
-
     def run_in_series(self) -> VehicleControl:
-        """
-        Run step for the local planner
-        Procedure:
-            1. Sync data
-            2. get the correct look ahead for current speed
-            3. get the correct next waypoint
-            4. feed waypoint into controller
-            5. return result from controller
-
-        Returns:
-            next control that the local think the agent should execute.
-        """
-        if (
-                len(self.mission_planner.mission_plan) == 0
-                and len(self.way_points_queue) == 0
-        ):
-            return VehicleControl()
-
         # get vehicle's location
         vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
 
         if vehicle_transform is None:
             raise AgentException("I do not know where I am, I cannot proceed forward")
 
-        # redefine closeness level based on speed
-        self.set_closeness_threhold(self.closeness_threshold_config)
-
-        # get current waypoint
-        curr_closest_dist = float("inf")
-        while True:
-            if len(self.way_points_queue) == 0:
-                self.logger.info("Destination reached")
-                return VehicleControl()
-            waypoint: Transform = self.way_points_queue[0]
-            curr_dist = vehicle_transform.location.distance(waypoint.location)
-            if curr_dist < curr_closest_dist:
-                # if i find a waypoint that is closer to me than before
-                # note that i will always enter here to start the calculation for curr_closest_dist
-                curr_closest_dist = curr_dist
-            elif curr_dist < self.closeness_threshold:
-                # i have moved onto a waypoint, remove that waypoint from the queue
-                self.way_points_queue.popleft()
-            else:
-                break
-
-        target_waypoint = self.way_points_queue[0]
+        target_waypoint = self.find_next_waypoint()
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint)
-        # self.logger.debug(f"\n"
-        #                   f"Curr Transform: {self.agent.vehicle.transform}\n"
-        #                   f"Target Location: {target_waypoint.location}\n"
-        #                   f"Control: {control} | Speed: {Vehicle.get_speed(self.agent.vehicle)}\n")
+        # self.logger.debug(f"control -> {control} | next waypoint -> {target_waypoint.location}")
         return control
 
     def set_closeness_threhold(self, config: dict):
@@ -131,6 +86,28 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             if curr_speed < speed_upper_bound:
                 self.closeness_threshold = closeness_threshold
                 break
+    def find_next_waypoint(self):
+        # redefine closeness level based on speed
+        self.set_closeness_threhold(self.closeness_threshold_config)
 
-    def restart(self):
-        self.set_mission_plan()
+        # get current waypoint
+        curr_closest_dist = float("inf")
+        while True:
+            if len(self.way_points_queue) == self._curr_waypoint_index:
+                self._curr_waypoint_index = 0 + 10  # this is so that i don't actually just look at the zeroth one
+                # when i loop back
+            waypoint: Transform = self.way_points_queue[self._curr_waypoint_index]
+            curr_dist = self.agent.vehicle.transform.location.distance(waypoint.location)
+            if curr_dist < curr_closest_dist:
+                # if i find a waypoint that is closer to me than before
+                # note that i will always enter here to start the calculation for curr_closest_dist
+                curr_closest_dist = curr_dist
+            elif curr_dist < self.closeness_threshold:
+                # i have moved onto a waypoint, remove that waypoint from the queue
+                self._curr_waypoint_index += 1
+            else:
+                break
+        target_waypoint = self.way_points_queue[self._curr_waypoint_index]
+        return target_waypoint
+    def get_curr_waypoint_index(self):
+        return self._curr_waypoint_index

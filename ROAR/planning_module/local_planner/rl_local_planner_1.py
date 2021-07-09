@@ -44,6 +44,10 @@ class RLLocalPlanner(LocalPlanner):
         return False
 
     def run_in_series(self) -> VehicleControl:
-        control: VehicleControl = self.agent.kwargs.get("control", VehicleControl())
-        return control
-
+        next_waypoint: Transform = self.agent.kwargs.get("next_waypoint", None)
+        if next_waypoint is None:
+            return VehicleControl()
+        else:
+            self.way_points_queue.append(next_waypoint)
+            control = self.controller.run_in_series(next_waypoint=next_waypoint)
+            return control

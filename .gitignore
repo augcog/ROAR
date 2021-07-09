@@ -33,7 +33,7 @@ MANIFEST
 *.manifest
 *.spec
 
-# Installer logs
+# Installer checkpoints
 pip-log.txt
 pip-delete-this-directory.txt
 
@@ -139,3 +139,9 @@ archive
 misc/*.jpg
 misc/*.png
 misc/*.npy
+misc/logs
+misc/*.h5
+*.h5
+misc/logs/*
+*.ipynb_checkpoints
+misc/depth_nvidia_model_logs

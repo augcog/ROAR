@@ -125,7 +125,7 @@ class LatPIDController(Controller):
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
-        
+
         if _cross[1] > 0:
             error *= -1
         self._error_buffer.append(error)
@@ -141,5 +141,4 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        
         return lat_control
