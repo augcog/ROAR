@@ -18,6 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
         self.max_speed = self.agent.agent_settings.max_speed
+        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
@@ -35,7 +36,7 @@ class PIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
-                                                          target_speed=kwargs.get("target_speed", self.max_speed))
+                                                          target_speed=kwargs.get("target_speed", self.target_speed))
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
         return VehicleControl(throttle=throttle, steering=steering)
 
@@ -57,20 +58,25 @@ class LongPIDController(Controller):
         super().__init__(agent, **kwargs)
         self.config = config
         self.max_speed = max_speed
+        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self._error_buffer = deque(maxlen=10)
 
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
-        target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+        target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
-
+        print("LongPIDController")
+        print("target speed: ", target_speed)
+        print("current speed", current_speed)
+        print("k_p, k_d, k_i: ", [k_p, k_d,k_i])
+        
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
             _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
