@@ -18,11 +18,9 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
         self.max_speed = self.agent.agent_settings.max_speed
-        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
-        self.config = self.agent.agent_settings.pid_values # ROAR Academy
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
                                                      max_speed=self.max_speed,
@@ -36,7 +34,7 @@ class PIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
-                                                          target_speed=kwargs.get("target_speed", self.target_speed))
+                                                          target_speed=kwargs.get("target_speed", self.max_speed))
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
         return VehicleControl(throttle=throttle, steering=steering)
 
@@ -49,7 +47,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
+        return k_p, k_d, k_i
 
 
 class LongPIDController(Controller):
@@ -58,25 +56,20 @@ class LongPIDController(Controller):
         super().__init__(agent, **kwargs)
         self.config = config
         self.max_speed = max_speed
-        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self._error_buffer = deque(maxlen=10)
 
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
-        target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
+        target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
-        print("LongPIDController")
-        print("target speed: ", target_speed)
-        print("current speed", current_speed)
-        print("k_p, k_d, k_i: ", [k_p, k_d,k_i])
-        
+
         if len(self._error_buffer) >= 2:
             # print(self._error_buffer[-1], self._error_buffer[-2])
             _de = (self._error_buffer[-2] - self._error_buffer[-1]) / self._dt
@@ -132,6 +125,7 @@ class LatPIDController(Controller):
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
+
         if _cross[1] > 0:
             error *= -1
         self._error_buffer.append(error)
@@ -147,9 +141,4 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        # print(f"v_vec_normed: {v_vec_normed} | w_vec_normed = {w_vec_normed}")
-        # print("v_vec_normed @ w_vec_normed.T:", v_vec_normed @ w_vec_normed.T)
-        # print(f"Curr: {self.agent.vehicle.transform.location}, waypoint: {next_waypoint}")
-        # print(f"lat_control: {round(lat_control, 3)} | error: {error} ")
-        # print()
         return lat_control
