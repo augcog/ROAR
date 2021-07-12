@@ -50,18 +50,20 @@ class Configuration(BaseModel):
                                  title="Rear RGB Camera")
     # data path
     waypoint_file_path: str = Field(default=(Path(
-        os.getcwd()) / "data" / "easy_map_waypoints.txt").as_posix())
+        os.getcwd()) / "data" / "berkeley_minor_waypoints.txt").as_posix())
 
     json_waypoint_file_path: str = Field(default=(Path(
-        os.getcwd()) / "data" / "easy_map_waypoints.json").as_posix())
+        os.getcwd()) / "data" / "berkeley_minor_waypoints.json").as_posix())
 
     json_qr_code_file_path: str = Field(default=(Path(
         os.getcwd()) / "ROAR_Jetson" / "data" / "track_1.json"
     ).as_posix())
 
     output_data_folder_path: str = Field(
-        default=(Path(os.getcwd()) / "data" / "output"))
+        default=(Path(os.getcwd()) / "data" / "output"), description="path to save newly generated waypoints txt file.")
 
+    output_data_file_name: str = Field(default="map_waypoints", description="file name for a newly generated waypoints txt file.")             
+    
     # miscellaneous settings
     spawn_point_id: int = Field(default=1, title="Spaning Location ID",
                                 description="Spanning Location ID")
@@ -76,8 +78,6 @@ class Configuration(BaseModel):
     enable_autopilot: bool = Field(default=True, title="Enable Antopilot",
                                    description="Enable Antopilot")
     num_laps: int = Field(default=1, description="Number of laps to run for")
-    output_data_folder_path: str = Field(default="./data/output", description="path to save newly generated waypoints txt file.")
-    output_data_file_name: str = Field(default="map_waypoints", description="file name for a newly generated waypoints txt file.")             
     max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at") 
     target_speed: int = Field(default=80, description="The tracking speed that the pid controller is trying to achieve")
     steering_boundary: tuple = Field(default=(-1,1), description="maximum and minimum boundary for steering") # ROAR Academy:

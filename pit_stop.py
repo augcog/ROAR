@@ -91,9 +91,16 @@ class PitStop:
     def set_num_laps(self, num:int=1):
         self.agent_config.num_laps = num
 
+    '''
+    Set a path to waypoint txt file for a map.
+
+    Examples:
+        path = 
+    '''
     """
     Set output_data_folder_path
-        
+    Path to save newly generated waypoints txt file.
+
     Examples:
         path = "./data/output"
     """
@@ -102,7 +109,8 @@ class PitStop:
 
     """
     Set output_data_file_name
-        
+    File name for a newly generated waypoints txt file.
+
     Examples:
         name = "map_waypoints"
     """
