@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 import time
+import os
 
 from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
@@ -36,10 +37,12 @@ def main():
     pitstop.set_car_model(car_model="vehicle.tesla.cybertruck")
     pitstop.set_car_color(color = CarlaCarColor(r = 255,g = 200,b = 00,a = 255))
     pitstop.set_num_laps(num=1)
-    pitstop.set_output_data_folder_path("./data/output")
-    pitstop.set_output_data_file_name(time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
+    pitstop.set_waypoint_file_path(path=(Path(
+        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix())
+    pitstop.set_output_data_folder_path(path="./data/output")
+    pitstop.set_output_data_file_name(name=time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
     pitstop.set_max_speed(speed = 200)
-    pitstop.set_target_speed(speed = 20)
+    pitstop.set_target_speed(speed = 80)
     pitstop.set_steering_boundary(boundary = (-1.0, 1.0))
     pitstop.set_throttle_boundary(boundary = (0, 0.5))
     pitstop.set_waypoints_look_ahead_values(values={
@@ -47,7 +50,7 @@ def main():
                                                     "80": 10,
                                                     "120": 20,
                                                     "180": 50})
-    pid_value = {
+    pid_values = {
                     "longitudinal_controller": {
                         "40": {
                             "Kp": 0.8,
@@ -83,7 +86,7 @@ def main():
                             }
                     }
                 }
-    pitstop.set_pid_values(pid_value)
+    pitstop.set_pid_values(pid_values)
 
     """Passing configurations to Carla and Agent"""
     carla_runner = CarlaRunner(carla_settings=carla_config,

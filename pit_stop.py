@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_Sim.carla_client.util.utilities import CarlaCarColor, CarlaCarColors
@@ -95,8 +98,13 @@ class PitStop:
     Set a path to waypoint txt file for a map.
 
     Examples:
-        path = 
+        path = (Path(
+        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix()
     '''
+    def set_waypoint_file_path(self,path:str=(Path(
+        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix()):
+        self.agent_config.waypoint_file_path = path
+
     """
     Set output_data_folder_path
     Path to save newly generated waypoints txt file.
