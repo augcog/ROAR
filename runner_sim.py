@@ -31,15 +31,15 @@ def main():
         Use different kinds of 'set' functions at PitStop to tune/fix your own car!
     """
     pitstop = PitStop(carla_config, agent_config)
-    pitstop.set_carla_sync_mode(False)
-    pitstop.set_autopilot_mode(True)
-    pitstop.set_car_model("vehicle.tesla.cybertruck")
-    pitstop.set_car_color(CarlaCarColor(r = 255,g = 200,b = 00,a = 255))
+    pitstop.set_carla_sync_mode(synchronized = False)
+    pitstop.set_autopilot_mode(enabled = True)
+    pitstop.set_car_model(car_model="vehicle.tesla.cybertruck")
+    pitstop.set_car_color(color = CarlaCarColor(r = 255,g = 200,b = 00,a = 255))
     pitstop.set_num_laps(num=1)
-    pitstop.set_output_data_folder_path("./data/output")
-    pitstop.set_output_data_file_name(time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
+    pitstop.set_output_data_folder_path(path = "./data/output")
+    pitstop.set_output_data_file_name(name = time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
     pitstop.set_max_speed(speed = 200)
-    pitstop.set_target_speed(speed = 30)
+    pitstop.set_target_speed(speed = 100)
     print(agent_config.target_speed, " target speed")
     pitstop.set_steering_boundary(boundary = (-1.0, 1.0))
     pitstop.set_throttle_boundary(boundary = (0, 0.5))
@@ -48,7 +48,7 @@ def main():
                                                     "80": 10,
                                                     "120": 20,
                                                     "180": 50})
-    pid_value = {
+    pid_values = {
                     "longitudinal_controller": {
                         "40": {
                             "Kp": 0.8,
@@ -84,7 +84,7 @@ def main():
                             }
                     }
                 }
-    pitstop.set_pid_values(pid_value)
+    pitstop.set_pid_values(values = pid_values)
 
     """Passing configurations to Carla and Agent"""
     carla_runner = CarlaRunner(carla_settings=carla_config,
