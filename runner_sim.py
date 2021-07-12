@@ -31,9 +31,9 @@ def main():
         Use different kinds of 'set' functions at PitStop to tune/fix your own car!
     """
     pitstop = PitStop(carla_config, agent_config)
-    pitstop.set_carla_version(version = "0.9.9")
     pitstop.set_carla_sync_mode(False)
     pitstop.set_autopilot_mode(True)
+    pitstop.set_car_model("vehicle.tesla.cybertruck")
     pitstop.set_car_color(CarlaCarColor(r = 255,g = 200,b = 00,a = 255))
     pitstop.set_num_laps(num=1)
     pitstop.set_output_data_folder_path("./data/output")
@@ -87,8 +87,8 @@ def main():
     pitstop.set_pid_values(pid_value)
 
     """Passing configurations to Carla and Agent"""
-    carla_runner = CarlaRunner(carla_settings=carla_config, # ROAR Academy: fine
-                               agent_settings=agent_config, # ROAR Academy: fine
+    carla_runner = CarlaRunner(carla_settings=carla_config,
+                               agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
@@ -113,3 +113,7 @@ if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore", module="carla")
     main()
+
+
+
+

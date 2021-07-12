@@ -7,16 +7,6 @@ class PitStop:
     def __init__(self, carla_config: CarlaConfig, agent_config: AgentConfig):
         self.carla_config = carla_config
         self.agent_config = agent_config
-
-    """
-    Set Carla Version
-        
-    Examples:
-        version="0.9.9"
-        version="0.9.10"
-    """
-    def set_carla_version (self, version: str="0.9.9"):
-        self.carla_config.carla_version = version 
         
     """
     Set carla server frame rate and clinet frame rate to be syncrhonized
@@ -51,6 +41,30 @@ class PitStop:
     """
     def set_autopilot_mode(self, enabled: bool=True):
         self.agent_config.enable_autopilot = enabled
+
+    '''
+    Set Car Model.
+
+    Available Model:
+        Audi TT, Chevrolet Impala, both Dodge police cars, Dodge Charger, Audi e-tron, 
+        Lincoln 2017 and 2020, Mustang, Tesla Model 3, Tesla Cybertruck, Volkswagen T2 
+        and the Mercedes C-Class.
+
+        Check Vehicle section in https://carla.readthedocs.io/en/latest/bp_library/
+
+    Example:
+        car_model = "vehicle.bmw.grandtourer"
+        car_model = "vehicle.chevrolet.impala"
+        car_model = "vehicle.dodge_charger.police"
+        car_model = "vehicle.jeep.wrangler_rubicon"
+        car_model = "vehicle.mercedes-benz.coupe"
+        car_model = "vehicle.mustang.mustang"
+        car_model = "vehicle.tesla.cybertruck"
+        car_model = "vehicle.toyota.prius"
+        car_model = "vehicle.volkswagen.t2"
+    '''
+    def set_car_model(self, car_model:str="vehicle.tesla.cybertruck"):
+        self.carla_config.carla_vehicle_blueprint_filter = car_model
 
     """
     Set your car's color.
@@ -110,19 +124,19 @@ class PitStop:
     Examples:
         speed = 100
     """
-    def set_target_speed (self, speed: float=40):
-        #  different section, differnt target speed.
+    def set_target_speed (self, speed: float=70):
+        # different section, differnt target speed.
         # it's global target speed for now.
         # local target speed. regional.
         # within this section of waypoints, dictionary
         # use the index of two waypoints to determine.
-        # 
         self.agent_config.target_speed = speed
     
     """
     Set Steering boundary
 
     Examples:
+        boundary = (-0.5, 0.5)
     """
     def set_steering_boundary(self, boundary: tuple=(-1, 1)):
         self.agent_config.steering_boundary = boundary
@@ -131,6 +145,7 @@ class PitStop:
     Set Steering boundary
 
     Examples:
+        boundary = (0,0.9)
     """
     def set_throttle_boundary(self, boundary: tuple=(0, 1)):
         self.agent_config.throttle_boundary = boundary
@@ -148,7 +163,6 @@ class PitStop:
     def set_waypoints_look_ahead_values(self, values: dict={"60": 5, "80": 10, "120": 20, "180": 50}):
         self.agent_config.waypoints_look_ahead_values = values
 
-    
     """
     Set 6 Pid Values.
 
