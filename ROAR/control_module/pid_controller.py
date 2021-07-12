@@ -18,6 +18,7 @@ class PIDController(Controller):
                  throttle_boundary: Tuple[float, float], **kwargs):
         super().__init__(agent, **kwargs)
         self.max_speed = self.agent.agent_settings.max_speed
+        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
@@ -34,7 +35,7 @@ class PIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
-                                                          target_speed=kwargs.get("target_speed", self.max_speed))
+                                                          target_speed=kwargs.get("target_speed", self.target_speed))
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
         return VehicleControl(throttle=throttle, steering=steering)
 
@@ -47,7 +48,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
+        return k_p, k_d, k_i    
 
 
 class LongPIDController(Controller):
@@ -56,13 +57,14 @@ class LongPIDController(Controller):
         super().__init__(agent, **kwargs)
         self.config = config
         self.max_speed = max_speed
+        self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self._error_buffer = deque(maxlen=10)
 
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
-        target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
+        target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
         k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)

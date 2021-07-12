@@ -44,6 +44,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         self.closeness_threshold = closeness_threshold
         self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
+        self.closeness_threshold_config = agent.agent_settings.waypoints_look_ahead_values # ROAR Academy:
+        
+        
 
     def set_mission_plan(self) -> None:
         """

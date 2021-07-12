@@ -8,11 +8,12 @@ from pathlib import Path
 class WaypointGeneratigAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle=vehicle, agent_settings=agent_settings, **kwargs)
-        self.output_file_path: Path = self.output_folder_path / "easy_map_waypoints.txt"
+        #self.output_file_path: Path = self.output_folder_path / "waypoints.txt"
+        self.output_file_path: Path = self.output_folder_path / self.agent_settings.output_data_file_name # ROAR Academy:
         if self.output_folder_path.exists() is False:
             self.output_folder_path.mkdir(exist_ok=True, parents=True)
         self.output_file = self.output_file_path.open('w')
-
+        
 
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
