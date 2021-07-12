@@ -57,7 +57,7 @@ class Configuration(BaseModel):
 
     json_qr_code_file_path: str = Field(default=(Path(
         os.getcwd()) / "ROAR_Jetson" / "data" / "track_1.json"
-    ).as_posix())
+                                                 ).as_posix())
 
     output_data_folder_path: str = Field(
         default=(Path(os.getcwd()) / "data" / "output"), description="path to save newly generated waypoints txt file.")
@@ -74,7 +74,6 @@ class Configuration(BaseModel):
         description="This variable is used to intialize the Occupancy grid map."
                     "The bigger it is, the more impact it is going to have on the runtime computation"
                     "However, if it is smaller than the actual map, some weird things can happen")
-    
     enable_autopilot: bool = Field(default=True, title="Enable Antopilot",
                                    description="Enable Antopilot")
     num_laps: int = Field(default=1, description="Number of laps to run for")

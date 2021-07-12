@@ -43,6 +43,9 @@ class Location(BaseModel):
     def to_array(self) -> np.array:
         return np.array([self.x, self.y, self.z])
 
+    def to_string(self) -> str:
+        return f"{self.x},{self.y},{self.z}"
+
     @staticmethod
     def from_array(array):
         return Location(x=array[0], y=array[1], z=array[2])

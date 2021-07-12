@@ -42,16 +42,17 @@ def save_meta(data: np.ndarray, meta_data_file_path: Path):
 if __name__ == "__main__":
     meta_data_folder_path = Path("../data/output/occupancy_map/")
     meta_data_file_path = meta_data_folder_path / "meta_data.npy"
-    save_meta(data=np.array([-1500, -1500, 1500, 1500, 40]), meta_data_file_path=Path("../ROAR_Sim/data/berkeley_minor_occu_map_meta_data.npy"))
+    # save_meta(data=np.array([-1500, -1500, 1500, 1500, 40]), meta_data_file_path=Path("../ROAR_Sim/data/berkeley_minor_occu_map_meta_data.npy"))
 
-    # try:
-    #     meta_data: np.ndarray = load_meta_data(meta_data_file_path)
-    #     global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/04_*.npz")
-    #     path = Path("../ROAR_Sim/data/berkeley_minor_global_occu_map.npy")
-    #     np.save(path.as_posix(), global_occu_map)
-    #     print(f"Global Occu map saved at [{path}]. Press any key to exit")
-    #     visualize(global_occu_map, wait_key=0)
-    # except Exception as e:
-    #     meta_data = np.array([-550, -550, 550, 550, 40])
-    #     np.save(meta_data_file_path.as_posix(), meta_data)
-    #     print(f"Meta data {meta_data} Saved")
+    try:
+        meta_data: np.ndarray = load_meta_data(meta_data_file_path)
+        global_occu_map = create_global_occu_map(meta_data, meta_data_folder_path, regex="/frame_*.npz")
+        # path = Path("../ROAR_Sim/data/berkeley_minor_global_occu_map.npy")
+        # np.save(path.as_posix(), global_occu_map)
+        # print(f"Global Occu map saved at [{path}]. Press any key to exit")
+        visualize(global_occu_map, wait_key=0)
+    except Exception as e:
+        print(e)
+        # meta_data = np.array([-550, -550, 550, 550, 40])
+        # np.save(meta_data_file_path.as_posix(), meta_data)
+        # print(f"Meta data {meta_data} Saved")

@@ -11,14 +11,11 @@ from prettytable import PrettyTable
 from ROAR.agent_module.pid_agent import PIDAgent
 
 
-def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0]),
-                  max_bounding_box=np.array([13, 5, 50])) -> Tuple[float, int, int]:
+def compute_score(carla_runner: CarlaRunner) -> Tuple[float, int, int]:
     """
     Calculates the score of the vehicle upon completion of the track based on certain metrics
     Args:
         carla_runner ():
-        min_bounding_box ():
-        max_bounding_box ():
 
     Returns:
         time_elapsed:
@@ -33,8 +30,8 @@ def compute_score(carla_runner: CarlaRunner, min_bounding_box=np.array([5, -5, 0
     return time_elapsed, num_collision, laps_completed
 
 
-def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path, num_laps: int = 10) -> Tuple[
-    float, int, bool]:
+def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
+        num_laps: int = 10) -> Tuple[float, int, bool]:
     """
     Run the agent along the track and produce a score based on certain metrics
     Args:
@@ -80,7 +77,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 1
+    num_trials = 10
     total_score = 0
     num_laps = 2
     table = PrettyTable()
@@ -89,8 +86,7 @@ def main():
         scores = run(agent_class=agent_class,
                      agent_config_file_path=Path("./ROAR_Sim/configurations/agent_configuration.json"),
                      carla_config_file_path=Path("./ROAR_Sim/configurations/configuration.json"),
-                     num_laps=num_laps
-                     )
+                     num_laps=num_laps)
         table.add_row(scores)
     print(table)
 

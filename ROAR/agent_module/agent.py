@@ -16,7 +16,7 @@ import threading
 from typing import Dict, Any
 from datetime import datetime
 import threading
-
+from ROAR.utilities_module.camera_models import Camera
 
 class Agent(ABC):
     """
@@ -39,8 +39,8 @@ class Agent(ABC):
         self.logger = logging.getLogger(__name__)
         self.vehicle = vehicle
         self.agent_settings = agent_settings
-        self.front_rgb_camera = agent_settings.front_rgb_cam
-        self.front_depth_camera = agent_settings.front_depth_cam
+        self.front_rgb_camera: Optional[Camera] = agent_settings.front_rgb_cam
+        self.front_depth_camera: Optional[Camera] = agent_settings.front_depth_cam
         self.rear_rgb_camera = agent_settings.rear_rgb_cam
         self.imu = imu
         self.is_done = False
@@ -55,6 +55,8 @@ class Agent(ABC):
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
         self.transform_output_folder_path = self.output_folder_path / "transform"
         self.vehicle_state_output_folder_path = self.output_folder_path / "vehicle_state"
+        self.local_planner_next_waypoint_output_foler_path = self.output_folder_path / "next_waypoints"
+
         self.local_planner: Optional[LocalPlanner] = None
         self.behavior_planner: Optional[BehaviorPlanner] = None
         self.mission_planner: Optional[MissionPlanner] = None
@@ -78,6 +80,7 @@ class Agent(ABC):
                                                     exist_ok=True)
             self.vehicle_state_output_folder_path.mkdir(parents=True,
                                                         exist_ok=True)
+            self.local_planner_next_waypoint_output_foler_path.mkdir(parents=True, exist_ok=True)
             self.write_meta_data()
         self.kwargs: Dict[str, Any] = kwargs  # additional info
 
@@ -137,6 +140,8 @@ class Agent(ABC):
             self.save_sensor_data_async()
         if self.local_planner is not None and self.local_planner.is_done():
             self.is_done = True
+        else:
+            self.is_done = False
         return VehicleControl()
 
     def sync_data(self, sensors_data: SensorsData, vehicle: Vehicle) -> None:
@@ -189,7 +194,9 @@ class Agent(ABC):
         Returns:
             None
         """
-        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
+        now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f')
+        # print(f"Saving sensor data -> {now}")
+
         try:
             if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
                 cv2.imwrite((self.front_rgb_camera_output_folder_path /
@@ -218,6 +225,7 @@ class Agent(ABC):
         try:
             transform_file = (Path(self.transform_output_folder_path) /
                               f"frame_{now}.txt").open('w')
+            print(f"Recording -> {self.vehicle.transform.record()}")
             transform_file.write(self.vehicle.transform.record())
             transform_file.close()
         except Exception as e:
@@ -232,6 +240,16 @@ class Agent(ABC):
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
+
+        try:
+            if self.local_planner is not None and self.local_planner.way_points_queue is not None and len(
+                    self.local_planner.way_points_queue) > 0:
+                next_waypoint: Transform = self.local_planner.way_points_queue[0]
+
+                np.save((Path(self.local_planner_next_waypoint_output_foler_path) / f"frame_{now}").as_posix(),
+                        next_waypoint.location.to_array())
+        except Exception as e:
+            self.logger.error(f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
     def start_module_threads(self):
         for module in self.threaded_modules:
