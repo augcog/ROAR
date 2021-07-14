@@ -22,6 +22,7 @@ class PIDController(Controller):
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
         self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
+        self.config = self.agent.agent_settings.pid_values # ROAR Academy
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
                                                      max_speed=self.max_speed,
@@ -48,6 +49,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
+        print("pid values:", k_p, k_d, k_i)
         return k_p, k_d, k_i    
 
 
