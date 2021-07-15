@@ -11,15 +11,16 @@ class PitStop:
         self.carla_config = carla_config
         self.agent_config = agent_config
         
-    """
-    Set carla server frame rate and clinet frame rate to be syncrhonized
-    or asynchronized.
-
-    Example:
-        synchronized = False
-        synchronized = True
-    """
+    
     def set_carla_sync_mode(self, synchronized: bool=False):
+        """
+        Set carla server frame rate and clinet frame rate to be syncrhonized
+        or asynchronized.
+
+        Example:
+            synchronized = False
+            synchronized = True
+        """
         self.carla_config.synchronous_mode = synchronized
 
     """
@@ -40,7 +41,6 @@ class PitStop:
         z     : left light on
         x     : right light on
         q     : both lights on
-
     """
     def set_autopilot_mode(self, enabled: bool=True):
         self.agent_config.enable_autopilot = enabled
@@ -99,7 +99,10 @@ class PitStop:
 
     Examples:
         path = (Path(
-        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix()
+        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix() # for Berkeley Minor Map
+
+        path = (Path(
+        os.getcwd()) / "ROAR_Sim" / "data" / "easy_map_waypoints.txt").as_posix() # for linux easy map
     '''
     def set_waypoint_file_path(self,path:str=(Path(
         os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix()):
