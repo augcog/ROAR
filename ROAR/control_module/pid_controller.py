@@ -47,7 +47,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
+        return np.array([k_p, k_d, k_i])
 
 
 class LongPIDController(Controller):
@@ -65,7 +65,12 @@ class LongPIDController(Controller):
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
-        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
+        k_p, k_d, k_i = PIDController.
+        
+        
+        
+        
+        (vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
