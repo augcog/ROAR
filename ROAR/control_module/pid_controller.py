@@ -65,12 +65,7 @@ class LongPIDController(Controller):
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.max_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
-        k_p, k_d, k_i = PIDController.
-        
-        
-        
-        
-        (vehicle=self.agent.vehicle, config=self.config)
+        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
