@@ -132,6 +132,16 @@ class Transform(BaseModel):
 
     __mul__ = __rmul__
 
+    def readStr(self, raw: str, delimeter: str = ","):
+        self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch, \
+        self.rotation.yaw = [float(val) for val in raw.split(delimeter)]
+
+    @staticmethod
+    def fromBytes(raw: bytes):
+        t = Transform()
+        t.readStr(raw=raw.decode("utf-8"), delimeter=",")
+        return t
+
 
 class Vector3D(BaseModel):
     x: float = Field(default=0)

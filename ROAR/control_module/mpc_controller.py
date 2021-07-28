@@ -112,11 +112,11 @@ class VehicleMPCController(Controller):
         # get vehicle location (x, y)
         # location = self.vehicle.transform.location
 
-        location = self.agent.vehicle.transform.location
+        location = self.agent.vehicle.control.location
         x, y = location.x, location.y
         # get vehicle rotation
         # rotation = self.vehicle.transform.rotation
-        rotation = self.agent.vehicle.transform.rotation
+        rotation = self.agent.vehicle.control.rotation
         ψ = rotation.yaw / 180 * np.pi  # transform into radient
         cos_ψ = np.cos(ψ)
         sin_ψ = np.sin(ψ)

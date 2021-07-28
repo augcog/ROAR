@@ -19,7 +19,6 @@ class Configuration(BaseModel):
                                                            pitch=0,
                                                            yaw=0,
                                                            roll=0)),
-
                                                    image_size_x=800,
                                                    image_size_y=600),
                                     title="Front Depth Camera")
@@ -75,6 +74,11 @@ class Configuration(BaseModel):
                     "However, if it is smaller than the actual map, some weird things can happen")
     target_speed: int = 80
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
+    pid_config: dict = Field(
+        default= {
+            60: {1,23,}
+        }
+    )
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")
     occu_map_config_path: str = Field(default="./ROAR_Sim/configurations/occu_map_config.json")
     obstacle_from_depth_config_path: str = Field(default="./ROAR_Sim/configurations/obstacle_from_depth_config.json")

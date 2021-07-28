@@ -9,6 +9,12 @@ from ROAR.agent_module.potential_field_agent import PotentialFieldAgent
 from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.michael_pid_agent import PIDAgent
 # from ROAR.agent_module.depth_e2e_agent import DepthE2EAgent
+from pydantic import BaseModel, Field
+
+
+class PitStop(BaseModel):
+    carla_config: CarlaConfig = Field(default=CarlaConfig())
+    agent_config: AgentConfig = Field(default=AgentConfig())
 
 
 def main():
@@ -16,7 +22,40 @@ def main():
     agent_config = AgentConfig.parse_file(Path("./ROAR_Sim/configurations/agent_configuration.json"))
     carla_config = CarlaConfig.parse_file(Path("./ROAR_Sim/configurations/configuration.json"))
 
-    carla_runner = CarlaRunner(carla_settings=carla_config,
+    pit_stop = PitStop(carla_config=carla_config, agent_config=agent_config)
+    pit_stop.agent_config.save_sensor_data = False
+    pit_stop.agent_config.look_ahead = {
+        60: 1,
+        80: 2
+    }
+    pit_stop.agent_config.pid_config = {
+        "longitudinal_controller": {
+            "40": {
+                "Kp": 0.8,
+                "Kd": 0.4,
+                "Ki": 0
+            },
+            "60": {
+                "Kp": 0.5,
+                "Kd": 0.3,
+                "Ki": 0
+            },
+        },
+        "latitudinal_controller": {
+            "60": {
+                "Kp": 0.8,
+                "Kd": 0.1,
+                "Ki": 0.1
+            },
+            "100": {
+                "Kp": 0.6,
+                "Kd": 0.2,
+                "Ki": 0.1
+            }
+        }
+    }
+
+    carla_runner = CarlaRunner(carla_settings=pit_stop.carla_config,
                                agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent)
     try:
