@@ -34,8 +34,47 @@ def read_txt(file_path: Path) -> List[List[float]]:
 def visualize_track_data(track_data: List[List[float]]):
     print(f"Visualizing [{len(track_data)}] data points")
     track_data = np.asarray(track_data)
-    fig = go.Figure(data=[go.Scatter3d(x=track_data[:, 0], y=[0] * len(track_data), z=track_data[:, 2],
-                                       mode='markers')])
+    times = [i for i in range(len(track_data))]
+    Xs = track_data[:, 0]
+    Ys = track_data[:, 1]
+    Zs = track_data[:, 2]
+
+    fig = make_subplots(rows=3, cols=3)
+    fig.add_trace(
+        go.Scatter(
+            y=Xs, mode='markers', marker=dict(color="Red"), name="Xs"
+        ),
+        row=1, col=1
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            y=Ys, mode='markers', marker=dict(color="Blue"), name="Ys"
+        ),
+        row=2, col=1
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            y=Zs, mode='markers', marker=dict(color="Green"), name="Zs"
+        ), row=3, col=1
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=Xs, y=Ys, mode='markers', marker=dict(color="Black"), name="X vs Y"
+        ), row=1, col=2
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=Xs, y=Zs, mode='markers', marker=dict(color="Orange"), name="X vs Z"
+        ), row=2, col=2
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=Ys, y=Zs, mode='markers', marker=dict(color="Yellow"), name="Y vs Z"
+        ), row=3, col=2
+    )
+
     fig.show()
 
 
@@ -95,7 +134,7 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
 
 
 if __name__ == "__main__":
-    # track_data: List[List[float]] = read_txt(Path("rfs_waypoints.txt"))
-    # visualize_track_data(track_data=track_data)
+    track_data: List[List[float]] = read_txt(Path("../ROAR_iOS/data/RFS_Track.txt"))
+    visualize_track_data(track_data=track_data)
     # visualize_tracks(regex="trajectory_log*")
-    visualize_tracks_together(data_dir=Path("."), regex="rfs_waypoints_*.txt")
+    # visualize_tracks_together(data_dir=Path("."), regex="rfs_waypoints_*.txt")
