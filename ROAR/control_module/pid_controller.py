@@ -21,15 +21,18 @@ class PIDController(Controller):
         self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
-        self.config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
-        self.config = self.agent.agent_settings.pid_values # ROAR Academy
+        self.global_pid_config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
+        if self.agent.agent_settings.global_pid_values: # ROAR Academy
+            self.global_pid_config = self.agent.agent_settings.global_pid_values # ROAR Academy
+        if self.agent.agent_settings.regional_pid_values: # ROAR Academy
+            self.regional_pid_config = self.agent.agent_settings.regional_pid_values # ROAR Academy
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
                                                      max_speed=self.max_speed,
-                                                     config=self.config["longitudinal_controller"])
+                                                     config=self.global_pid_config["longitudinal_controller"])
         self.lat_pid_controller = LatPIDController(
             agent=agent,
-            config=self.config["latitudinal_controller"],
+            config=self.global_pid_config["latitudinal_controller"],
             steering_boundary=steering_boundary
         )
         self.logger = logging.getLogger(__name__)
@@ -49,7 +52,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        #print("pid values:", k_p, k_d, k_i)
+        print("lat pid values:", k_p, k_d, k_i) # ROAR_Academy
         return k_p, k_d, k_i    
 
 
@@ -57,7 +60,7 @@ class LongPIDController(Controller):
     def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
-        self.config = config
+        self.global_pid_config = config
         self.max_speed = max_speed
         self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
@@ -69,7 +72,7 @@ class LongPIDController(Controller):
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
-        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.config)
+        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.global_pid_config)
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
@@ -93,7 +96,7 @@ class LatPIDController(Controller):
     def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
-        self.config = config
+        self.global_pid_config = config
         self.steering_boundary = steering_boundary
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
@@ -140,7 +143,7 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
+        k_p, k_d, k_i = PIDController.find_k_values(config=self.global_pid_config, vehicle=self.agent.vehicle)
 
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])

@@ -51,34 +51,71 @@ def main():
                                                     "80": 10,
                                                     "120": 20,
                                                     "180": 50})
-    pid_values = {
+    global_pid_values = {
                     "longitudinal_controller": {
                         "40": {
-                            "Kp": 0.8,
-                            "Kd": 0.2,
-                            "Ki": 0
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
                         },
                         "60": {
-                            "Kp": 0.5,
-                            "Kd": 0.2,
-                            "Ki": 0
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
                         },
                         "150": {
-                            "Kp": 0.2,
-                            "Kd": 0.1,
-                            "Ki": 0.1
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
                             }
                     },
                     "latitudinal_controller": {
                         "60": {
-                            "Kp": 0.8,
-                            "Kd": 0.1,
-                            "Ki": 0.1
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
                         },
                         "100": {
-                            "Kp": 0.6,
-                            "Kd": 0.2,
-                            "Ki": 0.1
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
+                        },
+                        "150": {
+                            "Kp": 0.3,
+                            "Kd": 0.3,
+                            "Ki": 0.3
+                            }
+                    }
+                }
+    #pitstop.set_global_pid_values(global_pid_values)
+    regional_pid_values_1 = {
+                    "longitudinal_controller": {
+                        "40": {
+                            "Kp": 7,
+                            "Kd": 7,
+                            "Ki": 7
+                        },
+                        "60": {
+                            "Kp": 7,
+                            "Kd": 7,
+                            "Ki": 7
+                        },
+                        "150": {
+                            "Kp": 7,
+                            "Kd": 7,
+                            "Ki": 7
+                            }
+                    },
+                    "latitudinal_controller": {
+                        "60": {
+                            "Kp": 7,
+                            "Kd": 7,
+                            "Ki": 7
+                        },
+                        "100": {
+                            "Kp": 7,
+                            "Kd": 7,
+                            "Ki": 7
                         },
                         "150": {
                             "Kp": 0.5,
@@ -87,7 +124,44 @@ def main():
                             }
                     }
                 }
-    pitstop.set_pid_values(pid_values)
+    pitstop.set_regional_pid_values(range(0,20), regional_pid_values_1)
+    regional_pid_values_2 = {
+                    "longitudinal_controller": {
+                        "40": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                        },
+                        "60": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                        },
+                        "150": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                            }
+                    },
+                    "latitudinal_controller": {
+                        "60": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                        },
+                        "100": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                        },
+                        "150": {
+                            "Kp": 7.7,
+                            "Kd": 7.7,
+                            "Ki": 7.7
+                            }
+                    }
+                }
+    pitstop.set_regional_pid_values(range(21,40), regional_pid_values_2)
 
     """Passing configurations to Carla and Agent"""
     carla_runner = CarlaRunner(carla_settings=carla_config,

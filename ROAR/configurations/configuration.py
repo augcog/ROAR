@@ -84,31 +84,7 @@ class Configuration(BaseModel):
     waypoints_look_ahead_values: dict = Field(default={"60": 5, "80": 10, "120": 20, "180": 50}) # ROAR Academy:
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
-    pid_values: dict = Field(default={
-                                        'longitudinal_controller': {
-                                            '40': {
-                                                'Kp': 0.8, 'Kd': 0.2, 'Ki': 0
-                                            }, 
-                                            '60': {
-                                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0
-                                            }, 
-                                            '150': {
-                                                'Kp': 0.2, 'Kd': 0.1, 'Ki': 0.1
-                                            }
-                                        },   
-                                        'latitudinal_controller': {
-                                            '60': {
-                                                'Kp': 0.8, 'Kd': 0.1, 'Ki': 0.1
-                                            }, 
-                                            '100': {
-                                                'Kp': 0.6, 'Kd': 0.2, 'Ki': 0.1
-                                            }, 
-                                            '150': {
-                                                'Kp': 0.5, 'Kd': 0.2, 'Ki': 0.1
-                                            }
-                                        }
-                                    }
-                            ) # ROAR Academy 
+    global_pid_values: dict = Field(default=None) # ROAR Academy 
+    regional_pid_values: dict = Field(default=None) # ROAR Academy
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")
-    
