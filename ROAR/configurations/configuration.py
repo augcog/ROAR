@@ -81,10 +81,10 @@ class Configuration(BaseModel):
     target_speed: int = Field(default=80, description="The tracking speed that the pid controller is trying to achieve")
     steering_boundary: tuple = Field(default=(-1,1), description="maximum and minimum boundary for steering") # ROAR Academy:
     throttle_boundary: tuple = Field(default=(0,1), description="maximum and minimum boundary for steering") # ROAR Academy:
-    waypoints_look_ahead_values: dict = Field(default={"60": 5, "80": 10, "120": 20, "180": 50}) # ROAR Academy:
+    waypoints_look_ahead_values: dict = Field(default={}) # ROAR Academy
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR_Sim/configurations/simple_waypoint_local_planner_config.json")
     global_pid_values: dict = Field(default=None) # ROAR Academy 
-    regional_pid_values: dict = Field(default=None) # ROAR Academy
+    regional_pid_values: dict = Field(default={}) # ROAR Academy
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")

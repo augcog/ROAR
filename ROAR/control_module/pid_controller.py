@@ -21,18 +21,21 @@ class PIDController(Controller):
         self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
         self.steering_boundary = steering_boundary
-        self.global_pid_config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
         if self.agent.agent_settings.global_pid_values: # ROAR Academy
             self.global_pid_config = self.agent.agent_settings.global_pid_values # ROAR Academy
-        if self.agent.agent_settings.regional_pid_values: # ROAR Academy
-            self.regional_pid_config = self.agent.agent_settings.regional_pid_values # ROAR Academy
+        else:
+            self.global_pid_config = json.load(Path(agent.agent_settings.pid_config_file_path).open(mode='r'))
+        self.regional_pid_config = self.agent.agent_settings.regional_pid_values # ROAR Academy
         self.long_pid_controller = LongPIDController(agent=agent,
                                                      throttle_boundary=throttle_boundary,
                                                      max_speed=self.max_speed,
-                                                     config=self.global_pid_config["longitudinal_controller"])
+                                                     global_config=self.global_pid_config["longitudinal_controller"],
+                                                     regional_config=self.regional_pid_config
+                                                     )
         self.lat_pid_controller = LatPIDController(
             agent=agent,
-            config=self.global_pid_config["latitudinal_controller"],
+            global_config=self.global_pid_config["latitudinal_controller"],
+            regional_config=self.regional_pid_config,
             steering_boundary=steering_boundary
         )
         self.logger = logging.getLogger(__name__)
@@ -44,23 +47,24 @@ class PIDController(Controller):
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
-    def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
+    def find_k_values(vehicle: Vehicle, global_config: dict, regional_config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
         k_p, k_d, k_i = 1, 0, 0
-        for speed_upper_bound, kvalues in config.items():
+        for speed_upper_bound, kvalues in global_config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        print("lat pid values:", k_p, k_d, k_i) # ROAR_Academy
         return k_p, k_d, k_i    
 
 
 class LongPIDController(Controller):
-    def __init__(self, agent, config: dict, throttle_boundary: Tuple[float, float], max_speed: float,
-                 dt: float = 0.03, **kwargs):
+    def __init__(self, agent, global_config: dict, regional_config: dict, throttle_boundary: Tuple[float, float], 
+                max_speed: float,
+                dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
-        self.global_pid_config = config
+        self.global_pid_config = global_config
+        self.regional_pid_config = regional_config
         self.max_speed = max_speed
         self.target_speed = self.agent.agent_settings.target_speed
         self.throttle_boundary = throttle_boundary
@@ -69,10 +73,15 @@ class LongPIDController(Controller):
         self._dt = dt
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
+        # print("long_next_waypoints:", next_waypoint)
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
 
-        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=self.global_pid_config)
+        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, 
+                                                    global_config=self.global_pid_config, 
+                                                    regional_config=self.regional_pid_config
+                                                    )
+        # print("long pid values:", k_p, k_d, k_i) # ROAR_Academy
         error = target_speed - current_speed
 
         self._error_buffer.append(error)
@@ -93,10 +102,11 @@ class LongPIDController(Controller):
 
 
 class LatPIDController(Controller):
-    def __init__(self, agent, config: dict, steering_boundary: Tuple[float, float],
+    def __init__(self, agent, global_config: dict, regional_config: dict, steering_boundary: Tuple[float, float],
                  dt: float = 0.03, **kwargs):
         super().__init__(agent, **kwargs)
-        self.global_pid_config = config
+        self.global_pid_config = global_config
+        self.regional_pid_config = regional_config
         self.steering_boundary = steering_boundary
         self._error_buffer = deque(maxlen=10)
         self._dt = dt
@@ -111,6 +121,7 @@ class LatPIDController(Controller):
         Returns:
             lat_control
         """
+        # print("lat_next_waypoints:", next_waypoint)
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
         direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
@@ -143,8 +154,11 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        k_p, k_d, k_i = PIDController.find_k_values(config=self.global_pid_config, vehicle=self.agent.vehicle)
-
+        k_p, k_d, k_i = PIDController.find_k_values(global_config=self.global_pid_config, 
+                                                    regional_config=self.regional_pid_config, 
+                                                    vehicle=self.agent.vehicle
+                                                    )
+        # print("lat pid values:", k_p, k_d, k_i) # ROAR_Academy
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )

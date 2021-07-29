@@ -42,9 +42,13 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         self.set_mission_plan()
         self.logger.debug("Simple Path Following Local Planner Initiated")
         self.closeness_threshold = closeness_threshold
-        self.closeness_threshold_config = json.load(Path(
+        
+        if agent.agent_settings.waypoints_look_ahead_values: # ROAR Academy
+            self.closeness_threshold_config = agent.agent_settings.waypoints_look_ahead_values
+        else:
+            self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
-        self.closeness_threshold_config = agent.agent_settings.waypoints_look_ahead_values # ROAR Academy:
+        
         
         
 
