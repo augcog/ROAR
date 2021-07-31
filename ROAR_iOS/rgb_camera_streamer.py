@@ -41,9 +41,6 @@ class RGBCamStreamer(Module):
             try:
                 img = np.frombuffer(result, dtype=np.uint8)
                 self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
-                self.curr_image = cv2.rotate(self.curr_image, cv2.ROTATE_90_CLOCKWISE)
-                if self.resize:
-                    self.curr_image = cv2.resize(self.curr_image, self.resize)
 
             except Exception as e:
                 self.logger.error(f"Failed to decode image: {e}")

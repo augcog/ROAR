@@ -13,6 +13,7 @@ from ROAR_iOS.rgb_camera_streamer import RGBCamStreamer
 from ROAR_iOS.transform_streamer import TransformStreamer
 from ROAR_iOS.control_streamer import ControlStreamer
 import numpy as np
+import cv2
 
 
 class iOSRunner:
@@ -49,8 +50,7 @@ class iOSRunner:
         pygame.init()
         pygame.font.init()
         self.display = pygame.display.set_mode((self.ios_config.pygame_display_width,
-                                                self.ios_config.pygame_display_height),
-                                               pygame.HWSURFACE | pygame.DOUBLEBUF)
+                                                self.ios_config.pygame_display_height))
         self.logger.debug("PyGame initiated")
 
     def start_game_loop(self, auto_pilot=False):
@@ -112,8 +112,7 @@ class iOSRunner:
             VehicleControl - the new VehicleControl cmd by the keyboard
         """
         if self.display is not None and self.agent.front_rgb_camera.data is not None:
-            array: np.ndarray = self.agent.front_rgb_camera.data.copy()[:, :, ::-1]
-            surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
-            self.display.blit(surface, (0, 0))
+            data = cv2.flip(cv2.cvtColor(self.agent.front_rgb_camera.data, cv2.COLOR_BGR2RGB), 0)
+            pygame.surfarray.blit_array(self.display, data)
         pygame.display.flip()
         return self.controller.parse_events(clock=clock)
