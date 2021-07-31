@@ -8,7 +8,7 @@ from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.potential_field_agent import PotentialFieldAgent
 from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.michael_pid_agent import PIDAgent
-# from ROAR.agent_module.depth_e2e_agent import DepthE2EAgent
+from ROAR.agent_module.special_agents.waypoint_generating_agent import WaypointGeneratigAgent
 from pydantic import BaseModel, Field
 
 
@@ -60,8 +60,8 @@ def main():
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-        agent = PotentialFieldAgent(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
+        agent = WaypointGeneratigAgent(vehicle=my_vehicle, agent_settings=agent_config)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
     except Exception as e:
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()

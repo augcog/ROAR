@@ -33,8 +33,9 @@ def read_txt(file_path: Path) -> List[List[float]]:
 
 def visualize_track_data(track_data: List[List[float]]):
     print(f"Visualizing [{len(track_data)}] data points")
+
     track_data = np.asarray(track_data)
-    times = [i for i in range(len(track_data))]
+    # times = [i for i in range(len(track_data))]
     Xs = track_data[:, 0]
     Ys = track_data[:, 1]
     Zs = track_data[:, 2]
@@ -134,7 +135,7 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
 
 
 if __name__ == "__main__":
-    track_data: List[List[float]] = read_txt(Path("../ROAR_iOS/data/RFS_Track.txt"))
+    track_data: List[List[float]] = read_txt(Path("../ROAR_iOS/data/transforms_6_19_orig_1.txt"))
     visualize_track_data(track_data=track_data)
     # visualize_tracks(regex="trajectory_log*")
     # visualize_tracks_together(data_dir=Path("."), regex="rfs_waypoints_*.txt")

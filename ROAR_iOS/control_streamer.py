@@ -4,6 +4,7 @@ from ROAR.utilities_module.vehicle_models import VehicleControl
 from typing import Optional, List
 from pathlib import Path
 from websocket import create_connection
+import requests
 
 
 class ControlStreamer(Module):
@@ -18,7 +19,8 @@ class ControlStreamer(Module):
         self.host = host
         self.port = port
         self.control: VehicleControl = VehicleControl()
-        self.ws = create_connection(f"ws://{self.host}:{self.port}/{name}")
+        self.ws_tx = None
+        self.ws_rx = None
         self.ack = "ack".encode("utf-8")
         self.should_record = should_record
         self.file_path: Path = file_path
@@ -27,13 +29,17 @@ class ControlStreamer(Module):
         self.logger.info(f"{name} initialized")
 
     def send(self, vehicle_control: VehicleControl):
-        self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}")
-        self.ws.send(vehicle_control.record().encode("utf-8"))
+        param = {
+            "throttle": vehicle_control.throttle,
+            "steering": vehicle_control.steering
+        }
+        respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param)
+        self.logger.info(f"{param}, {respond.status_code}")
 
     def receive(self):
         try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}")
-            result: bytes = self.ws.recv()
+            self.ws_rx = create_connection(f"ws://{self.host}:{self.port}/{self.name}_tx")
+            result: bytes = self.ws_rx.recv()
             try:
                 self.control = VehicleControl.fromBytes(result)
                 if self.should_record:

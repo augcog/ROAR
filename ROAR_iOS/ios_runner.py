@@ -80,6 +80,7 @@ class iOSRunner:
             self.depth_cam_streamer.receive()
             self.world_cam_streamer.receive()
             self.transform_streamer.receive()
+            self.control_streamer.receive()
             sensor_data: SensorsData = \
                 self.ios_bridge.convert_sensor_data_from_source_to_agent(
                     {
@@ -90,7 +91,7 @@ class iOSRunner:
             vehicle = self.ios_bridge.convert_vehicle_from_source_to_agent(
                 {
                     "transform": self.transform_streamer.transform,
-                    "control": self.control_streamer.control  # TODO implement streaming control
+                    # "control": self.control_streamer.control  # TODO implement streaming control
                 }
             )
             return sensor_data, vehicle

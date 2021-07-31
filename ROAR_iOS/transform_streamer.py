@@ -18,8 +18,7 @@ class TransformStreamer(Module):
         self.host = host
         self.port = port
         self.transform: Transform = Transform()
-        self.ws = create_connection(f"ws://{self.host}:{self.port}/{name}")
-        self.ack = "ack".encode("utf-8")
+        self.ws = None
         self.should_record = should_record
         self.file_path: Path = file_path
         self.file = open(self.file_path.as_posix(), "a")

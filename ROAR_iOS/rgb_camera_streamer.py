@@ -22,7 +22,7 @@ class RGBCamStreamer(Module):
         self.logger = logging.getLogger(f"{self.name} server on [{host}:{port}]")
         self.host = host
         self.port = port
-        self.ws = create_connection(f"ws://{self.host}:{self.port}/{name}")
+        self.ws = None
 
         self.resize = resize
         self.show = show

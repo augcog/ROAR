@@ -5,10 +5,19 @@ from ROAR.utilities_module.vehicle_models import VehicleControl
 
 
 class ManualControl:
-    def __init__(self,throttle_increment=0.05, steering_increment=0.05):
+    def __init__(self, throttle_increment=0.05, steering_increment=0.05):
         self.logger = logging.getLogger(__name__)
         self._steering_increment = steering_increment
         self._throttle_increment = throttle_increment
+
+        try:
+            pygame.joystick.init()
+            self.joystick = pygame.joystick.Joystick(0)
+            self.logger.info(f"Joystick [{self.joystick.get_name()}] detected, Using Joytick")
+            self.use_joystick = True
+        except Exception as e:
+            self.logger.info("No joystick detected. Plz use your keyboard instead")
+
         self.steering = 0.0
         self.throttle = 0.0
         self.logger.debug("Keyboard Control Initiated")
@@ -28,8 +37,16 @@ class ManualControl:
         for event in events:
             if event.type == pygame.QUIT or key_pressed[K_q] or key_pressed[K_ESCAPE]:
                 return False, VehicleControl()
-        self._parse_vehicle_keys(key_pressed)
+
+        if self.use_joystick:
+            self._parse_joystick()
+        else:
+            self._parse_vehicle_keys(key_pressed)
         return True, VehicleControl(throttle=self.throttle, steering=self.steering)
+
+    def _parse_joystick(self):
+        self.steering = self.joystick.get_axis(0)
+        self.throttle = -self.joystick.get_axis(1)
 
     def _parse_vehicle_keys(self, keys):
         """
