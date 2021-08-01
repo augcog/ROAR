@@ -9,7 +9,7 @@ class ManualControl:
         self.logger = logging.getLogger(__name__)
         self._steering_increment = steering_increment
         self._throttle_increment = throttle_increment
-
+        self.use_joystick = False
         try:
             pygame.joystick.init()
             self.joystick = pygame.joystick.Joystick(0)
