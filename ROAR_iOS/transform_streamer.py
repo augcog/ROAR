@@ -34,17 +34,15 @@ class TransformStreamer(Module):
                 if self.should_record:
                     self.transform_history.append(self.transform)
             except Exception as e:
-                self.logger.error(f"Failed to parse data {e}. {result}")
+                pass
+                # self.logger.error(f"Failed to parse data {e}. {result}")
 
         except Exception as e:
-            self.logger.error(f"Failed to get data: {e}")
+            pass
+            # self.logger.error(f"Failed to get data: {e}")
 
     def run_in_series(self, **kwargs):
-        while True:
-            self.receive()
-
-    def run_in_threaded(self, **kwargs):
-        self.run_in_series()
+        self.receive()
 
     def shutdown(self):
         super(TransformStreamer, self).shutdown()

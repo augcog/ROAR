@@ -14,6 +14,8 @@ from ROAR_iOS.transform_streamer import TransformStreamer
 from ROAR_iOS.control_streamer import ControlStreamer
 import numpy as np
 import cv2
+import qrcode
+from ROAR.utilities_module.utilities import get_ip
 
 
 class iOSRunner:
@@ -53,8 +55,17 @@ class iOSRunner:
                                                 self.ios_config.pygame_display_height))
         self.logger.debug("PyGame initiated")
 
+    def show_qr_code(self):
+        cv2.imshow("qr code", np.array(qrcode.make(f"{get_ip()}").convert('RGB')))
+        cv2.waitKey(1000)
+        cv2.destroyWindow("qr code")
+
     def start_game_loop(self, auto_pilot=False):
         self.logger.info("Starting Game loop")
+        self.agent.add_threaded_module(self.transform_streamer)
+        self.agent.add_threaded_module(self.depth_cam_streamer)
+        self.agent.add_threaded_module(self.world_cam_streamer)
+        self.agent.add_threaded_module(self.control_streamer)
         try:
             self.agent.start_module_threads()
 
@@ -63,12 +74,16 @@ class iOSRunner:
             while should_continue:
                 clock.tick_busy_loop(60)
                 should_continue, control = self.update_pygame(clock=clock)
-                sensor_data, vehicle = self.convert_data()
-                agent_control = self.agent.run_step(vehicle=vehicle,
-                                                    sensors_data=sensor_data)
-                if auto_pilot:
-                    control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
-                self.control_streamer.send(control)
+                if self.world_cam_streamer.curr_image is None:
+                    self.show_qr_code()
+                else:
+
+                    sensor_data, vehicle = self.convert_data()
+                    agent_control = self.agent.run_step(vehicle=vehicle,
+                                                        sensors_data=sensor_data)
+                    if auto_pilot:
+                        control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
+                    self.control_streamer.send(control)
 
         except Exception as e:
             self.logger.error(f"Something bad happend {e}")
@@ -77,10 +92,7 @@ class iOSRunner:
 
     def convert_data(self):
         try:
-            self.depth_cam_streamer.receive()
-            self.world_cam_streamer.receive()
-            self.transform_streamer.receive()
-            self.control_streamer.receive()
+
             sensor_data: SensorsData = \
                 self.ios_bridge.convert_sensor_data_from_source_to_agent(
                     {
@@ -101,6 +113,7 @@ class iOSRunner:
 
     def on_finish(self):
         self.logger.info("Finishing...")
+        self.agent.shutdown_module_threads()
 
     def update_pygame(self, clock) -> Tuple[bool, VehicleControl]:
         """

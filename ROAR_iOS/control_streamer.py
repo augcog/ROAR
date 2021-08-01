@@ -29,12 +29,17 @@ class ControlStreamer(Module):
         self.logger.info(f"{name} initialized")
 
     def send(self, vehicle_control: VehicleControl):
-        param = {
-            "throttle": vehicle_control.throttle,
-            "steering": vehicle_control.steering
-        }
-        respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param)
-        self.logger.info(f"{param}, {respond.status_code}")
+        try:
+            param = {
+                "throttle": vehicle_control.throttle,
+                "steering": vehicle_control.steering
+            }
+
+            respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param, timeout=1)
+        except requests.exceptions.Timeout:
+            pass
+            # self.logger.error("Send Timed out")
+        # self.logger.info(f"{param}, {respond.status_code}")
 
     def receive(self):
         try:
@@ -45,17 +50,15 @@ class ControlStreamer(Module):
                 if self.should_record:
                     self.control_history.append(self.control)
             except Exception as e:
-                self.logger.error(f"Failed to parse data {e}. {result}")
+                pass
+                # self.logger.error(f"Failed to parse data {e}. {result}")
 
         except Exception as e:
-            self.logger.error(f"Failed to get data: {e}")
+            pass
+            # self.logger.error(f"Failed to get data: {e}")
 
     def run_in_series(self, **kwargs):
-        while True:
-            self.receive()
-
-    def run_in_threaded(self, **kwargs):
-        self.run_in_series()
+        self.receive()
 
     def shutdown(self):
         super(ControlStreamer, self).shutdown()
