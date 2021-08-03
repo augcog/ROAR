@@ -43,9 +43,9 @@ def main():
     pitstop.set_output_data_folder_path(path="./data/output")
     pitstop.set_output_data_file_name(name=time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
     pitstop.set_max_speed(speed = 200)
-    pitstop.set_target_speed(speed = 80)
+    pitstop.set_target_speed(speed = 120)
     pitstop.set_steering_boundary(boundary = (-1.0, 1.0))
-    pitstop.set_throttle_boundary(boundary = (0, 0.5))
+    pitstop.set_throttle_boundary(boundary = (0, 1.0))
     pitstop.set_waypoints_look_ahead_values(values={
                                                     "60": 5,
                                                     "80": 10,

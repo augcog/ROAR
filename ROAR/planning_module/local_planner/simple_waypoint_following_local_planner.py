@@ -49,9 +49,6 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
         
-        
-        
-
     def set_mission_plan(self) -> None:
         """
         Clears current waypoints, and reset mission plan from start
