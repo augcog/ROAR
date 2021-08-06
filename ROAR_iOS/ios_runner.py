@@ -23,12 +23,18 @@ class iOSRunner:
         self.agent = agent
         self.ios_config = ios_config
         self.ios_bridge = iOSBridge()
+        self.pygame_display_width = 800
+        self.pygame_display_height = 640
         self.logger = logging.getLogger("iOS Runner")
         self.display: Optional[pygame.display] = None
         self.controller = ManualControl()
+        self.setup_pygame()
+
         self.world_cam_streamer = RGBCamStreamer(host=self.ios_config.ios_ip_addr,
                                                  port=self.ios_config.ios_port,
-                                                 name=self.ios_config.world_cam_route_name
+                                                 name=self.ios_config.world_cam_route_name,
+                                                 resize=(self.pygame_display_height,
+                                                         self.pygame_display_width)
                                                  )
         self.depth_cam_streamer = DepthCamStreamer(host=self.ios_config.ios_ip_addr,
                                                    port=self.ios_config.ios_port,
@@ -40,9 +46,13 @@ class iOSRunner:
         self.control_streamer = ControlStreamer(host=self.ios_config.ios_ip_addr,
                                                 port=self.ios_config.ios_port,
                                                 name=self.ios_config.control_route_name)
-        self.setup_pygame()
         self.logger.info("iOS Runner Initialized")
 
+    def auto_full_screen(self):
+        modes = pygame.display.list_modes()  # big -> small
+        # self.pygame_display_width, self.pygame_display_height = modes[0]
+
+        self.pygame_display_width, self.pygame_display_height = 2560, 1080
     def setup_pygame(self):
         """
         Initiate pygame
@@ -51,8 +61,9 @@ class iOSRunner:
         """
         pygame.init()
         pygame.font.init()
-        self.display = pygame.display.set_mode((self.ios_config.pygame_display_width,
-                                                self.ios_config.pygame_display_height))
+        self.auto_full_screen()
+        self.display = pygame.display.set_mode((self.pygame_display_width,
+                                                self.pygame_display_height))
         self.logger.debug("PyGame initiated")
 
     def show_qr_code(self):
@@ -65,7 +76,7 @@ class iOSRunner:
         self.agent.add_threaded_module(self.transform_streamer)
         self.agent.add_threaded_module(self.depth_cam_streamer)
         self.agent.add_threaded_module(self.world_cam_streamer)
-        self.agent.add_threaded_module(self.control_streamer)
+        # self.agent.add_threaded_module(self.control_streamer) # i don't really need to receive control data
         try:
             self.agent.start_module_threads()
 
@@ -74,16 +85,12 @@ class iOSRunner:
             while should_continue:
                 clock.tick_busy_loop(60)
                 should_continue, control = self.update_pygame(clock=clock)
-                if self.world_cam_streamer.curr_image is None:
-                    self.show_qr_code()
-                else:
-
-                    sensor_data, vehicle = self.convert_data()
-                    agent_control = self.agent.run_step(vehicle=vehicle,
-                                                        sensors_data=sensor_data)
-                    if auto_pilot:
-                        control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
-                    self.control_streamer.send(control)
+                sensor_data, vehicle = self.convert_data()
+                agent_control = self.agent.run_step(vehicle=vehicle,
+                                                    sensors_data=sensor_data)
+                if auto_pilot:
+                    control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
+                self.control_streamer.send(control)
 
         except Exception as e:
             self.logger.error(f"Something bad happend {e}")

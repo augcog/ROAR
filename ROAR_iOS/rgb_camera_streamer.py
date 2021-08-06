@@ -36,12 +36,12 @@ class RGBCamStreamer(Module):
 
     def receive(self):
         try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}")
+            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
             result = self.ws.recv()
             try:
                 img = np.frombuffer(result, dtype=np.uint8)
-                self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
-
+                img = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
+                self.curr_image = cv2.resize(img, dsize=self.resize) if self.resize else img
             except Exception as e:
                 pass
                 # self.logger.error(f"Failed to decode image: {e}")

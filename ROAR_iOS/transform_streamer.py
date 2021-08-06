@@ -27,7 +27,7 @@ class TransformStreamer(Module):
 
     def receive(self):
         try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}")
+            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
             result: bytes = self.ws.recv()
             try:
                 self.transform = Transform.fromBytes(result)

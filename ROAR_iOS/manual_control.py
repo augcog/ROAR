@@ -45,7 +45,10 @@ class ManualControl:
         return True, VehicleControl(throttle=self.throttle, steering=self.steering)
 
     def _parse_joystick(self):
-        self.steering = self.joystick.get_axis(0)
+        # code to test which axis is your controller using
+        # vals = [self.joystick.get_axis(i) for i in range(self.joystick.get_numaxes())]
+        # print(vals)
+        self.steering = self.joystick.get_axis(2)
         self.throttle = -self.joystick.get_axis(1)
 
     def _parse_vehicle_keys(self, keys):

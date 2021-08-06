@@ -9,6 +9,3 @@ class iOSConfig(BaseModel):
     transform_route_name: str = Field("transform")
     control_route_name: str = Field("control")
     depth_cam_route_name: str = Field("world_cam_depth")
-
-    pygame_display_width: int = Field(default=1080)
-    pygame_display_height: int = Field(default=460)

@@ -37,14 +37,14 @@ class DepthCamStreamer(Module):
 
     def receive(self):
         try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}")
+            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
             result = self.ws.recv()
             try:
                 """
                 width=256 height=192 bytesPerRow=1024 pixelFormat=fdep
                 """
                 img: np.ndarray = np.frombuffer(result, dtype=np.float32)
-                self.curr_image = np.rot90(img.reshape((192, 256)), k=3)
+                self.curr_image = np.rot90(img.reshape((192, 256)), k=-1)
             except Exception as e:
                 pass
                 # self.logger.error(f"Failed to decode image: {e}")

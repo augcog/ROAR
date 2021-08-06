@@ -21,7 +21,6 @@ class ControlStreamer(Module):
         self.control: VehicleControl = VehicleControl()
         self.ws_tx = None
         self.ws_rx = None
-        self.ack = "ack".encode("utf-8")
         self.should_record = should_record
         self.file_path: Path = file_path
         self.file = open(self.file_path.as_posix(), "a")
@@ -37,8 +36,9 @@ class ControlStreamer(Module):
 
             respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param, timeout=1)
         except requests.exceptions.Timeout:
-            pass
-            # self.logger.error("Send Timed out")
+            self.logger.error("Send Timed out")
+        except requests.exceptions.ConnectionError:
+            self.logger.error("Unable to connect")
         # self.logger.info(f"{param}, {respond.status_code}")
 
     def receive(self):
