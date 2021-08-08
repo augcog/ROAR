@@ -27,7 +27,6 @@ import json
 from PIL import Image
 
 
-
 class OccupancyGridMap(Module):
     def __init__(self, agent: Agent, **kwargs):
         """
@@ -129,7 +128,7 @@ class OccupancyGridMap(Module):
                                                                                     1]
                 min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
                                              np.min(occu_cords_y), np.max(occu_cords_y)
-                self._map[min_y:max_y, min_x:max_x] = 0 # free
+                self._map[min_y:max_y, min_x:max_x] = 0  # free
                 self._map[occu_cords_y, occu_cords_x] += self._occu_prob
                 # self._map = self._map.clip(0, 1)
         except Exception as e:

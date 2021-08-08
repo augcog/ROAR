@@ -90,9 +90,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             return VehicleControl()
 
         # get vehicle's location
-        vehicle_transform: Union[Transform, None] = self.agent.vehicle.control
-
-        if vehicle_transform is None:
+        vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
+        if vehicle_transform is None or type(vehicle_transform) != Transform:
             raise AgentException("I do not know where I am, I cannot proceed forward")
 
         # redefine closeness level based on speed

@@ -18,6 +18,7 @@ from datetime import datetime
 import threading
 from ROAR.utilities_module.camera_models import Camera
 
+
 class Agent(ABC):
     """
     Abstract Agent class that define the minimum of a ROAR agent.

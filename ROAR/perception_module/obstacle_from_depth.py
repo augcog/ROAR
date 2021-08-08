@@ -53,7 +53,6 @@ class ObstacleFromDepth(Detector):
             normals = np.asarray(pcd.normals)
             abs_normals = np.abs(normals)
             obstacles_mask = abs_normals[:, 1] < self.max_incline_normal
-            print(np.mean(points, axis=0), self.agent.vehicle.transform.location.y)
             obstacle_below_height_mask = \
                 np.abs(points[:, 1]) < self.agent.vehicle.transform.location.y + self.min_obstacle_height
             mask = obstacles_mask & obstacle_below_height_mask
