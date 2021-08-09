@@ -2,13 +2,19 @@ from pygame import *
 import logging
 import pygame
 from ROAR.utilities_module.vehicle_models import VehicleControl
+import numpy as np
 
 
 class ManualControl:
-    def __init__(self, throttle_increment=0.05, steering_increment=0.05):
+    def __init__(self, throttle_increment=0.05, steering_increment=0.05, max_throttle=1, max_steering=1):
         self.logger = logging.getLogger(__name__)
         self._steering_increment = steering_increment
         self._throttle_increment = throttle_increment
+        self.max_throttle = max_throttle
+        self.max_steering = max_steering
+
+        self.left_trigger = 0
+        self.right_trigger = 0
         self.use_joystick = False
         try:
             pygame.joystick.init()
@@ -42,14 +48,20 @@ class ManualControl:
             self._parse_joystick()
         else:
             self._parse_vehicle_keys(key_pressed)
-        return True, VehicleControl(throttle=self.throttle, steering=self.steering)
+        return True, VehicleControl(throttle=np.clip(self.throttle, -self.max_throttle, self.max_throttle),
+                                    steering=np.clip(self.steering, -self.max_steering, self.max_steering))
 
     def _parse_joystick(self):
         # code to test which axis is your controller using
         # vals = [self.joystick.get_axis(i) for i in range(self.joystick.get_numaxes())]
         # print(vals)
-        self.steering = self.joystick.get_axis(2)
-        self.throttle = -self.joystick.get_axis(1)
+        steering = self.joystick.get_axis(2)
+        throttle = -self.joystick.get_axis(1)
+
+        self.steering = int(steering * 10) / 10
+        self.throttle = int(throttle * 10) / 10
+        self.left_trigger = self.joystick.get_axis(4)
+        self.right_trigger = self.joystick.get_axis(5)
 
     def _parse_vehicle_keys(self, keys):
         """

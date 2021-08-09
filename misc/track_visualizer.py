@@ -5,7 +5,7 @@ x,y,z,roll,pitch,yaw or x,y,z
 and visualize the track
 """
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 import numpy as np
 import plotly.graph_objects as go
 from glob import glob
@@ -31,7 +31,7 @@ def read_txt(file_path: Path) -> List[List[float]]:
     return result
 
 
-def visualize_track_data(track_data: List[List[float]]):
+def visualize_track_data(track_data: List[List[float]], file_name:Optional[Path]):
     print(f"Visualizing [{len(track_data)}] data points")
 
     track_data = np.asarray(track_data)
@@ -40,10 +40,13 @@ def visualize_track_data(track_data: List[List[float]]):
     Ys = track_data[:, 1]
     Zs = track_data[:, 2]
 
-    fig = make_subplots(rows=3, cols=3)
+    fig = make_subplots(rows=3, cols=2, subplot_titles=["Xs","X vs Y", "Ys", "Y vs Z", "Zs", "X vs Z"])
+    fig.update_layout(
+        title=f"Data file path: {file_name.as_posix()}"
+    )
     fig.add_trace(
         go.Scatter(
-            y=Xs, mode='markers', marker=dict(color="Red"), name="Xs"
+            y=Xs, mode='markers', marker=dict(color="Red"), name="Xs",
         ),
         row=1, col=1
     )
@@ -129,13 +132,14 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
     ax1 = fig.add_subplot(111)
     for name, track in tracks.items():
         track = np.array(track)
-        ax1.scatter(track[:, 0], track[:, 2], s=10, marker="s", label=name)
+        ax1.scatter(track[:, 0], track[:, 1], s=10, marker="s", label=name)
     plt.legend(loc='upper left')
     plt.show()
 
 
 if __name__ == "__main__":
-    # track_data: List[List[float]] = read_txt(Path("../data/output/transform/08_04_2021_18.txt"))
-    # visualize_track_data(track_data=track_data)
+    file_name = Path("../data/output/transform/08_08_2021_23_3.txt")
+    # track_data: List[List[float]] = read_txt(file_name)
+    # visualize_track_data(track_data=track_data, file_name=file_name)
     # visualize_tracks(regex="trajectory_log*")
-    visualize_tracks_together(data_dir=Path("../data/output/transform/"), regex="08*.txt")
+    # visualize_tracks_together(data_dir=Path("../data/output/transform"), regex="08*.txt")

@@ -17,8 +17,10 @@ class RGBCamStreamer(Module):
 
     def __init__(self, host, port, show=False, resize: Optional[Tuple] = None,
                  name: str = "world_cam", threaded: bool = True,
-                 should_record: bool = False, dir_path: Path = Path("./data/images")):
-        super().__init__(threaded=threaded, name=name)
+                 should_record: bool = False, dir_path: Path = Path("./data/images"),
+                 update_interval: float = 0.5):
+        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
+
         self.logger = logging.getLogger(f"{self.name} server on [{host}:{port}]")
         self.host = host
         self.port = port
@@ -37,11 +39,12 @@ class RGBCamStreamer(Module):
     def receive(self):
         try:
             self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
-            result = self.ws.recv()
+            img = self.ws.recv()
+            # intrinsics = self.ws.recv()
             try:
-                img = np.frombuffer(result, dtype=np.uint8)
-                img = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
-                self.curr_image = cv2.resize(img, dsize=self.resize) if self.resize else img
+                img = np.frombuffer(img, dtype=np.uint8)
+                self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
+                # intrinsics = np.frombuffer(img, dtype=np.float64)
             except Exception as e:
                 pass
                 # self.logger.error(f"Failed to decode image: {e}")
