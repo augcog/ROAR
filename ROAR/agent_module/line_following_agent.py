@@ -11,7 +11,7 @@ from collections import deque
 class LineFollowingAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.debug = True
+        self.debug = False
         self.error_queue = deque(maxlen=10)
 
         self.kP = 0.005
@@ -56,12 +56,12 @@ class LineFollowingAgent(Agent):
                                radius=10,
                                color=(0.5, 0.5),
                                thickness=-1)
-                    cv2.imshow("img", img)
+                    cv2.imshow("Drive Assist Image", img)
                     cv2.waitKey(1)
 
                 control = VehicleControl(throttle=0.175, steering=lat_control)
 
-                print(control)
+                # print(control)
                 return control
             except Exception as e:
                 # self.logger.error("Unable to detect line")
@@ -76,15 +76,16 @@ class LineFollowingAgent(Agent):
         """
         shape = orig.shape
         img = orig[shape[0] // 2:, :, :]
-        cv2.imshow("ROI", img)
+        cv2.imshow("ROI Image", img)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(gray, 175, 255, cv2.THRESH_BINARY)
-        # cv2.imshow("thresh", thresh)
+        cv2.imshow("threshold Image", thresh)
 
         kernel = np.ones((10, 10), np.uint8)
 
         img = cv2.erode(thresh, kernel)
         img = cv2.dilate(img, kernel)
+        cv2.imshow("Erode & Dilation Image", img)
 
         # find all your connected components (white blobs in your image)
         nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(img, connectivity=8)
@@ -101,4 +102,6 @@ class LineFollowingAgent(Agent):
         for i in range(0, nb_components):
             if sizes[i] >= min_size:
                 img2[output == i + 1] = 255
+
+        cv2.imshow("Connected Component Image", img2)
         return img2

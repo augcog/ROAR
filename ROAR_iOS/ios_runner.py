@@ -101,11 +101,14 @@ class iOSRunner:
 
     def convert_data(self):
         try:
-
+            if self.ios_config.ar_mode and self.world_cam_streamer.curr_image is not None:
+                frame = self.world_cam_streamer.curr_image
+            else:
+                frame = cv2.rotate(self.world_cam_streamer.curr_image, cv2.ROTATE_90_CLOCKWISE)
             sensor_data: SensorsData = \
                 self.ios_bridge.convert_sensor_data_from_source_to_agent(
                     {
-                        "front_rgb": self.world_cam_streamer.curr_image,
+                        "front_rgb": frame,
                         "front_depth": self.depth_cam_streamer.curr_image,
                     }
                 )
@@ -134,11 +137,11 @@ class iOSRunner:
             VehicleControl - the new VehicleControl cmd by the keyboard
         """
         if self.display is not None and self.agent.front_rgb_camera.data is not None:
-            frame = self.agent.front_rgb_camera.data.copy()
-            if self.ios_config.ar_mode:
-                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            frame = cv2.rotate(self.agent.front_rgb_camera.data.copy(), cv2.ROTATE_90_COUNTERCLOCKWISE)
+            if self.ios_config.ar_mode is False:
+                frame = cv2.flip(frame, 0)
             reshaped = cv2.resize(frame, (self.pygame_display_height, self.pygame_display_width))
-            data = cv2.flip(cv2.cvtColor(reshaped, cv2.COLOR_BGR2RGB), 0)
+            data = cv2.cvtColor(reshaped, cv2.COLOR_BGR2RGB)
             pygame.surfarray.blit_array(self.display, data)
         pygame.display.flip()
         return self.controller.parse_events(clock=clock)
