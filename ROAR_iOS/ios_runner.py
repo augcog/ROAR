@@ -16,6 +16,7 @@ import numpy as np
 import cv2
 import qrcode
 from ROAR.utilities_module.utilities import get_ip
+import time
 
 
 class iOSRunner:
@@ -50,6 +51,8 @@ class iOSRunner:
         self.control_streamer = ControlStreamer(host=self.ios_config.ios_ip_addr,
                                                 port=self.ios_config.ios_port,
                                                 name=self.ios_config.control_route_name)
+
+        self.last_control_time = time.time()
         self.logger.info("iOS Runner Initialized")
 
     def auto_configure_screen_size(self, mode_idx: Optional[int] = 0):
@@ -76,7 +79,7 @@ class iOSRunner:
 
     def start_game_loop(self, auto_pilot=False):
         self.logger.info("Starting Game loop")
-        # self.agent.add_threaded_module(self.transform_streamer)
+        self.agent.add_threaded_module(self.transform_streamer)
         # self.agent.add_threaded_module(self.depth_cam_streamer)
         self.agent.add_threaded_module(self.world_cam_streamer)
         try:
@@ -92,6 +95,7 @@ class iOSRunner:
                                                     sensors_data=sensor_data)
                 if auto_pilot:
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
+
                 self.control_streamer.send(control)
 
         except Exception as e:
@@ -117,6 +121,12 @@ class iOSRunner:
                     "transform": self.transform_streamer.transform,
                 }
             )
+            current_time = time.time()
+            diff = current_time - self.last_control_time
+            vehicle.velocity.x = (self.agent.vehicle.transform.location.x - vehicle.transform.location.x) / diff
+            vehicle.velocity.y = (self.agent.vehicle.transform.location.y - vehicle.transform.location.y) / diff
+            vehicle.velocity.z = (self.agent.vehicle.transform.location.z - vehicle.transform.location.z) / diff
+            self.last_control_time = current_time
             return sensor_data, vehicle
         except Exception as e:
             self.logger.error(f"Cannot convert data: {e}")
@@ -137,9 +147,7 @@ class iOSRunner:
             VehicleControl - the new VehicleControl cmd by the keyboard
         """
         if self.display is not None and self.agent.front_rgb_camera.data is not None:
-            frame = cv2.rotate(self.agent.front_rgb_camera.data.copy(), cv2.ROTATE_90_COUNTERCLOCKWISE)
-            if self.ios_config.ar_mode is False:
-                frame = cv2.flip(frame, 0)
+            frame = cv2.flip(cv2.rotate(self.agent.front_rgb_camera.data.copy(), cv2.ROTATE_90_COUNTERCLOCKWISE), 0)
             reshaped = cv2.resize(frame, (self.pygame_display_height, self.pygame_display_width))
             data = cv2.cvtColor(reshaped, cv2.COLOR_BGR2RGB)
             pygame.surfarray.blit_array(self.display, data)

@@ -5,7 +5,6 @@ from typing import Optional, Any
 import open3d as o3d
 import time, cv2
 
-
 class GroundPlaneDetector(DepthToPointCloudDetector):
     def __init__(self, agent: Agent, knn: int = 200, res: int = 4, **kwargs):
         super().__init__(agent, **kwargs)

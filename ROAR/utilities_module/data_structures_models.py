@@ -151,6 +151,9 @@ class Vector3D(BaseModel):
     def to_array(self):
         return np.array([self.x, self.y, self.z])
 
+    def __str__(self):
+        return f"{round(self.x, 3)}, {round(self.y, 3)}, {round(self.z, 3)}"
+
 
 class RGBData(BaseModel):
     data: np.ndarray = Field(
