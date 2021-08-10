@@ -34,11 +34,11 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         super().__init__(agent=agent)
         self.logger = logging.getLogger(__name__)
         self.file_path: Path = Path(self.agent.agent_settings.waypoint_file_path)
+        self.waypoints: List[Transform] = list() # ROAR Academy
         self.mission_plan = self.produce_mission_plan()
         self._mission_plan_backup = self.mission_plan.copy()
         self.logger.debug("Path Following Mission Planner Initiated.")
 
-        self.waypoints: List[Transform] = list() # ROAR Academy
         self.current_region = 0
 
     def produce_mission_plan(self) -> deque:
@@ -53,7 +53,7 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
             if len(coord) == 3 or len(coord) == 6:
                 transform = self._raw_coord_to_transform(coord) # ROAR Academy
                 mission_plan.append(transform) # ROAR Academy
-                #self.waypoints.append(transform) # ROAR Academy
+                self.waypoints.append(transform) # ROAR Academy
         self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
 
         return mission_plan
