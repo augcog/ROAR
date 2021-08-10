@@ -1,3 +1,5 @@
+from pydantic import BaseModel, Field
+
 import os
 from pathlib import Path
 
@@ -6,7 +8,9 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_Sim.carla_client.util.utilities import CarlaCarColor, CarlaCarColors
 
 class PitStop:
-    
+# class PitStop(BaseModel):
+    # carla_config: CarlaConfig = Field(default=CarlaConfig())
+    # agent_config: AgentConfig = Field(default=AgentConfig())
     def __init__(self, carla_config: CarlaConfig, agent_config: AgentConfig):
         self.carla_config = carla_config
         self.agent_config = agent_config
@@ -216,6 +220,7 @@ class PitStop:
         """
         self.agent_config.global_pid_values = values
 
-    def set_regional_pid_values(self, waypoints_range, values=dict):
-        self.agent_config.regional_pid_values[waypoints_range] = values
+    def set_regional_pid_values(self, waypoints_idx_range, values=dict):
+        for i in waypoints_idx_range:
+            self.agent_config.regional_pid_values[i] = values
         

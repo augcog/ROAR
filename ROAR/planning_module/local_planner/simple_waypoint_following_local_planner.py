@@ -49,6 +49,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
         
+        self.current_region = 0 # ROAR Academy
+        
     def set_mission_plan(self) -> None:
         """
         Clears current waypoints, and reset mission plan from start
@@ -59,9 +61,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             None
         """
         self.way_points_queue.clear()
-        while (
-                self.mission_planner.mission_plan
-        ):  # this actually clears the mission plan!!
+        while self.mission_planner.mission_plan:  # this actually clears the mission plan!!
             self.way_points_queue.append(self.mission_planner.mission_plan.popleft())
 
     def is_done(self) -> bool:

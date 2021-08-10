@@ -47,15 +47,15 @@ class PIDController(Controller):
         return VehicleControl(throttle=throttle, steering=steering)
 
     @staticmethod
-    def find_k_values(vehicle: Vehicle, global_config: dict, regional_config: dict) -> np.array:
+    def find_k_values(vehicle: Vehicle, config: dict) -> np.array:
         current_speed = Vehicle.get_speed(vehicle=vehicle)
         k_p, k_d, k_i = 1, 0, 0
-        for speed_upper_bound, kvalues in global_config.items():
+        for speed_upper_bound, kvalues in config.items():
             speed_upper_bound = float(speed_upper_bound)
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        return k_p, k_d, k_i    
+        return np.array([k_p, k_d, k_i])
 
 
 class LongPIDController(Controller):
@@ -76,11 +76,14 @@ class LongPIDController(Controller):
         # print("long_next_waypoints:", next_waypoint)
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
+        
+        current_region = 0
+        if current_region in self.regional_pid_config:
+            pid_config = self.regional_pid_config[current_region]["longitudinal_controller"]
+        else:
+            pid_config = self.global_pid_config 
 
-        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, 
-                                                    global_config=self.global_pid_config, 
-                                                    regional_config=self.regional_pid_config
-                                                    )
+        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config = pid_config)
         # print("long pid values:", k_p, k_d, k_i) # ROAR_Academy
         error = target_speed - current_speed
 
@@ -154,10 +157,12 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        k_p, k_d, k_i = PIDController.find_k_values(global_config=self.global_pid_config, 
-                                                    regional_config=self.regional_pid_config, 
-                                                    vehicle=self.agent.vehicle
-                                                    )
+        current_region = 0 # ROAR Academy
+        if current_region in self.regional_pid_config:
+            pid_config = self.regional_pid_config[current_region]["latitudinal_controller"]
+        else:
+            pid_config = self.global_pid_config 
+        k_p, k_d, k_i = PIDController.find_k_values(vehicle=self.agent.vehicle, config=pid_config)
         # print("lat pid values:", k_p, k_d, k_i) # ROAR_Academy
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])

@@ -38,6 +38,9 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         self._mission_plan_backup = self.mission_plan.copy()
         self.logger.debug("Path Following Mission Planner Initiated.")
 
+        self.waypoints: List[Transform] = list() # ROAR Academy
+        self.current_region = 0
+
     def produce_mission_plan(self) -> deque:
         """
         Generates a list of waypoints based on the input file path
@@ -48,7 +51,9 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         mission_plan = deque(maxlen=length)
         for coord in np.tile(raw_path, (self.agent.agent_settings.num_laps, 1)):
             if len(coord) == 3 or len(coord) == 6:
-                mission_plan.append(self._raw_coord_to_transform(coord))
+                transform = self._raw_coord_to_transform(coord) # ROAR Academy
+                mission_plan.append(transform) # ROAR Academy
+                #self.waypoints.append(transform) # ROAR Academy
         self.logger.debug(f"Computed Mission path of length [{len(mission_plan)}]")
 
         return mission_plan

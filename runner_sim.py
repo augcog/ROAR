@@ -87,7 +87,7 @@ def main():
                             }
                     }
                 }
-    #pitstop.set_global_pid_values(global_pid_values)
+    pitstop.set_global_pid_values(global_pid_values)
     regional_pid_values_1 = {
                     "longitudinal_controller": {
                         "40": {
@@ -124,44 +124,44 @@ def main():
                             }
                     }
                 }
-    pitstop.set_regional_pid_values(range(0,20), regional_pid_values_1)
-    regional_pid_values_2 = {
-                    "longitudinal_controller": {
-                        "40": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                        },
-                        "60": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                        },
-                        "150": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                            }
-                    },
-                    "latitudinal_controller": {
-                        "60": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                        },
-                        "100": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                        },
-                        "150": {
-                            "Kp": 0.77,
-                            "Kd": 0.77,
-                            "Ki": 0.77
-                            }
-                    }
-                }
-    pitstop.set_regional_pid_values(range(21,40), regional_pid_values_2)
+    pitstop.set_regional_pid_values(waypoints_idx_range=range(0,2), values=regional_pid_values_1)
+    # regional_pid_values_2 = {
+    #                 "longitudinal_controller": {
+    #                     "40": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                     },
+    #                     "60": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                     },
+    #                     "150": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                         }
+    #                 },
+    #                 "latitudinal_controller": {
+    #                     "60": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                     },
+    #                     "100": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                     },
+    #                     "150": {
+    #                         "Kp": 0.77,
+    #                         "Kd": 0.77,
+    #                         "Ki": 0.77
+    #                         }
+    #                 }
+    #             }
+    # pitstop.set_regional_pid_values(waypoints_idx_range=range(4,7), values=regional_pid_values_2)
 
     """Passing configurations to Carla and Agent"""
     carla_runner = CarlaRunner(carla_settings=carla_config,
