@@ -42,7 +42,7 @@ class PIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         throttle = self.long_pid_controller.run_in_series(next_waypoint=next_waypoint,
-                                                          target_speed=kwargs.get("target_speed", self.target_speed))
+                                                          target_speed=kwargs.get("target_speed", self.target_speed)) # ROAR-Academy: regional target_speed to be updated
         steering = self.lat_pid_controller.run_in_series(next_waypoint=next_waypoint)
         return VehicleControl(throttle=throttle, steering=steering)
 

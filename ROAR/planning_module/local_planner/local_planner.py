@@ -32,7 +32,6 @@ class LocalPlanner(AbstractPlanner):
             else mission_planner
         )
         self.way_points_queue = deque()
-
     @abstractmethod
     def is_done(self):
         return False

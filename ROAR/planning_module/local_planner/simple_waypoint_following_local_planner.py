@@ -39,6 +39,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                          behavior_planner=behavior_planner,
                          )
         self.logger = logging.getLogger("SimplePathFollowingLocalPlanner")
+        self.current_region = 0 # ROAR-Academy
         self.set_mission_plan()
         self.logger.debug("Simple Path Following Local Planner Initiated")
         self.closeness_threshold = closeness_threshold
@@ -48,9 +49,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         else:
             self.closeness_threshold_config = json.load(Path(
             agent.agent_settings.simple_waypoint_local_planner_config_file_path).open(mode='r'))
-        
-        self.current_region = 0 # ROAR Academy
-        
+                
     def set_mission_plan(self) -> None:
         """
         Clears current waypoints, and reset mission plan from start
@@ -79,10 +78,11 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         Run step for the local planner
         Procedure:
             1. Sync data
-            2. get the correct look ahead for current speed
-            3. get the correct next waypoint
-            4. feed waypoint into controller
-            5. return result from controller
+            2. Update the current region # ROAR Academy
+            3. get the correct look ahead for current speed for the current region
+            4. get the correct next waypoint
+            5. feed waypoint into controller
+            6. return result from controller
 
         Returns:
             next control that the local think the agent should execute.
@@ -100,7 +100,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             raise AgentException("I do not know where I am, I cannot proceed forward")
 
         # redefine closeness level based on speed
-        self.set_closeness_threhold(self.closeness_threshold_config)
+        self.set_closeness_threhold(self.closeness_threshold_config) # ROAR-Academy: regional WLAV updtaed inside here. or right before this line.
 
         # get current waypoint
         curr_closest_dist = float("inf")
@@ -130,7 +130,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
     def set_closeness_threhold(self, config: dict):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
-        for speed_upper_bound, closeness_threshold in config.items():
+        for speed_upper_bound, closeness_threshold in config.items(): # ROAR-Academy: this needs to be updated to support regional setting.
             speed_upper_bound = float(speed_upper_bound)
             if curr_speed < speed_upper_bound:
                 self.closeness_threshold = closeness_threshold

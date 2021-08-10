@@ -39,8 +39,6 @@ class WaypointFollowingMissionPlanner(MissionPlanner):
         self._mission_plan_backup = self.mission_plan.copy()
         self.logger.debug("Path Following Mission Planner Initiated.")
 
-        self.current_region = 0
-
     def produce_mission_plan(self) -> deque:
         """
         Generates a list of waypoints based on the input file path
