@@ -32,7 +32,7 @@ def main():
     Pit Stop:
         Use different kinds of 'set' functions at PitStop to tune/fix your own car!
     """
-    pitstop = PitStop(carla_config, agent_config)
+    pitstop = PitStop(carla_config=carla_config, agent_config=agent_config)
     pitstop.set_carla_sync_mode(synchronized = False)
     pitstop.set_autopilot_mode(enabled = True)
     pitstop.set_car_model(car_model="vehicle.tesla.cybertruck")

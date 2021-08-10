@@ -1,6 +1,7 @@
 from ROAR.planning_module.local_planner.local_planner import LocalPlanner
-from ROAR.utilities_module.data_structures_models import Transform
+from ROAR.utilities_module.data_structures_models import Transform, Location
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
+from ROAR.utilities_module.utilities import lengthSquare, getTriangleAngles
 from ROAR.control_module.controller import Controller
 from ROAR.planning_module.mission_planner.mission_planner import MissionPlanner
 from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
@@ -13,7 +14,6 @@ from ROAR.utilities_module.errors import (
 from ROAR.agent_module.agent import Agent
 import json
 from pathlib import Path
-
 
 class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
     def __init__(
@@ -39,7 +39,7 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
                          behavior_planner=behavior_planner,
                          )
         self.logger = logging.getLogger("SimplePathFollowingLocalPlanner")
-        self.current_region = 0 # ROAR-Academy
+        self.current_region = 0
         self.set_mission_plan()
         self.logger.debug("Simple Path Following Local Planner Initiated")
         self.closeness_threshold = closeness_threshold
@@ -56,10 +56,13 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         I am simply transferring the mission plan into my waypoint queue.
         Assuming that this current run will run all the way to the end
 
+        current_region is also set to 0 as mission plan has been resetted to start.
+
         Returns:
             None
         """
         self.way_points_queue.clear()
+        self.current_region = 0 # ROAR-Academy
         while self.mission_planner.mission_plan:  # this actually clears the mission plan!!
             self.way_points_queue.append(self.mission_planner.mission_plan.popleft())
 
@@ -72,6 +75,35 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
             True if Done, False otherwise
         """
         return len(self.way_points_queue) == 0
+    
+
+    def update_current_region(self, vehicle_location:Location) -> int:
+        '''
+        Update current region
+        '''
+        while True:
+            print("current_region:",self.current_region)
+            left_waypoint = self.mission_planner.waypoints[self.current_region]
+            right_waypoint = self.mission_planner.waypoints[self.current_region + 1]
+
+            print("left_waypoint:", left_waypoint.location)
+            print("right_waypoint:", right_waypoint.location)
+            print("vehicle_location:", vehicle_location)
+
+            alpha, betta, gamma = getTriangleAngles(
+                A=(left_waypoint.location.x, left_waypoint.location.y), 
+                B=(right_waypoint.location.x, right_waypoint.location.y),
+                C=(vehicle_location.x, vehicle_location.y))
+            if alpha > 90:
+                self.current_region -= 1
+                print("CR -= 1")
+            elif betta < 90:
+                self.current_region += 1
+                print("CR += 1")
+            else:
+                print("CR Stays the Same")
+                print("==========================================\n\n\n\n\n")
+                return
 
     def run_in_series(self) -> VehicleControl:
         """
@@ -95,6 +127,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
         # get vehicle's location
         vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
+
+        # update current region
+        self.update_current_region(vehicle_transform.location)
 
         if vehicle_transform is None:
             raise AgentException("I do not know where I am, I cannot proceed forward")

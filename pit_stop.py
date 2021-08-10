@@ -7,10 +7,11 @@ from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_Sim.carla_client.util.utilities import CarlaCarColor, CarlaCarColors
 
-class PitStop:
 # class PitStop(BaseModel):
-    # carla_config: CarlaConfig = Field(default=CarlaConfig())
-    # agent_config: AgentConfig = Field(default=AgentConfig())
+#     carla_config: CarlaConfig = Field(..., title="CarlaConfig", description="CarlaConfig")
+#     agent_config: AgentConfig = Field(..., title="AgentConfig", description="AgentConfig")
+    
+class PitStop:
     def __init__(self, carla_config: CarlaConfig, agent_config: AgentConfig):
         self.carla_config = carla_config
         self.agent_config = agent_config

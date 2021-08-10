@@ -1,5 +1,5 @@
 import numpy as np
-
+import math # ROAR Academy
 
 def png_to_depth(im: np.array) -> np.array:
     """
@@ -126,3 +126,56 @@ def rotation_matrix_from_euler(roll: float, pitch: float, yaw: float) -> np.ndar
     ])
     return Rx @ Ry @ Rz
 
+def lengthSquare(X, Y): 
+    '''
+    Takes in points and returns square of distance b/w two points 
+
+    Args:
+        two 2D points where point = (x, y)
+
+    Returns:
+        square of distance b/w two 2D points
+    '''
+    xDiff = X[0] - Y[0] 
+    yDiff = X[1] - Y[1] 
+    return xDiff * xDiff + yDiff * yDiff
+
+def getTriangleAngles(A, B, C):
+    '''
+    Find all angles of a given triangle, https://www.geeksforgeeks.org/find-angles-given-triangle/
+
+    alpha = angle between AC and AB
+    betta = angle between CA and CB
+    gamma = angle between BC and BA
+
+    returns alpha, betta, gamma
+    '''
+    # Square of lengths be a2, b2, c2 
+    a2 = lengthSquare(B, C) 
+    b2 = lengthSquare(A, C) 
+    c2 = lengthSquare(A, B) 
+
+    # length of sides be a, b, c 
+    a = math.sqrt(a2); 
+    b = math.sqrt(b2); 
+    c = math.sqrt(c2); 
+
+    # From Cosine law 
+    alpha = math.acos((b2 + c2 - a2) /
+                        (2 * b * c)); 
+    betta = math.acos((a2 + c2 - b2) / 
+                        (2 * a * c)); 
+    gamma = math.acos((a2 + b2 - c2) / 
+                        (2 * a * b)); 
+
+    # Converting to degree 
+    alpha = alpha * 180 / math.pi; 
+    betta = betta * 180 / math.pi; 
+    gamma = gamma * 180 / math.pi; 
+
+    # printing all the angles 
+    print("alpha : %f" %(alpha)) 
+    print("betta : %f" %(betta))
+    print("gamma : %f" %(gamma))
+
+    return alpha, betta, gamma
