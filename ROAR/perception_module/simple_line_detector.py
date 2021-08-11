@@ -18,9 +18,11 @@ class LineDetector(Detector):
             try:
                 orig = self.agent.front_rgb_camera.data.copy()
                 shape = orig.shape
-                img = orig[:, :, :]
+                img = orig[0:shape[0], 0:shape[1], :]  # you can limit your field of view here
                 # b g r
-                mask = cv2.inRange(img, (0, 180, 200), (120, 255, 255))
+                low_range = (0, 180, 200)  # low range of color
+                high_range = (120, 255, 255)  # high range of color
+                mask = cv2.inRange(img, low_range, high_range)
                 self.agent.kwargs["lane_mask"] = mask
 
                 return mask

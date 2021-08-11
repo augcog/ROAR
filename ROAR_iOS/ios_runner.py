@@ -24,8 +24,8 @@ class iOSRunner:
         self.agent = agent
         self.ios_config = ios_config
         self.ios_bridge = iOSBridge()
-        self.pygame_display_width = 800
-        self.pygame_display_height = 640
+        self.pygame_display_width = self.ios_config.pygame_display_width
+        self.pygame_display_height = self.ios_config.pygame_display_height
         self.logger = logging.getLogger("iOS Runner")
         self.display: Optional[pygame.display] = None
 
@@ -39,6 +39,12 @@ class iOSRunner:
                                                  resize=(self.pygame_display_height,
                                                          self.pygame_display_width)
                                                  )
+        self.face_cam_streamer = RGBCamStreamer(host=self.ios_config.ios_ip_addr,
+                                                port=self.ios_config.ios_port,
+                                                name=self.ios_config.face_cam_route_name,
+                                                resize=(self.pygame_display_height,
+                                                        self.pygame_display_width)
+                                                )
         self.depth_cam_streamer = DepthCamStreamer(host=self.ios_config.ios_ip_addr,
                                                    port=self.ios_config.ios_port,
                                                    name=self.ios_config.depth_cam_route_name,
@@ -52,12 +58,37 @@ class iOSRunner:
                                                 port=self.ios_config.ios_port,
                                                 name=self.ios_config.control_route_name)
 
+        self.front_cam_display_size: Tuple[int, int] = (100, 480)
+        self.front_cam_offsets = (self.pygame_display_width // 2 - self.front_cam_display_size[1] // 2, 0)
+
+        s = (self.pygame_display_height, self.pygame_display_width)
+        self.green_overlay_pts = [
+            np.array([[0, s[0]],  # lower left
+                      [30 * s[1] // 100, 40 * s[0] // 100],  # upper left
+                      [70 * s[1] // 100, 40 * s[0] // 100],  # upper right
+                      [s[1], s[0]]  # lower right
+                      ],
+                     np.int32).reshape((-1, 1, 2))
+        ]
+        self.yellow_overlay_pts = [
+            np.array([[0, s[0]],
+                      [20 * s[1] // 100, 60 * s[0] // 100],  # upper left
+                      [80 * s[1] // 100, 60 * s[0] // 100],  # upper right
+                      [s[1], s[0]]
+                      ],
+                     np.int32).reshape((-1, 1, 2))
+        ]
+        self.red_overlay_pts = [
+            np.array([[0, s[0]],  # lower left
+                      [10 * s[1] // 100, 80 * s[0] // 100],  # upper left
+                      [90 * s[1] // 100, 80 * s[0] // 100],  # upper right
+                      [s[1], s[0]]  # lower right
+                      ],
+                     np.int32)
+        ]
+
         self.last_control_time = time.time()
         self.logger.info("iOS Runner Initialized")
-
-    def auto_configure_screen_size(self, mode_idx: Optional[int] = 0):
-        modes = pygame.display.list_modes()  # big -> small
-        self.pygame_display_width, self.pygame_display_height = 1080, 640
 
     def setup_pygame(self):
         """
@@ -67,7 +98,6 @@ class iOSRunner:
         """
         pygame.init()
         pygame.font.init()
-        self.auto_configure_screen_size(mode_idx=-1)
         self.display = pygame.display.set_mode((self.pygame_display_width,
                                                 self.pygame_display_height))
         self.logger.debug("PyGame initiated")
@@ -79,10 +109,13 @@ class iOSRunner:
 
     def start_game_loop(self, auto_pilot=False):
         self.logger.info("Starting Game loop")
-        self.agent.add_threaded_module(self.transform_streamer)
-        if self.ios_config.ar_mode is False:
-            self.agent.add_threaded_module(self.depth_cam_streamer)
         self.agent.add_threaded_module(self.world_cam_streamer)
+        if self.ios_config.ar_mode:
+            self.agent.add_threaded_module(self.face_cam_streamer)
+        else:
+            self.agent.add_threaded_module(self.depth_cam_streamer)
+            self.agent.add_threaded_module(self.transform_streamer)
+
         try:
             self.agent.start_module_threads()
 
@@ -97,9 +130,11 @@ class iOSRunner:
                 if auto_pilot:
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
 
-                control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle, self.ios_config.max_throttle)
+                control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle,
+                                           self.ios_config.max_throttle)
                 control.steering = np.clip(control.steering, -self.ios_config.max_steering,
                                            self.ios_config.max_steering)
+                # self.logger.info(f"Current Control: {control}")
                 self.control_streamer.send(control)
 
         except Exception as e:
@@ -109,15 +144,21 @@ class iOSRunner:
 
     def convert_data(self):
         try:
+            rear_rgb = None
             if self.ios_config.ar_mode and self.world_cam_streamer.curr_image is not None:
-                frame = self.world_cam_streamer.curr_image
+                front_rgb = self.world_cam_streamer.curr_image
             else:
-                frame = cv2.rotate(self.world_cam_streamer.curr_image, cv2.ROTATE_90_CLOCKWISE)
+                front_rgb = cv2.rotate(self.world_cam_streamer.curr_image, cv2.ROTATE_90_CLOCKWISE)
+
+            if self.ios_config.ar_mode and self.face_cam_streamer.curr_image is not None:
+                rear_rgb = self.face_cam_streamer.curr_image
+
             sensor_data: SensorsData = \
                 self.ios_bridge.convert_sensor_data_from_source_to_agent(
                     {
-                        "front_rgb": frame,
+                        "front_rgb": front_rgb,
                         "front_depth": self.depth_cam_streamer.curr_image,
+                        "rear_rgb": rear_rgb
                     }
                 )
             vehicle = self.ios_bridge.convert_vehicle_from_source_to_agent(
@@ -150,10 +191,37 @@ class iOSRunner:
             bool - whether to continue the game
             VehicleControl - the new VehicleControl cmd by the keyboard
         """
-        if self.display is not None and self.agent.front_rgb_camera.data is not None:
-            frame = cv2.flip(cv2.rotate(self.agent.front_rgb_camera.data.copy(), cv2.ROTATE_90_COUNTERCLOCKWISE), 0)
-            reshaped = cv2.resize(frame, (self.pygame_display_height, self.pygame_display_width))
-            data = cv2.cvtColor(reshaped, cv2.COLOR_BGR2RGB)
-            pygame.surfarray.blit_array(self.display, data)
+        if self.display is not None:
+            frame = self.generate_current_frame(self.agent.front_rgb_camera.data, self.agent.rear_rgb_camera.data)
+            if frame is not None:
+                frame = self.impose_reference_line(frame)
+                frame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).swapaxes(0, 1)
+                pygame.surfarray.blit_array(self.display, frame)
+                pygame.display.flip()
         pygame.display.flip()
         return self.controller.parse_events(clock=clock)
+
+    def generate_current_frame(self,
+                               world_cam_data: Optional[np.ndarray] = None,
+                               face_cam_data: Optional[np.ndarray] = None) -> Optional[np.ndarray]:
+        frame: Optional[np.ndarray] = None
+        overlay_frame: Optional[np.ndarray] = None
+        if world_cam_data is not None:
+            frame = cv2.resize(world_cam_data, dsize=(self.pygame_display_width, self.pygame_display_height))
+
+        if face_cam_data is not None:
+            overlay_frame = cv2.resize(face_cam_data,
+                                       (self.front_cam_display_size[1], self.front_cam_display_size[0]))
+        if overlay_frame is not None and frame is not None:
+            x_offset = self.front_cam_offsets[0]
+            y_offset = self.front_cam_offsets[1]
+            frame[y_offset:y_offset + overlay_frame.shape[0],
+            x_offset:x_offset + overlay_frame.shape[1]] = overlay_frame
+        return frame
+
+    def impose_reference_line(self, frame: np.ndarray):
+        frame = cv2.polylines(frame, self.green_overlay_pts, isClosed=True, color=(0, 255, 0), thickness=2)
+        frame = cv2.polylines(frame, self.yellow_overlay_pts, isClosed=True, color=(0, 255, 255), thickness=2)
+        frame = cv2.polylines(frame, self.red_overlay_pts, isClosed=True, color=(0, 0, 255), thickness=2)
+
+        return frame

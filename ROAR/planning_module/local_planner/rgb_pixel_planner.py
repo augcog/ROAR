@@ -10,7 +10,7 @@ class RGBPixelPlanner(AbstractPlanner):
     def run_in_series(self, **kwargs):
         if "lane_mask" in kwargs:
             img = kwargs["lane_mask"]
-            cv2.imshow("mask", img)
+            cv2.imshow("lane_mask", cv2.resize(img, dsize=(img.shape[0]//2, img.shape[1]//2)))
             cv2.waitKey(1)
             mid_ys = [i for i in range(0, img.shape[0], 10)]
             straight_x = img.shape[1] // 2
@@ -34,13 +34,12 @@ class RGBPixelPlanner(AbstractPlanner):
         # search from center to right
         for x in range(straight_x, image.shape[1], 20):
             if image[y][x] > 10:
-                return x-straight_x
+                return x - straight_x
 
         # if i cant find ANY
-            # if i was turning left
+        # if i was turning left
         if self.agent.vehicle.control.steering < -0.1:
             return 0 - straight_x
         elif self.agent.vehicle.control.steering > 0.1:
             return image.shape[1] - straight_x
         return 0
-

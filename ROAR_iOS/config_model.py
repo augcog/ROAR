@@ -13,3 +13,6 @@ class iOSConfig(BaseModel):
 
     max_throttle: float = Field(1)
     max_steering: float = Field(1)
+
+    pygame_display_width: int = Field(1080)
+    pygame_display_height: int = Field(810)
