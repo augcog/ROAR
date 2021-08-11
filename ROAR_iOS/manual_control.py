@@ -19,6 +19,7 @@ class ManualControl:
         try:
             pygame.joystick.init()
             self.joystick = pygame.joystick.Joystick(0)
+            self.joystick.init()
             self.logger.info(f"Joystick [{self.joystick.get_name()}] detected, Using Joytick")
             self.use_joystick = True
         except Exception as e:
