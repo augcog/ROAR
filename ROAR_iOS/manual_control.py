@@ -60,8 +60,8 @@ class ManualControl:
 
         self.steering = int(steering * 10) / 10
         self.throttle = int(throttle * 10) / 10
-        self.left_trigger = self.joystick.get_axis(4)
-        self.right_trigger = self.joystick.get_axis(5)
+        # self.left_trigger = self.joystick.get_axis(4)
+        # self.right_trigger = self.joystick.get_axis(5)
 
     def _parse_vehicle_keys(self, keys):
         """
