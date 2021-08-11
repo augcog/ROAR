@@ -12,14 +12,14 @@ class SimplePIDController(Controller):
         self.lat_error_queue = deque(maxlen=10)
         self.long_error_queue = deque(maxlen=100)
 
-        self.target_speed = 1.25  # m / s
+        self.target_speed = 1.5  # m / s
         self.min_throttle, self.max_throttle = 0, 0.5
 
-        self.lat_kp = 0.00006
-        self.lat_kd = 100
+        self.lat_kp = 0.00000025
+        self.lat_kd = 0
         self.lat_ki = 0.0000025
 
-        self.long_kp = 0.15
+        self.long_kp = 0.16
         self.long_kd = 1000
         self.long_ki = 1000
 

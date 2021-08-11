@@ -25,7 +25,7 @@ class RGBPixelPlanner(AbstractPlanner):
 
     def find_error(self, y, image, straight_x):
         # if im right on top of the line
-        if image[y][straight_x] > 255:
+        if image[y][straight_x] > 200:
             return 0
         # search from center to left
         for x in range(straight_x, 0, -20):

@@ -23,10 +23,9 @@ class LineFollowingAgent(Agent):
         mask = self.line_detector.run_in_series()
 
         if mask is not None:
-
-
-
-
-            pass
+            self.rgb_pixel_planner.run_in_series(lane_mask=mask)
+            control = self.pid_controller.run_in_series()
+            print(control)
+            return control
 
         return VehicleControl()

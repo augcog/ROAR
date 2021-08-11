@@ -80,7 +80,8 @@ class iOSRunner:
     def start_game_loop(self, auto_pilot=False):
         self.logger.info("Starting Game loop")
         self.agent.add_threaded_module(self.transform_streamer)
-        # self.agent.add_threaded_module(self.depth_cam_streamer)
+        if self.ios_config.ar_mode is False:
+            self.agent.add_threaded_module(self.depth_cam_streamer)
         self.agent.add_threaded_module(self.world_cam_streamer)
         try:
             self.agent.start_module_threads()
@@ -96,6 +97,9 @@ class iOSRunner:
                 if auto_pilot:
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
 
+                control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle, self.ios_config.max_throttle)
+                control.steering = np.clip(control.steering, -self.ios_config.max_steering,
+                                           self.ios_config.max_steering)
                 self.control_streamer.send(control)
 
         except Exception as e:

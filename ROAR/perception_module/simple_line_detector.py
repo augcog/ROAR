@@ -19,11 +19,10 @@ class LineDetector(Detector):
                 orig = self.agent.front_rgb_camera.data.copy()
                 shape = orig.shape
                 img = orig[:, :, :]
-                cv2.imshow("roi", img)
-                cv2.waitKey(1)
                 # b g r
-                mask = cv2.inRange(img, (0, 200, 200), (120, 255, 255))
+                mask = cv2.inRange(img, (0, 180, 200), (120, 255, 255))
                 self.agent.kwargs["lane_mask"] = mask
+
                 return mask
             except Exception as e:
                 self.logger.info(f"Unable to produce lane mask {e}")
