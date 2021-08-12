@@ -47,7 +47,7 @@ class PIDController(Controller):
             if current_speed < speed_upper_bound:
                 k_p, k_d, k_i = kvalues["Kp"], kvalues["Kd"], kvalues["Ki"]
                 break
-        return np.clip([k_p, k_d, k_i], a_min=0, a_max=1)
+        return np.array([k_p, k_d, k_i])
 
 
 class LongPIDController(Controller):

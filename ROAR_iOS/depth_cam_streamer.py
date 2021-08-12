@@ -13,13 +13,14 @@ class DepthCamStreamer(Module):
     def save(self, **kwargs):
         if self.curr_image is not None:
             cv2.imwrite((
-                                    self.dir_path / f"{self.name}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.jpg").as_posix(),
+                                self.dir_path / f"{self.name}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.jpg").as_posix(),
                         self.curr_image)
 
     def __init__(self, host, port, show=False, resize: Optional[Tuple] = None,
                  name: str = "depth_cam", threaded: bool = True,
-                 should_record: bool = False, dir_path: Path = Path("./data/images")):
-        super().__init__(threaded=threaded, name=name)
+                 should_record: bool = False, dir_path: Path = Path("./data/images"),
+                 update_interval: float = 0.5):
+        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
         self.logger = logging.getLogger(f"{self.name} server on [{host}:{port}]")
         self.host = host
         self.port = port
@@ -51,5 +52,6 @@ class DepthCamStreamer(Module):
         except Exception as e:
             # self.logger.error(f"Failed to get image: {e}")
             pass
+
     def run_in_series(self, **kwargs):
         self.receive()
