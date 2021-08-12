@@ -31,7 +31,7 @@ class LineFollowingAgent(Agent):
             cv2.waitKey(1)
 
         if mask is not None:
-            self.rgb_pixel_planner.run_in_series(lane_mask=mask)
+            self.kwargs["lat_error"] = self.rgb_pixel_planner.run_in_series(lane_mask=mask)
             control = self.pid_controller.run_in_series()
             return control
 

@@ -6,22 +6,33 @@ import cv2
 
 
 class RGBPixelPlanner(AbstractPlanner):
+    def __init__(self, agent, **kwargs):
+        super().__init__(agent, **kwargs)
+        self.visualize = True
 
     def run_in_series(self, **kwargs):
         if "lane_mask" in kwargs:
-            img = kwargs["lane_mask"]
-            cv2.imshow("lane_mask", cv2.resize(img, dsize=(img.shape[0]//2, img.shape[1]//2)))
-            cv2.waitKey(1)
-            mid_ys = [i for i in range(0, img.shape[0], 10)]
-            straight_x = img.shape[1] // 2
+            lane_mask = kwargs["lane_mask"]
+            s = np.shape(lane_mask)
+            img = lane_mask[40*s[0]//100:100*s[0]//100, 0:s[1]]
+            empty = np.ones(shape=np.shape(img))
+            contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            if len(contours) > 0:
+                c = max(contours, key=cv2.contourArea)  # find the largest contour
+                x, y, w, h = cv2.boundingRect(c)
+                x_avg = x + (w // 2)
+                if self.visualize:
+                    cv2.drawContours(empty, contours, -1, 0, 3)  # draw out the rectangle
+                    cv2.imshow("lane_mask", lane_mask)
+                    cv2.rectangle(empty, (x, y), (x + w, y + h), (0, 0, 0), 2)
+                    cv2.circle(empty, (x_avg, y), radius=10, thickness=-1, color=0)
+                    cv2.imshow("next_waypoint", empty)
+                    cv2.waitKey(1)
 
-            errors = []
-            for y in mid_ys:
-                e = self.find_error(y, img, straight_x)
-                errors.append(e)
-            total_error = sum(errors)
-            self.agent.kwargs["lat_error"] = total_error
-            return total_error
+                straight_x = img.shape[1] // 2
+
+                return x_avg - straight_x
+            return 0
 
     def find_error(self, y, image, straight_x):
         # if im right on top of the line

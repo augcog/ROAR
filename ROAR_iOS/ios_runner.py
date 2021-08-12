@@ -64,24 +64,24 @@ class iOSRunner:
         s = (self.pygame_display_height, self.pygame_display_width)
         self.green_overlay_pts = [
             np.array([[0, s[0]],  # lower left
-                      [30 * s[1] // 100, 40 * s[0] // 100],  # upper left
-                      [70 * s[1] // 100, 40 * s[0] // 100],  # upper right
+                      [30 * s[1] // 100, 70 * s[0] // 100],  # upper left
+                      [70 * s[1] // 100, 70 * s[0] // 100],  # upper right
                       [s[1], s[0]]  # lower right
                       ],
                      np.int32).reshape((-1, 1, 2))
         ]
         self.yellow_overlay_pts = [
             np.array([[0, s[0]],
-                      [20 * s[1] // 100, 60 * s[0] // 100],  # upper left
-                      [80 * s[1] // 100, 60 * s[0] // 100],  # upper right
+                      [20 * s[1] // 100, 80 * s[0] // 100],  # upper left
+                      [80 * s[1] // 100, 80 * s[0] // 100],  # upper right
                       [s[1], s[0]]
                       ],
                      np.int32).reshape((-1, 1, 2))
         ]
         self.red_overlay_pts = [
             np.array([[0, s[0]],  # lower left
-                      [10 * s[1] // 100, 80 * s[0] // 100],  # upper left
-                      [90 * s[1] // 100, 80 * s[0] // 100],  # upper right
+                      [10 * s[1] // 100, 90 * s[0] // 100],  # upper left
+                      [90 * s[1] // 100, 90 * s[0] // 100],  # upper right
                       [s[1], s[0]]  # lower right
                       ],
                      np.int32)
@@ -102,18 +102,13 @@ class iOSRunner:
                                                 self.pygame_display_height))
         self.logger.debug("PyGame initiated")
 
-    def show_qr_code(self):
-        cv2.imshow("qr code", np.array(qrcode.make(f"{get_ip()}").convert('RGB')))
-        cv2.waitKey(1000)
-        cv2.destroyWindow("qr code")
-
     def start_game_loop(self, auto_pilot=False):
         self.logger.info("Starting Game loop")
         self.agent.add_threaded_module(self.world_cam_streamer)
         if self.ios_config.ar_mode:
             self.agent.add_threaded_module(self.face_cam_streamer)
         else:
-            self.agent.add_threaded_module(self.depth_cam_streamer)
+            # self.agent.add_threaded_module(self.depth_cam_streamer)
             self.agent.add_threaded_module(self.transform_streamer)
 
         try:

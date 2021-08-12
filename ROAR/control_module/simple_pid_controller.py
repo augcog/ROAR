@@ -9,19 +9,19 @@ import numpy as np
 class SimplePIDController(Controller):
     def __init__(self, agent, **kwargs):
         super().__init__(agent, **kwargs)
-        self.lat_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
+        self.lat_error_queue = deque(maxlen=100)  # this is how much error you want to accumulate
         self.long_error_queue = deque(maxlen=100)  # this is how much error you want to accumulate
 
         self.target_speed = 1.5  # m / s
         self.min_throttle, self.max_throttle = 0, 0.5
 
-        self.lat_kp = 0.00000025  # this is how much you want to steer
-        self.lat_kd = 0  # this is how much you want to resist change
-        self.lat_ki = 0.0000025  # this is the correction on past error
+        self.lat_kp = 0.0025  # this is how much you want to steer
+        self.lat_kd = 0.01  # this is how much you want to resist change
+        self.lat_ki = 0.00001  # this is the correction on past error
 
-        self.long_kp = 0.16  # this is how much you want to go forward
-        self.long_kd = 1000  # this is how much you want to resist change
-        self.long_ki = 1000  # this is how much correction on past error
+        self.long_kp = 0.14  # this is how much you want to go forward
+        self.long_kd = 0  # this is how much you want to resist change
+        self.long_ki = 0  # this is how much correction on past error
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         steering = self.lateral_pid_control()
@@ -38,6 +38,8 @@ class SimplePIDController(Controller):
         e_d = self.lat_kd * error_dt
         e_i = self.lat_ki * error_it
         lat_control = np.clip((e_p + e_d + e_i), -1, 1)
+        print(round(e_p, 3), round(e_d,3), round(e_i, 3), round(lat_control,3))
+
         return lat_control
 
     def long_pid_control(self) -> float:
