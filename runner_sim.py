@@ -39,11 +39,11 @@ def main():
     pitstop.set_car_color(color = CarlaCarColor(r = 255,g = 200,b = 00,a = 255))
     pitstop.set_num_laps(num=1)
     pitstop.set_waypoint_file_path(path=(Path(
-        os.getcwd()) / "ROAR_Sim" / "data" / "berkeley_minor_waypoints.txt").as_posix())
+        os.getcwd()) / "ROAR_Sim" / "data" / "moon_waypoints.txt").as_posix())
     pitstop.set_output_data_folder_path(path="./data/output")
     pitstop.set_output_data_file_name(name=time.strftime("%Y%m%d-%H%M%S-") + "map-waypoints")
     pitstop.set_max_speed(speed = 200)
-    pitstop.set_target_speed(speed = 120)
+    pitstop.set_target_speed(speed = 80)
     pitstop.set_steering_boundary(boundary = (-1.0, 1.0))
     pitstop.set_throttle_boundary(boundary = (0, 1.0))
     pitstop.set_waypoints_look_ahead_values(values={
@@ -124,44 +124,44 @@ def main():
                             }
                     }
                 }
-    pitstop.set_regional_pid_values(waypoints_idx_range=range(0,2), values=regional_pid_values_1)
-    # regional_pid_values_2 = {
-    #                 "longitudinal_controller": {
-    #                     "40": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                     },
-    #                     "60": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                     },
-    #                     "150": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                         }
-    #                 },
-    #                 "latitudinal_controller": {
-    #                     "60": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                     },
-    #                     "100": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                     },
-    #                     "150": {
-    #                         "Kp": 0.77,
-    #                         "Kd": 0.77,
-    #                         "Ki": 0.77
-    #                         }
-    #                 }
-    #             }
-    # pitstop.set_regional_pid_values(waypoints_idx_range=range(4,7), values=regional_pid_values_2)
+    pitstop.set_regional_pid_values(waypoints_idx_range=range(500,1000), values=regional_pid_values_1)
+    regional_pid_values_2 = {
+                    "longitudinal_controller": {
+                        "40": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                        },
+                        "60": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                        },
+                        "150": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                            }
+                    },
+                    "latitudinal_controller": {
+                        "60": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                        },
+                        "100": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                        },
+                        "150": {
+                            "Kp": 0.77,
+                            "Kd": 0.77,
+                            "Ki": 0.77
+                            }
+                    }
+                }
+    pitstop.set_regional_pid_values(waypoints_idx_range=range(1000,2000), values=regional_pid_values_2)
 
     """Passing configurations to Carla and Agent"""
     carla_runner = CarlaRunner(carla_settings=carla_config,

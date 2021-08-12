@@ -143,6 +143,7 @@ def lengthSquare(X, Y):
 def getTriangleAngles(A, B, C):
     '''
     Find all angles of a given triangle, https://www.geeksforgeeks.org/find-angles-given-triangle/
+    https://en.wikipedia.org/wiki/Law_of_cosines
 
     alpha = angle between AC and AB
     betta = angle between CA and CB
@@ -154,12 +155,13 @@ def getTriangleAngles(A, B, C):
     a2 = lengthSquare(B, C) 
     b2 = lengthSquare(A, C) 
     c2 = lengthSquare(A, B) 
-
     # length of sides be a, b, c 
     a = math.sqrt(a2); 
     b = math.sqrt(b2); 
     c = math.sqrt(c2); 
-
+    print("a : %f" %(a)) 
+    print("b : %f" %(b))
+    print("c : %f" %(c))
     # From Cosine law 
     alpha = math.acos((b2 + c2 - a2) /
                         (2 * b * c)); 

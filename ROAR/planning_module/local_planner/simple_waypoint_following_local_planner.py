@@ -43,7 +43,8 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         self.set_mission_plan()
         self.logger.debug("Simple Path Following Local Planner Initiated")
         self.closeness_threshold = closeness_threshold
-        
+        self.current_region_counter = 0 # ROAR Academy: debugging purpose
+
         if agent.agent_settings.waypoints_look_ahead_values: # ROAR Academy
             self.closeness_threshold_config = agent.agent_settings.waypoints_look_ahead_values
         else:
@@ -79,30 +80,64 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
     def update_current_region(self, vehicle_location:Location) -> int:
         '''
-        Update current region
+        Update the current region of the car until the vehicle location, left waypoint and right point makes 
+        an acute traingle.
+        
+        Region is defined by two consecutive waypoints.
+        
+        For example, region i = [waypoint[i], waypoint[i+1]] where waypoint is 2D point: x and z
+
+        if alpha > 90: CR -= 1
+        if gamma < 90: CR += 1
         '''
+        # while self.current_region_counter != 5:
         while True:
             print("current_region:",self.current_region)
+            
             left_waypoint = self.mission_planner.waypoints[self.current_region]
             right_waypoint = self.mission_planner.waypoints[self.current_region + 1]
 
-            print("left_waypoint:", left_waypoint.location)
-            print("right_waypoint:", right_waypoint.location)
-            print("vehicle_location:", vehicle_location)
-
-            alpha, betta, gamma = getTriangleAngles(
-                A=(left_waypoint.location.x, left_waypoint.location.y), 
-                B=(right_waypoint.location.x, right_waypoint.location.y),
-                C=(vehicle_location.x, vehicle_location.y))
-            if alpha > 90:
-                self.current_region -= 1
+            print("left_waypoint   : x: {0:10.14f}, z: {1:10.14f}".format(left_waypoint.location.x, left_waypoint.location.z))
+            print("right_waypoint  : x: {0:10.14f}, z: {1:10.14f}".format(right_waypoint.location.x, right_waypoint.location.z))
+            print("vehicle_location: x: {0:10.14f}, z: {1:10.14f}".format(vehicle_location.x, vehicle_location.z))
+            # In the real data of waypoints.txt, there is a case when the left and right waypoints are exactly the same
+            # Therefore results in division by zero -> Nan /  RuntimeWarning: invalid value encountered in double_scalars
+            if vehicle_location.x==0 or vehicle_location.z==0:
+                return
+            
+            if left_waypoint == right_waypoint:
+                self.current_region += 1
                 print("CR -= 1")
-            elif betta < 90:
+                continue
+
+            '''
+            alpha: angle between AC and AB
+            gamma: angle between BC and BA
+            betta: angle between CA and CB
+            A = left waypoint x, z
+            B = right waypoint x, z
+            C = vehicle location x, z
+            '''
+            alpha, betta, gamma = getTriangleAngles(
+                    A=(left_waypoint.location.x, left_waypoint.location.z), 
+                    B=(right_waypoint.location.x, right_waypoint.location.z),
+                    C=(vehicle_location.x, vehicle_location.z)
+                )
+            
+            if gamma > 90:
+                if self.current_region != 0:
+                    self.current_region -= 1
+                print("CR -= 1")
+                print("--------------------------------")
+                self.current_region_counter += 1
+            elif alpha > 90:
                 self.current_region += 1
                 print("CR += 1")
+                print("---------------------------------")
+                self.current_region_counter += 1
             else:
                 print("CR Stays the Same")
-                print("==========================================\n\n\n\n\n")
+                print("==========================================\n")
                 return
 
     def run_in_series(self) -> VehicleControl:
@@ -125,9 +160,9 @@ class SimpleWaypointFollowingLocalPlanner(LocalPlanner):
         ):
             return VehicleControl()
 
-        # get vehicle's location
+        # get vehicle's transform(= location + rotation)
         vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
-
+        
         # update current region
         self.update_current_region(vehicle_transform.location)
 

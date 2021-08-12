@@ -77,7 +77,7 @@ class LongPIDController(Controller):
         target_speed = min(self.max_speed, kwargs.get("target_speed", self.target_speed))
         current_speed = Vehicle.get_speed(self.agent.vehicle)
         
-        current_region = 0
+        current_region = self.agent.local_planner.current_region
         if current_region in self.regional_pid_config:
             pid_config = self.regional_pid_config[current_region]["longitudinal_controller"]
         else:
@@ -157,7 +157,7 @@ class LatPIDController(Controller):
             _de = 0.0
             _ie = 0.0
 
-        current_region = 0 # ROAR Academy
+        current_region = self.agent.local_planner.current_region # ROAR-Academy
         if current_region in self.regional_pid_config:
             pid_config = self.regional_pid_config[current_region]["latitudinal_controller"]
         else:
