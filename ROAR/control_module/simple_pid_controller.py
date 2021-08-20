@@ -38,8 +38,6 @@ class SimplePIDController(Controller):
         e_d = self.lat_kd * error_dt
         e_i = self.lat_ki * error_it
         lat_control = np.clip((e_p + e_d + e_i), -1, 1)
-        print(round(e_p, 3), round(e_d,3), round(e_i, 3), round(lat_control,3))
-
         return lat_control
 
     def long_pid_control(self) -> float:

@@ -8,7 +8,7 @@ import cv2
 class RGBPixelPlanner(AbstractPlanner):
     def __init__(self, agent, **kwargs):
         super().__init__(agent, **kwargs)
-        self.visualize = True
+        self.visualize = False
 
     def run_in_series(self, **kwargs):
         if "lane_mask" in kwargs:
