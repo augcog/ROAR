@@ -25,13 +25,13 @@ def compute_score(carla_runner: CarlaRunner) -> Tuple[float, int, int]:
     """
     time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
     num_collision: int = carla_runner.agent_collision_counter
-    laps_completed = min(0, carla_runner.completed_lap_count)
+    laps_completed = 0 if carla_runner.completed_lap_count < 0 else carla_runner.completed_lap_count
 
     return time_elapsed, num_collision, laps_completed
 
 
 def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
-        num_laps: int = 10) -> Tuple[float, int, bool]:
+        num_laps: int = 10) -> Tuple[float, int, int]:
     """
     Run the agent along the track and produce a score based on certain metrics
     Args:
@@ -77,7 +77,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 10
+    num_trials = 2
     total_score = 0
     num_laps = 2
     table = PrettyTable()
