@@ -29,16 +29,11 @@ class ControlStreamer(Module):
 
     def send(self, vehicle_control: VehicleControl):
         try:
-            param = {
-                "throttle": vehicle_control.throttle,
-                "steering": vehicle_control.steering
-            }
-
-            respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param, timeout=1)
-        except requests.exceptions.Timeout:
-            self.logger.error("Send Timed out")
-        except requests.exceptions.ConnectionError:
-            self.logger.error("Unable to connect")
+            self.ws_tx = create_connection(f"ws://{self.host}:{self.port}/{self.name}_rx", timeout=0.1)
+            self.ws_tx.send(f"{vehicle_control.throttle},{vehicle_control.steering}")
+            # respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param, timeout=1)
+        except Exception as e:
+            self.logger.error(e)
         # self.logger.info(f"{param}, {respond.status_code}")
 
     def receive(self):

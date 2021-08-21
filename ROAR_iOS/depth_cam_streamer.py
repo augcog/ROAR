@@ -47,11 +47,9 @@ class DepthCamStreamer(Module):
                 img: np.ndarray = np.frombuffer(result, dtype=np.float32)
                 self.curr_image = np.rot90(img.reshape((192, 256)), k=-1)
             except Exception as e:
-                pass
-                # self.logger.error(f"Failed to decode image: {e}")
+                self.logger.error(f"Failed to decode image: {e}")
         except Exception as e:
-            # self.logger.error(f"Failed to get image: {e}")
-            pass
+            self.logger.error(f"Failed to get image: {e}")
 
     def run_in_series(self, **kwargs):
         self.receive()

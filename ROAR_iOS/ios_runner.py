@@ -64,24 +64,24 @@ class iOSRunner:
         s = (self.pygame_display_height, self.pygame_display_width)
         self.green_overlay_pts = [
             np.array([[0, s[0]],  # lower left
-                      [30 * s[1] // 100, 70 * s[0] // 100],  # upper left
-                      [70 * s[1] // 100, 70 * s[0] // 100],  # upper right
+                      [30 * s[1] // 100, 60 * s[0] // 100],  # upper left
+                      [70 * s[1] // 100, 60 * s[0] // 100],  # upper right
                       [s[1], s[0]]  # lower right
                       ],
                      np.int32).reshape((-1, 1, 2))
         ]
         self.yellow_overlay_pts = [
             np.array([[0, s[0]],
-                      [20 * s[1] // 100, 80 * s[0] // 100],  # upper left
-                      [80 * s[1] // 100, 80 * s[0] // 100],  # upper right
+                      [20 * s[1] // 100, 74 * s[0] // 100],  # upper left
+                      [80 * s[1] // 100, 74 * s[0] // 100],  # upper right
                       [s[1], s[0]]
                       ],
                      np.int32).reshape((-1, 1, 2))
         ]
         self.red_overlay_pts = [
             np.array([[0, s[0]],  # lower left
-                      [10 * s[1] // 100, 90 * s[0] // 100],  # upper left
-                      [90 * s[1] // 100, 90 * s[0] // 100],  # upper right
+                      [10 * s[1] // 100, 88 * s[0] // 100],  # upper left
+                      [90 * s[1] // 100, 88 * s[0] // 100],  # upper right
                       [s[1], s[0]]  # lower right
                       ],
                      np.int32)

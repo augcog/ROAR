@@ -46,11 +46,9 @@ class RGBCamStreamer(Module):
                 self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
                 # intrinsics = np.frombuffer(img, dtype=np.float64)
             except Exception as e:
-                pass
-                # self.logger.error(f"Failed to decode image: {e}")
+                self.logger.error(f"Failed to decode image: {e}")
         except Exception as e:
-            pass
-            # self.logger.error(f"Failed to get image: {e}")
+            self.logger.error(f"Failed to get image: {e}")
             self.curr_image = None
 
     def run_in_series(self, **kwargs):
