@@ -10,6 +10,7 @@ class Module(ABC):
         self.update_interval = update_interval
         self.should_continue_threaded = True
         self.should_save = should_save
+        self.name = name
         self.saving_dir_path: Path = Path(f"data/output/{name}")
         if should_save and self.saving_dir_path.exists() is False:
             self.saving_dir_path.mkdir(exist_ok=True, parents=True)

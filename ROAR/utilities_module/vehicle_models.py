@@ -30,6 +30,14 @@ class VehicleControl(BaseModel):
     def to_array(self) -> np.ndarray:
         return np.array([self.throttle, self.steering])
 
+    def record(self):
+        return f"{self.throttle},{self.steering}"
+
+    @staticmethod
+    def fromBytes(data: bytes):
+        data = data.decode('utf-8').split(',')
+        return VehicleControl(throttle=float(data[0]), steering=float(data[1]))
+
 
 class Vehicle(BaseModel):
     """

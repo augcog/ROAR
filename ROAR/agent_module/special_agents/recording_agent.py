@@ -38,19 +38,20 @@ class RecordingAgent(Agent):
             mission_planner=self.mission_planner,
             behavior_planner=self.behavior_planner,
             closeness_threshold=1)
-        self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
-                                              world_coord_resolution=1,
-                                              occu_prob=0.99,
-                                              max_points_to_convert=5000,
-                                              threaded=True,
-                                              should_save=self.agent_settings.save_sensor_data)
-        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
-                                                              threaded=True,
-                                                              max_detectable_distance=0.3,
-                                                              max_points_to_convert=10000,
-                                                              min_obstacle_height=2)
-        self.add_threaded_module(self.obstacle_from_depth_detector)
-        self.add_threaded_module(self.occupancy_map)
+        # self.occupancy_map = OccupancyGridMap(absolute_maximum_map_size=1000,
+        #                                       world_coord_resolution=1,
+        #                                       occu_prob=0.99,
+        #                                       max_points_to_convert=5000,
+        #                                       threaded=True,
+        #                                       should_save=self.agent_settings.save_sensor_data,
+        #                                       agent=self)
+        # self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self,
+        #                                                       threaded=True,
+        #                                                       max_detectable_distance=0.3,
+        #                                                       max_points_to_convert=10000,
+        #                                                       min_obstacle_height=2)
+        # self.add_threaded_module(self.obstacle_from_depth_detector)
+        # self.add_threaded_module(self.occupancy_map)
         self.option = "obstacle_coords"
         self.lap_count = 0
 
@@ -58,9 +59,10 @@ class RecordingAgent(Agent):
                  vehicle: Vehicle) -> VehicleControl:
         super(RecordingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
         self.transform_history.append(self.vehicle.transform)
+
         control = self.local_planner.run_in_series()
-        if self.kwargs.get(self.option, None) is not None:
-            points = self.kwargs[self.option]
-            self.occupancy_map.update_async(points)
-            self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200))
+        # if self.kwargs.get(self.option, None) is not None:
+        #     points = self.kwargs[self.option]
+        #     self.occupancy_map.update_async(points)
+        #     self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200))
         return control

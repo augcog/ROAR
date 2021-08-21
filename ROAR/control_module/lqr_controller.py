@@ -97,11 +97,11 @@ class LQRController(Controller):
     # code stolen from the PID controller to calculate the angle
     def _calculate_angle_error(self, next_waypoint: Transform):
         # calculate a vector that represent where you are going
-        v_begin = self.agent.vehicle.transform.location
+        v_begin = self.agent.vehicle.control.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            x=math.cos(math.radians(self.agent.vehicle.control.rotation.pitch)),
             y=v_begin.y,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            z=math.sin(math.radians(self.agent.vehicle.control.rotation.pitch)),
         )
         # we ignore the vertical/altitude component, which is y, and only consider horizontal angle for
         # steering control

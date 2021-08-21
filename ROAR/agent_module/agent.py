@@ -18,6 +18,7 @@ from datetime import datetime
 import threading
 from ROAR.utilities_module.camera_models import Camera
 
+
 class Agent(ABC):
     """
     Abstract Agent class that define the minimum of a ROAR agent.
@@ -224,9 +225,9 @@ class Agent(ABC):
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
             transform_file = (Path(self.transform_output_folder_path) /
-                              f"frame_{now}.txt").open('w')
+                              f"{datetime.now().strftime('%m_%d_%Y_%H')}.txt").open('a')
             print(f"Recording -> {self.vehicle.transform.record()}")
-            transform_file.write(self.vehicle.transform.record())
+            transform_file.write(self.vehicle.transform.record() + "\n")
             transform_file.close()
         except Exception as e:
             self.logger.error(

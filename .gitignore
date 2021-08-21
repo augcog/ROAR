@@ -145,3 +145,4 @@ misc/*.h5
 misc/logs/*
 *.ipynb_checkpoints
 misc/depth_nvidia_model_logs
+credential.json

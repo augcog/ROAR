@@ -19,7 +19,7 @@ class Camera(BaseModel):
     )
     image_size_x: int = Field(default=800, title="Image size width")
     image_size_y: int = Field(default=600, title="Image size width")
-    distortion_coefficient: Optional[np.ndarray] = Field(default=np.array([0, 0, 0, 0, 0]),
+    distortion_coefficient: Optional[np.ndarray] = Field(default=None,
                                                          title="Distortion Coefficient from Intel Realsense")
     data: Optional[np.ndarray] = Field(default=None)
     intrinsics_matrix: Optional[np.ndarray] = Field(default=None)
@@ -59,7 +59,6 @@ class Camera(BaseModel):
         Args:
             title: title of cv2 image
             duration: in milisecond
-
         Returns:
             None
         """
