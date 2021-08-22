@@ -26,9 +26,9 @@ class LineFollowingAgent(Agent):
         if self.show_depth and self.front_depth_camera.data is not None:
             depth_data = -1*np.log(self.front_depth_camera.data)
             depth_data = depth_data / np.max(depth_data)
-            print(self.front_depth_camera.intrinsics_matrix)
             cv2.imshow("Log of Depth", depth_data)
             cv2.waitKey(1)
+        print(self.vehicle.transform)
 
         if mask is not None:
             self.kwargs["lat_error"] = self.rgb_pixel_planner.run_in_series(lane_mask=mask)
