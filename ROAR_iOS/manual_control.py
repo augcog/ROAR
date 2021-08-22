@@ -13,8 +13,10 @@ class ManualControl:
         self.max_throttle = max_throttle
         self.max_steering = max_steering
 
+        self.steering_offset = 0
+
         self.gear_throttle_step = 0.1
-        self.gear_steering_step = 0.1
+        self.gear_steering_step = 0.05
 
         self.left_trigger = 0
         self.right_trigger = 0
@@ -55,9 +57,9 @@ class ManualControl:
                     self.max_throttle = np.clip(self.max_throttle - self.gear_throttle_step, 0, 1)
 
                 if hori > 0:
-                    self.max_steering = np.clip(self.max_steering + self.gear_steering_step, -1, 1)
+                    self.steering_offset = np.clip(self.steering_offset + self.gear_steering_step, -1, 1)
                 elif hori < 0:
-                    self.max_steering = np.clip(self.max_steering - self.gear_steering_step, -1, 1)
+                    self.steering_offset = np.clip(self.steering_offset - self.gear_steering_step, -1, 1)
 
         if self.use_joystick:
             self._parse_joystick()

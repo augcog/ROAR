@@ -4,7 +4,7 @@
   "pygame_display_width": 1080,
   "pygame_display_height": 810,
   "max_throttle": 0.3,
-  "max_steering": 0.8,
+  "max_steering": 1,
   "ar_mode": true
 
 }
