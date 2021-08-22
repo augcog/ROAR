@@ -30,6 +30,7 @@ class DepthCamStreamer(Module):
         self.show = show
 
         self.curr_image: Optional[np.ndarray] = None
+        self.intrinsics: Optional[np.ndarray] = None
         self.should_record = should_record
         self.dir_path = dir_path / f"{self.name}"
         if self.dir_path.exists() is False:
@@ -39,12 +40,20 @@ class DepthCamStreamer(Module):
     def receive(self):
         try:
             self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
-            result = self.ws.recv()
+            im = self.ws.recv()
+            intrinsics_str: str = self.ws.recv()
+
             try:
+                intrinsics_arr = [float(i) for i in intrinsics_str.split(",")]
+                self.intrinsics = np.array([
+                    [intrinsics_arr[0], 0, intrinsics_arr[2]],
+                    [0, intrinsics_arr[1], intrinsics_arr[3]],
+                    [0, 0, 1]
+                ])
                 """
                 width=256 height=192 bytesPerRow=1024 pixelFormat=fdep
                 """
-                img: np.ndarray = np.frombuffer(result, dtype=np.float32)
+                img: np.ndarray = np.frombuffer(im, dtype=np.float32)
                 self.curr_image = np.rot90(img.reshape((192, 256)), k=-1)
             except Exception as e:
                 self.logger.error(f"Failed to decode image: {e}")

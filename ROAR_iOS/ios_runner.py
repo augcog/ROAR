@@ -108,7 +108,7 @@ class iOSRunner:
         if self.ios_config.ar_mode:
             self.agent.add_threaded_module(self.face_cam_streamer)
         else:
-            # self.agent.add_threaded_module(self.depth_cam_streamer)
+            self.agent.add_threaded_module(self.depth_cam_streamer)
             self.agent.add_threaded_module(self.transform_streamer)
 
         try:
@@ -132,9 +132,9 @@ class iOSRunner:
                                            self.ios_config.max_throttle)
                 control.steering = np.clip(control.steering + self.ios_config.steering_offset, -self.ios_config.max_steering,
                                            self.ios_config.max_steering)
-                self.logger.info(f"Current Control: {control}. "
-                                 f"max_throttle: {round(self.controller.max_throttle,3)}, "
-                                 f"steering_offset: {round(self.controller.steering_offset,3)}")
+                # self.logger.info(f"Current Control: {control}. "
+                #                  f"max_throttle: {round(self.controller.max_throttle,3)}, "
+                #                  f"steering_offset: {round(self.controller.steering_offset,3)}")
                 self.control_streamer.send(control)
 
         except Exception as e:
@@ -172,6 +172,9 @@ class iOSRunner:
             vehicle.velocity.y = (self.agent.vehicle.transform.location.y - vehicle.transform.location.y) / diff
             vehicle.velocity.z = (self.agent.vehicle.transform.location.z - vehicle.transform.location.z) / diff
             self.last_control_time = current_time
+
+            if self.ios_config.ar_mode is False:
+                self.agent.front_depth_camera.intrinsics_matrix = self.depth_cam_streamer.intrinsics
             return sensor_data, vehicle
         except Exception as e:
             self.logger.error(f"Cannot convert data: {e}")
