@@ -3,7 +3,7 @@
   "ios_port": 8005,
   "pygame_display_width": 1080,
   "pygame_display_height": 810,
-  "max_throttle": 1,
+  "max_throttle": 0.3,
   "max_steering": 0.8,
   "ar_mode": true
 

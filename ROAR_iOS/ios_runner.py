@@ -125,11 +125,13 @@ class iOSRunner:
                 if auto_pilot:
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
 
+                self.ios_config.max_throttle = self.controller.max_throttle  # since we can change max throttle on the xbox
+                self.ios_config.max_steering = self.controller.max_steering
                 control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle,
                                            self.ios_config.max_throttle)
                 control.steering = np.clip(control.steering, -self.ios_config.max_steering,
                                            self.ios_config.max_steering)
-                # self.logger.info(f"Current Control: {control}")
+                self.logger.info(f"Current Control: {control}. {self.controller.max_steering}")
                 self.control_streamer.send(control)
 
         except Exception as e:

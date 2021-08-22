@@ -13,6 +13,9 @@ class ManualControl:
         self.max_throttle = max_throttle
         self.max_steering = max_steering
 
+        self.gear_throttle_step = 0.1
+        self.gear_steering_step = 0.1
+
         self.left_trigger = 0
         self.right_trigger = 0
         self.use_joystick = False
@@ -44,6 +47,17 @@ class ManualControl:
         for event in events:
             if event.type == pygame.QUIT or key_pressed[K_q] or key_pressed[K_ESCAPE]:
                 return False, VehicleControl()
+            if event.type == pygame.JOYHATMOTION:
+                hori, vert = self.joystick.get_hat(0)
+                if vert > 0:
+                    self.max_throttle = np.clip(self.max_throttle + self.gear_throttle_step, 0, 1)
+                elif vert < 0:
+                    self.max_throttle = np.clip(self.max_throttle - self.gear_throttle_step, 0, 1)
+
+                if hori > 0:
+                    self.max_steering = np.clip(self.max_steering + self.gear_steering_step, -1, 1)
+                elif hori < 0:
+                    self.max_steering = np.clip(self.max_steering - self.gear_steering_step, -1, 1)
 
         if self.use_joystick:
             self._parse_joystick()
@@ -56,13 +70,22 @@ class ManualControl:
         # code to test which axis is your controller using
         # vals = [self.joystick.get_axis(i) for i in range(self.joystick.get_numaxes())]
         # print(vals)
-        steering = self.joystick.get_axis(2)
-        throttle = -self.joystick.get_axis(1)
+        left_trigger_val: float = self.joystick.get_axis(5)
+        right_trigger_val: float = self.joystick.get_axis(4)
+        left_joystick_vertical_val = self.joystick.get_axis(1)
+        left_joystick_horizontal_val = self.joystick.get_axis(0)
+        right_joystick_vertical_val = self.joystick.get_axis(3)
+        right_joystick_horizontal_val = self.joystick.get_axis(2)
 
-        self.steering = int(steering * 10) / 10
-        self.throttle = int(throttle * 10) / 10
-        # self.left_trigger = self.joystick.get_axis(4)
-        # self.right_trigger = self.joystick.get_axis(5)
+        # post processing on raw values
+        left_trigger_val = (1 + left_trigger_val) / 2
+        right_trigger_val = (1 + right_trigger_val) / 2
+        throttle = left_trigger_val + (-1 * right_trigger_val)
+        steering = right_joystick_horizontal_val
+        left_joystick_vertical_val = -1 * left_joystick_vertical_val
+
+        self.throttle = throttle
+        self.steering = steering
 
     def _parse_vehicle_keys(self, keys):
         """
