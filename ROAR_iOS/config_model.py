@@ -18,3 +18,5 @@ class iOSConfig(BaseModel):
 
     pygame_display_width: int = Field(1080)
     pygame_display_height: int = Field(810)
+
+    should_display_system_status: bool = True

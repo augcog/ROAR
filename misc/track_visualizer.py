@@ -138,8 +138,8 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
 
 
 if __name__ == "__main__":
-    file_name = Path("../data/output/transform/08_08_2021_23_3.txt")
+    # file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_8_22_02.txt")
     # track_data: List[List[float]] = read_txt(file_name)
     # visualize_track_data(track_data=track_data, file_name=file_name)
     # visualize_tracks(regex="trajectory_log*")
-    # visualize_tracks_together(data_dir=Path("../data/output/transform"), regex="08*.txt")
+    visualize_tracks_together(data_dir=Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/"), regex="transforms_8_22_*.txt")

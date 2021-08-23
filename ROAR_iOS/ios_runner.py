@@ -28,7 +28,7 @@ class iOSRunner:
         self.pygame_display_height = self.ios_config.pygame_display_height
         self.logger = logging.getLogger("iOS Runner")
         self.display: Optional[pygame.display] = None
-
+        self.should_display_system_status = self.ios_config.should_display_system_status
         self.controller = ManualControl(max_throttle=self.ios_config.max_throttle,
                                         max_steering=self.ios_config.max_steering)
 
@@ -88,6 +88,14 @@ class iOSRunner:
         ]
 
         self.last_control_time = time.time()
+
+        # smoothen control
+        # TODO optimize this smoothening
+        self.should_smoothen_control = True
+        self.prev_control = VehicleControl()
+        self.steering_smoothen_factor = 15
+        self.throttle_smoothen_factor = 100
+
         self.logger.info("iOS Runner Initialized")
 
     def setup_pygame(self):
@@ -130,17 +138,30 @@ class iOSRunner:
                 self.ios_config.steering_offset = self.controller.steering_offset
                 control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle,
                                            self.ios_config.max_throttle)
-                control.steering = np.clip(control.steering + self.ios_config.steering_offset, -self.ios_config.max_steering,
+                control.steering = np.clip(control.steering + self.ios_config.steering_offset,
+                                           -self.ios_config.max_steering,
                                            self.ios_config.max_steering)
-                # self.logger.info(f"Current Control: {control}. "
-                #                  f"max_throttle: {round(self.controller.max_throttle,3)}, "
-                #                  f"steering_offset: {round(self.controller.steering_offset,3)}")
+                if self.should_smoothen_control:
+                    self.smoothen_control(control)
                 self.control_streamer.send(control)
 
         except Exception as e:
             self.logger.error(f"Something bad happend {e}")
         finally:
             self.on_finish()
+
+    def smoothen_control(self, control: VehicleControl):
+        if abs(control.throttle) > abs(self.prev_control.throttle) and self.prev_control.throttle > 0.15:
+            # ensure slower increase, faster decrease. 0.15 barely drives the car
+            control.throttle = (self.prev_control.throttle * self.throttle_smoothen_factor + control.throttle) / \
+                               (self.throttle_smoothen_factor + 1)
+        if abs(control.steering) > abs(self.prev_control.steering):
+
+            control.steering = (self.prev_control.steering * self.steering_smoothen_factor + control.steering) / \
+                               (self.steering_smoothen_factor + 1)
+
+        self.prev_control = control
+        return control
 
     def convert_data(self):
         try:
@@ -220,11 +241,28 @@ class iOSRunner:
             y_offset = self.front_cam_offsets[1]
             frame[y_offset:y_offset + overlay_frame.shape[0],
             x_offset:x_offset + overlay_frame.shape[1]] = overlay_frame
+        if self.should_display_system_status:
+            self.display_system_status(frame)
         return frame
 
     def impose_reference_line(self, frame: np.ndarray):
         frame = cv2.polylines(frame, self.green_overlay_pts, isClosed=True, color=(0, 255, 0), thickness=2)
         frame = cv2.polylines(frame, self.yellow_overlay_pts, isClosed=True, color=(0, 255, 255), thickness=2)
         frame = cv2.polylines(frame, self.red_overlay_pts, isClosed=True, color=(0, 0, 255), thickness=2)
+
+        return frame
+
+    def display_system_status(self, frame: np.ndarray):
+        if frame is not None:
+            frame = cv2.putText(img=frame, text=f"{self.agent.vehicle.transform}", org=(20, frame.shape[0] - 20),
+                                fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6,
+                                color=(0, 255, 0), thickness=1, lineType=cv2.LINE_AA)
+            frame = cv2.putText(img=frame,
+                                text=f"{self.control_streamer.control_tx} | "
+                                     f"max_throttle = {round(self.ios_config.max_throttle,3)} | "
+                                     f"max_steering = {round(self.ios_config.max_steering,3)}",
+                                org=(20, frame.shape[0] - 40), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6,
+                                color=(0, 255, 0),  # BGR
+                                thickness=1, lineType=cv2.LINE_AA)
 
         return frame

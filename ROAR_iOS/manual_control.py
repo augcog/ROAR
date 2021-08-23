@@ -3,6 +3,7 @@ import logging
 import pygame
 from ROAR.utilities_module.vehicle_models import VehicleControl
 import numpy as np
+from typing import Tuple
 
 
 class ManualControl:
@@ -15,7 +16,7 @@ class ManualControl:
 
         self.steering_offset = 0
 
-        self.gear_throttle_step = 0.1
+        self.gear_throttle_step = 0.05
         self.gear_steering_step = 0.05
 
         self.left_trigger = 0
@@ -62,13 +63,15 @@ class ManualControl:
                     self.steering_offset = np.clip(self.steering_offset - self.gear_steering_step, -1, 1)
 
         if self.use_joystick:
-            self._parse_joystick()
+            self.throttle, self.steering = self._parse_joystick()
         else:
-            self._parse_vehicle_keys(key_pressed)
+            self.throttle, self.steering = self._parse_vehicle_keys(key_pressed)
+
+
         return True, VehicleControl(throttle=np.clip(self.throttle, -self.max_throttle, self.max_throttle),
                                     steering=np.clip(self.steering, -self.max_steering, self.max_steering))
 
-    def _parse_joystick(self):
+    def _parse_joystick(self) -> Tuple[float, float]:
         # code to test which axis is your controller using
         # vals = [self.joystick.get_axis(i) for i in range(self.joystick.get_numaxes())]
         # print(vals)
@@ -86,10 +89,9 @@ class ManualControl:
         steering = right_joystick_horizontal_val
         left_joystick_vertical_val = -1 * left_joystick_vertical_val
 
-        self.throttle = throttle
-        self.steering = steering
+        return throttle, steering
 
-    def _parse_vehicle_keys(self, keys):
+    def _parse_vehicle_keys(self, keys) -> Tuple[float, float]:
         """
         Parse a single key press and set the throttle & steering
         Args:
@@ -113,4 +115,4 @@ class ManualControl:
         else:
             self.steering = 0
 
-        self.throttle, self.steering = round(self.throttle, 5), round(self.steering, 5)
+        return round(self.throttle, 5), round(self.steering, 5)

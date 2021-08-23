@@ -11,13 +11,10 @@ import datetime
 
 class RGBCamStreamer(Module):
     def save(self, **kwargs):
-        if self.curr_image is not None:
-            cv2.imwrite((self.dir_path / f"{self.name}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.jpg").as_posix(),
-                        self.curr_image)
+        pass
 
-    def __init__(self, host, port, show=False, resize: Optional[Tuple] = None,
+    def __init__(self, host, port, resize: Optional[Tuple] = None,
                  name: str = "world_cam", threaded: bool = True,
-                 should_record: bool = False, dir_path: Path = Path("./data/images"),
                  update_interval: float = 0.5):
         super().__init__(threaded=threaded, name=name, update_interval=update_interval)
 
@@ -27,13 +24,8 @@ class RGBCamStreamer(Module):
         self.ws = None
 
         self.resize = resize
-        self.show = show
 
         self.curr_image: Optional[np.ndarray] = None
-        self.should_record = should_record
-        self.dir_path = dir_path / f"{self.name}"
-        if self.dir_path.exists() is False:
-            self.dir_path.mkdir(parents=True, exist_ok=True)
         self.logger.info(f"{name} initialized")
 
     def receive(self):
@@ -56,5 +48,5 @@ class RGBCamStreamer(Module):
 
 
 if __name__ == '__main__':
-    ir_image_server = RGBCamStreamer(host="10.142.143.48", port=8005, name="world_cam", show=True)
+    ir_image_server = RGBCamStreamer(host="10.142.143.48", port=8005, name="world_cam")
     ir_image_server.run_in_series()

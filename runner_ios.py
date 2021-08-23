@@ -3,6 +3,8 @@ from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
 from ROAR.agent_module.line_following_agent import LineFollowingAgent
+from ROAR.agent_module.michael_pid_agent import PIDAgent
+from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.special_agents.real_time_plotter_agent import RealtimePlotterAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
@@ -41,10 +43,10 @@ if __name__ == '__main__':
 
     try:
         agent_config = AgentConfig.parse_file(
-            Path("ROAR_iOS/agent_config.json")
+            Path("ROAR_iOS/configurations/agent_config.json")
         )
         ios_config = iOSConfig.parse_file(
-            Path("ROAR_iOS/ios_config.json")
+            Path("ROAR_iOS/configurations/ios_config.json")
         )
         ios_config.ar_mode = True if args.mode == "ar" else False
 
