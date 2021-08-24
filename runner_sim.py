@@ -52,79 +52,86 @@ def main():
                                                     "120": 20,
                                                     "180": 50})
     global_pid_values = {
-                    "longitudinal_controller": {
-                        "40": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                        },
-                        "60": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                        },
-                        "150": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                            }
-                    },
-                    "latitudinal_controller": {
-                        "60": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                        },
-                        "100": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                        },
-                        "150": {
-                            "Kp": 0.3,
-                            "Kd": 0.3,
-                            "Ki": 0.3
-                            }
-                    }
+        "longitudinal_controller": {
+            "40": {
+                "Kp": 0.8,
+                "Kd": 0.4,
+                "Ki": 0
+            },
+            "60": {
+                "Kp": 0.5,
+                "Kd": 0.3,
+                "Ki": 0
+            },
+            "90": {
+                "Kp": 0.3,
+                "Kd": 0.3,
+                "Ki": 0
+            },
+            "150": {
+                "Kp": 0.2,
+                "Kd": 0.2,
+                "Ki": 0.1
                 }
+        },
+        "latitudinal_controller": {
+            "60": {
+                "Kp": 0.8,
+                "Kd": 0.1,
+                "Ki": 0.1
+            },
+            "100": {
+                "Kp": 0.6,
+                "Kd": 0.2,
+                "Ki": 0.1
+            },
+            "150": {
+                "Kp": 0.5,
+                "Kd": 0.2,
+                "Ki": 0.1
+                }
+        }
+        }
     pitstop.set_global_pid_values(global_pid_values)
-    regional_pid_values_1 = {
-                    "longitudinal_controller": {
-                        "40": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                        },
-                        "60": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                        },
-                        "150": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                            }
-                    },
-                    "latitudinal_controller": {
-                        "60": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                        },
-                        "100": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                        },
-                        "150": {
-                            "Kp": 0.7,
-                            "Kd": 0.7,
-                            "Ki": 0.7
-                            }
-                    }
-                }
-    pitstop.set_regional_pid_values(waypoints_idx_range=range(0,2), values=regional_pid_values_1)
+    # regional_pid_values_1 = {
+    #                 "longitudinal_controller": {
+    #                     "40": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                     },
+    #                     "60": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                     },
+    #                     "150": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                         }
+    #                 },
+    #                 "latitudinal_controller": {
+    #                     "60": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                     },
+    #                     "100": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                     },
+    #                     "150": {
+    #                         "Kp": 0.7,
+    #                         "Kd": 0.7,
+    #                         "Ki": 0.7
+    #                         }
+    #                 }
+    #             }
+    # pitstop.set_regional_pid_values(waypoints_idx_range=range(0,2), values=regional_pid_values_1)
+
+    
     # regional_pid_values_2 = {
     #                 "longitudinal_controller": {
     #                     "40": {

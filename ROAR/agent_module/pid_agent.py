@@ -11,7 +11,7 @@ import logging
 
 
 class PIDAgent(Agent):
-    def __init__(self, target_speed=40, **kwargs):
+    def __init__(self, target_speed=120, **kwargs):
         super().__init__(**kwargs)
         if self.agent_settings.target_speed:
             self.target_speed = self.agent_settings.target_speed # ROAR Academy
