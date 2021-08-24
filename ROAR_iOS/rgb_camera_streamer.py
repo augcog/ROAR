@@ -22,7 +22,7 @@ class RGBCamStreamer(Module):
         self.host = host
         self.port = port
         self.ws = None
-
+        self.intrinsics: Optional[np.ndarray] = None
         self.resize = resize
 
         self.curr_image: Optional[np.ndarray] = None
@@ -32,11 +32,16 @@ class RGBCamStreamer(Module):
         try:
             self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
             img = self.ws.recv()
-            # intrinsics = self.ws.recv()
+            intrinsics_str = self.ws.recv()
             try:
                 img = np.frombuffer(img, dtype=np.uint8)
                 self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
-                # intrinsics = np.frombuffer(img, dtype=np.float64)
+                intrinsics_arr = [float(i) for i in intrinsics_str.split(",")]
+                self.intrinsics = np.array([
+                    [intrinsics_arr[0], 0, intrinsics_arr[2]],
+                    [0, intrinsics_arr[1], intrinsics_arr[3]],
+                    [0, 0, 1]
+                ])
             except Exception as e:
                 self.logger.error(f"Failed to decode image: {e}")
         except Exception as e:

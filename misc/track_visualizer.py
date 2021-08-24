@@ -31,7 +31,7 @@ def read_txt(file_path: Path) -> List[List[float]]:
     return result
 
 
-def visualize_track_data(track_data: List[List[float]], file_name:Optional[Path]):
+def visualize_track_data(track_data: List[List[float]], file_name: Optional[Path]):
     print(f"Visualizing [{len(track_data)}] data points")
 
     track_data = np.asarray(track_data)
@@ -40,7 +40,7 @@ def visualize_track_data(track_data: List[List[float]], file_name:Optional[Path]
     Ys = track_data[:, 1]
     Zs = track_data[:, 2]
 
-    fig = make_subplots(rows=3, cols=2, subplot_titles=["Xs","X vs Y", "Ys", "Y vs Z", "Zs", "X vs Z"])
+    fig = make_subplots(rows=3, cols=2, subplot_titles=["Xs", "X vs Y", "Ys", "X vs Z", "Zs", "Y vs Z"])
     fig.update_layout(
         title=f"Data file path: {file_name.as_posix()}"
     )
@@ -137,9 +137,27 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
     plt.show()
 
 
+def swapCols(data: List[List[float]]) -> List[List[float]]:
+    data = np.array(data)
+    ys = data[:, 1]
+    zs = data[:, 2]
+    result = np.array([data[:, 0], zs, ys]).T
+    return result.tolist()
+
+
+def save(data: List[List[float]]):
+    output_file = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_8_22_01_revised.txt").open("w+")
+    for l in data:
+        output_file.write(f"{l[0]},{l[1]},{l[2]}\n")
+
+
 if __name__ == "__main__":
-    # file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_8_22_02.txt")
-    # track_data: List[List[float]] = read_txt(file_name)
-    # visualize_track_data(track_data=track_data, file_name=file_name)
+    file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_8_22_01_revised.txt")
+    track_data: List[List[float]] = read_txt(file_name)
+    # track_data = swapCols(track_data)
+    # save(track_data)
+
+    visualize_track_data(track_data=track_data, file_name=file_name)
     # visualize_tracks(regex="trajectory_log*")
-    visualize_tracks_together(data_dir=Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/"), regex="transforms_8_22_*.txt")
+    # visualize_tracks_together(data_dir=Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/"),
+    #                           regex="transforms*.txt")

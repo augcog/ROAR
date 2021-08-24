@@ -201,31 +201,31 @@ class Agent(ABC):
         now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f')
         # print(f"Saving sensor data -> {now}")
 
-        try:
-            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
-                cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                             f"frame_{now}.png").as_posix(),
-                            self.front_rgb_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-
-        try:
-            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
-                np.save((self.front_depth_camera_output_folder_path /
-                         f"frame_{now}").as_posix(),
-                        self.front_depth_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-        try:
-            if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
-                cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                             f"frame_{now}.png").as_posix(),
-                            self.rear_rgb_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        # try:
+        #     if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+        #         cv2.imwrite((self.front_rgb_camera_output_folder_path /
+        #                      f"frame_{now}.png").as_posix(),
+        #                     self.front_rgb_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        #
+        # try:
+        #     if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+        #         np.save((self.front_depth_camera_output_folder_path /
+        #                  f"frame_{now}").as_posix(),
+        #                 self.front_depth_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        # try:
+        #     if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
+        #         cv2.imwrite((self.rear_rgb_camera_output_folder_path /
+        #                      f"frame_{now}.png").as_posix(),
+        #                     self.rear_rgb_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
             print(f"Recording -> {self.vehicle.transform.record()}")
             self.transform_file.write(self.vehicle.transform.record() + "\n")

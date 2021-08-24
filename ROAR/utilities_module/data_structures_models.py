@@ -26,8 +26,8 @@ class Location(BaseModel):
     def distance(self, other_location):
         """Euclidean distance between current location and other location"""
         return distance.euclidean(
-            (self.x, self.y, self.z),
-            (other_location.x, other_location.y, other_location.z),
+            (self.x, self.z),
+            (other_location.x, other_location.z),
         )
 
     def __add__(self, other):

@@ -10,18 +10,23 @@ import cv2
 
 class iOSBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
-        return source
+        return Location(
+            x=source.x,
+            y=source.z,
+            z=source.y
+        )
 
     def convert_rotation_from_source_to_agent(self, source: Rotation) -> Rotation:
         r = Rotation(
             roll=np.rad2deg(source.pitch),
             pitch=np.rad2deg(source.yaw),
-            yaw=np.rad2deg(source.roll)
+            yaw=-np.rad2deg(source.roll)
         )
         return r
 
     def convert_transform_from_source_to_agent(self, source: Transform) -> Transform:
-        return Transform(location=source.location, rotation=self.convert_rotation_from_source_to_agent(source.rotation))
+        return Transform(location=self.convert_location_from_source_to_agent(source.location),
+                         rotation=self.convert_rotation_from_source_to_agent(source.rotation))
 
     def convert_control_from_source_to_agent(self, source: VehicleControl) -> VehicleControl:
         return source

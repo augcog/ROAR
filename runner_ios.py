@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--auto", type=str2bool, default=False, help="True to use auto control")
-    parser.add_argument("-m", "--mode", choices=choices, help="AR or VR", default="ar")
+    parser.add_argument("-m", "--mode", choices=choices, help="AR or VR", default="vr")
     args = parser.parse_args()
 
     try:
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         )
         ios_config.ar_mode = True if args.mode == "ar" else False
 
-        agent = LineFollowingAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
         ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
         ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:
