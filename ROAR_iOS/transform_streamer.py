@@ -12,8 +12,8 @@ class TransformStreamer(Module):
         pass
 
     def __init__(self, host: str, port: int, name: str = "transform",
-                 threaded: bool = True):
-        super().__init__(threaded=threaded, name=name)
+                 threaded: bool = True, update_interval: float = 0.01):
+        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
         self.logger = logging.getLogger(f"{self.name} server [{host}:{port}]")
         self.host = host
         self.port = port

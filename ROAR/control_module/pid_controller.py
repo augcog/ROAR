@@ -103,9 +103,6 @@ class LatPIDController(Controller):
         Returns:
             lat_control
         """
-        print(f"curr pos: {self.agent.vehicle.transform.location}")
-        print(f"next way: {next_waypoint.location}")
-        print(f"yaw:{self.agent.vehicle.transform.rotation.yaw}")
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
         direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
@@ -126,8 +123,6 @@ class LatPIDController(Controller):
         v_vec_normed = v_vec / np.linalg.norm(v_vec)
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
 
-        print(f"v_vec_normed: {v_vec_normed}")
-        print(f"w_vec_normed: {w_vec_normed}")
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
 
@@ -142,11 +137,9 @@ class LatPIDController(Controller):
             _ie = 0.0
 
         k_p, k_d, k_i = PIDController.find_k_values(config=self.config, vehicle=self.agent.vehicle)
-        print(f"error: {error}")
 
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
-        print(f"lat_control: {lat_control}")
-        print()
+
         return lat_control

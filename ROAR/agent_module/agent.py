@@ -233,29 +233,29 @@ class Agent(ABC):
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
-        try:
-            if self.vehicle is not None:
-                data = self.vehicle.to_array()
-                np.save((Path(self.vehicle_state_output_folder_path) /
-                         f"frame_{now}").as_posix(), data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-
-        try:
-            if self.local_planner is not None and self.local_planner.way_points_queue is not None and len(
-                    self.local_planner.way_points_queue) > 0:
-                next_waypoint: Transform = self.local_planner.way_points_queue[0]
-
-                np.save((Path(self.local_planner_next_waypoint_output_foler_path) / f"frame_{now}").as_posix(),
-                        next_waypoint.location.to_array())
-        except Exception as e:
-            self.logger.error(f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        # try:
+        #     if self.vehicle is not None:
+        #         data = self.vehicle.to_array()
+        #         np.save((Path(self.vehicle_state_output_folder_path) /
+        #                  f"frame_{now}").as_posix(), data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        #
+        # try:
+        #     if self.local_planner is not None and self.local_planner.way_points_queue is not None and len(
+        #             self.local_planner.way_points_queue) > 0:
+        #         next_waypoint: Transform = self.local_planner.way_points_queue[0]
+        #
+        #         np.save((Path(self.local_planner_next_waypoint_output_foler_path) / f"frame_{now}").as_posix(),
+        #                 next_waypoint.location.to_array())
+        # except Exception as e:
+        #     self.logger.error(f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
     def start_module_threads(self):
         for module in self.threaded_modules:
-            threading.Thread(target=module.run_in_threaded, daemon=True).start()
-            self.logger.debug(f"{module.__class__.__name__} thread started")
+            module.start()
+            self.logger.debug(f"Module: {module.name} -> started")
 
     def shutdown_module_threads(self):
         for module in self.threaded_modules:

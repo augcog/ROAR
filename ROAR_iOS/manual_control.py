@@ -19,6 +19,8 @@ class ManualControl:
         self.gear_throttle_step = 0.05
         self.gear_steering_step = 0.05
 
+        self.vertical_view_offset = 0
+
         self.left_trigger = 0
         self.right_trigger = 0
         self.use_joystick = False
@@ -67,7 +69,6 @@ class ManualControl:
         else:
             self.throttle, self.steering = self._parse_vehicle_keys(key_pressed)
 
-
         return True, VehicleControl(throttle=np.clip(self.throttle, -self.max_throttle, self.max_throttle),
                                     steering=np.clip(self.steering, -self.max_steering, self.max_steering))
 
@@ -88,6 +89,11 @@ class ManualControl:
         throttle = left_trigger_val + (-1 * right_trigger_val)
         steering = right_joystick_horizontal_val
         left_joystick_vertical_val = -1 * left_joystick_vertical_val
+
+        if left_joystick_vertical_val > 0.5:
+            self.vertical_view_offset = min(500, self.vertical_view_offset + 5)
+        elif left_joystick_vertical_val < -0.5:
+            self.vertical_view_offset = max(0, self.vertical_view_offset - 5)
 
         return throttle, steering
 

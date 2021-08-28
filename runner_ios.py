@@ -7,6 +7,7 @@ from ROAR.agent_module.michael_pid_agent import PIDAgent
 from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.special_agents.real_time_plotter_agent import RealtimePlotterAgent
+from ROAR.agent_module.ios_agent import iOSAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
 import argparse
@@ -50,7 +51,7 @@ if __name__ == '__main__':
         )
         ios_config.ar_mode = True if args.mode == "ar" else False
 
-        agent = PIDAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+        agent = iOSAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
         ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
         ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:

@@ -37,13 +37,15 @@ class iOSRunner:
                                                  port=self.ios_config.ios_port,
                                                  name=self.ios_config.world_cam_route_name,
                                                  resize=(self.pygame_display_height,
-                                                         self.pygame_display_width)
+                                                         self.pygame_display_width),
+                                                 update_interval=0.025
                                                  )
         self.face_cam_streamer = RGBCamStreamer(host=self.ios_config.ios_ip_addr,
                                                 port=self.ios_config.ios_port,
                                                 name=self.ios_config.face_cam_route_name,
                                                 resize=(self.pygame_display_height,
-                                                        self.pygame_display_width)
+                                                        self.pygame_display_width),
+                                                update_interval=0.025
                                                 )
         self.depth_cam_streamer = DepthCamStreamer(host=self.ios_config.ios_ip_addr,
                                                    port=self.ios_config.ios_port,
@@ -53,7 +55,8 @@ class iOSRunner:
                                                    )
         self.transform_streamer = TransformStreamer(host=self.ios_config.ios_ip_addr,
                                                     port=self.ios_config.ios_port,
-                                                    name=self.ios_config.transform_route_name)
+                                                    name=self.ios_config.transform_route_name,
+                                                    update_interval=0.01)
         self.control_streamer = ControlStreamer(host=self.ios_config.ios_ip_addr,
                                                 port=self.ios_config.ios_port,
                                                 name=self.ios_config.control_route_name)
@@ -93,7 +96,8 @@ class iOSRunner:
         # TODO optimize this smoothening
         self.should_smoothen_control = True
         self.prev_control = VehicleControl()
-        self.steering_smoothen_factor = 15
+        self.steering_smoothen_factor_forward = 100
+        self.steering_smoothen_factor_backward = 10
         self.throttle_smoothen_factor = 100
 
         self.logger.info("iOS Runner Initialized")
@@ -143,7 +147,7 @@ class iOSRunner:
                                            self.ios_config.max_steering)
                 if self.should_smoothen_control:
                     self.smoothen_control(control)
-                self.control_streamer.send(control)
+                # self.control_streamer.send(control)
 
         except Exception as e:
             self.logger.error(f"Something bad happend {e}")
@@ -155,10 +159,13 @@ class iOSRunner:
             # ensure slower increase, faster decrease. 0.15 barely drives the car
             control.throttle = (self.prev_control.throttle * self.throttle_smoothen_factor + control.throttle) / \
                                (self.throttle_smoothen_factor + 1)
-        if abs(control.steering) > abs(self.prev_control.steering):
-
-            control.steering = (self.prev_control.steering * self.steering_smoothen_factor + control.steering) / \
-                               (self.steering_smoothen_factor + 1)
+        if abs(control.steering) < abs(self.prev_control.steering):
+            # slowly turn back
+            control.steering = (self.prev_control.steering * self.steering_smoothen_factor_backward + control.steering) / \
+                               (self.steering_smoothen_factor_backward + 1)
+        elif abs(control.steering) < abs(self.prev_control.steering):
+            control.steering = (self.prev_control.steering * self.steering_smoothen_factor_forward + control.steering) / \
+                               (self.steering_smoothen_factor_backward + 1)
 
         self.prev_control = control
         return control
@@ -231,7 +238,12 @@ class iOSRunner:
         frame: Optional[np.ndarray] = None
         overlay_frame: Optional[np.ndarray] = None
         if world_cam_data is not None:
-            frame = cv2.resize(world_cam_data, dsize=(self.pygame_display_width, self.pygame_display_height))
+            s = world_cam_data.shape
+            height = 3*s[1]//4
+            min_y = s[0] - height - self.controller.vertical_view_offset
+            max_y = s[0] - self.controller.vertical_view_offset
+            display_view = world_cam_data[min_y:max_y , :]
+            frame = cv2.resize(display_view, dsize=(self.pygame_display_width, self.pygame_display_height))
 
         if face_cam_data is not None:
             overlay_frame = cv2.resize(face_cam_data,
