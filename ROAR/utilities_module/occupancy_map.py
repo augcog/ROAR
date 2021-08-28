@@ -45,6 +45,7 @@ class OccupancyGridMap(Module):
         config = OccupancyGridMapConfig.parse_file(self._agent.agent_settings.occu_map_config_path)
         self._map: Optional[np.ndarray] = None
         self._world_coord_resolution = config.world_coord_resolution
+        self.tmp = self._world_coord_resolution
         self._absolute_maximum_map_size = config.absolute_maximum_map_size
 
         self._min_x = -math.floor(self._absolute_maximum_map_size)
@@ -129,7 +130,7 @@ class OccupancyGridMap(Module):
                 min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
                                              np.min(occu_cords_y), np.max(occu_cords_y)
                 self._map[min_y:max_y, min_x:max_x] = 0  # free
-                self._map[occu_cords_y, occu_cords_x] += self._occu_prob
+                self._map[occu_cords_y, occu_cords_x] = 1#+= self._occu_prob
                 # self._map = self._map.clip(0, 1)
         except Exception as e:
             self.logger.error(f"Unable to update: {e}")
