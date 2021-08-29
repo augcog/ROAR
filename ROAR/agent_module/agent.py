@@ -55,6 +55,7 @@ class Agent(ABC):
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
         self.transform_output_folder_path = self.output_folder_path / "transform"
+
         self.vehicle_state_output_folder_path = self.output_folder_path / "vehicle_state"
         self.local_planner_next_waypoint_output_foler_path = self.output_folder_path / "next_waypoints"
 
@@ -69,7 +70,7 @@ class Agent(ABC):
 
         if should_init_default_cam:
             self.init_cam()
-
+        self.transform_file: Optional = None
         if self.should_save_sensor_data:
             self.front_depth_camera_output_folder_path.mkdir(parents=True,
                                                              exist_ok=True)
@@ -83,6 +84,8 @@ class Agent(ABC):
                                                         exist_ok=True)
             self.local_planner_next_waypoint_output_foler_path.mkdir(parents=True, exist_ok=True)
             self.write_meta_data()
+            self.transform_file = (Path(self.transform_output_folder_path) /
+                                   f"{datetime.now().strftime('%m_%d_%Y_%H')}.txt").open('w+')
         self.kwargs: Dict[str, Any] = kwargs  # additional info
 
     def write_meta_data(self):
@@ -198,65 +201,65 @@ class Agent(ABC):
         now = datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f')
         # print(f"Saving sensor data -> {now}")
 
+        # try:
+        #     if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+        #         cv2.imwrite((self.front_rgb_camera_output_folder_path /
+        #                      f"frame_{now}.png").as_posix(),
+        #                     self.front_rgb_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        #
+        # try:
+        #     if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
+        #         np.save((self.front_depth_camera_output_folder_path /
+        #                  f"frame_{now}").as_posix(),
+        #                 self.front_depth_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        # try:
+        #     if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
+        #         cv2.imwrite((self.rear_rgb_camera_output_folder_path /
+        #                      f"frame_{now}.png").as_posix(),
+        #                     self.rear_rgb_camera.data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
-            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
-                cv2.imwrite((self.front_rgb_camera_output_folder_path /
-                             f"frame_{now}.png").as_posix(),
-                            self.front_rgb_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-
-        try:
-            if self.front_rgb_camera is not None and self.front_rgb_camera.data is not None:
-                np.save((self.front_depth_camera_output_folder_path /
-                         f"frame_{now}").as_posix(),
-                        self.front_depth_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-        try:
-            if self.rear_rgb_camera is not None and self.rear_rgb_camera.data is not None:
-                cv2.imwrite((self.rear_rgb_camera_output_folder_path /
-                             f"frame_{now}.png").as_posix(),
-                            self.rear_rgb_camera.data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-        try:
-            transform_file = (Path(self.transform_output_folder_path) /
-                              f"{datetime.now().strftime('%m_%d_%Y_%H')}.txt").open('a')
             print(f"Recording -> {self.vehicle.transform.record()}")
-            transform_file.write(self.vehicle.transform.record() + "\n")
-            transform_file.close()
+            self.transform_file.write(self.vehicle.transform.record() + "\n")
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
-        try:
-            if self.vehicle is not None:
-                data = self.vehicle.to_array()
-                np.save((Path(self.vehicle_state_output_folder_path) /
-                         f"frame_{now}").as_posix(), data)
-        except Exception as e:
-            self.logger.error(
-                f"Failed to save at Frame {self.time_counter}. Error: {e}")
-
-        try:
-            if self.local_planner is not None and self.local_planner.way_points_queue is not None and len(
-                    self.local_planner.way_points_queue) > 0:
-                next_waypoint: Transform = self.local_planner.way_points_queue[0]
-
-                np.save((Path(self.local_planner_next_waypoint_output_foler_path) / f"frame_{now}").as_posix(),
-                        next_waypoint.location.to_array())
-        except Exception as e:
-            self.logger.error(f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        # try:
+        #     if self.vehicle is not None:
+        #         data = self.vehicle.to_array()
+        #         np.save((Path(self.vehicle_state_output_folder_path) /
+        #                  f"frame_{now}").as_posix(), data)
+        # except Exception as e:
+        #     self.logger.error(
+        #         f"Failed to save at Frame {self.time_counter}. Error: {e}")
+        #
+        # try:
+        #     if self.local_planner is not None and self.local_planner.way_points_queue is not None and len(
+        #             self.local_planner.way_points_queue) > 0:
+        #         next_waypoint: Transform = self.local_planner.way_points_queue[0]
+        #
+        #         np.save((Path(self.local_planner_next_waypoint_output_foler_path) / f"frame_{now}").as_posix(),
+        #                 next_waypoint.location.to_array())
+        # except Exception as e:
+        #     self.logger.error(f"Failed to save at Frame {self.time_counter}. Error: {e}")
 
     def start_module_threads(self):
         for module in self.threaded_modules:
-            threading.Thread(target=module.run_in_threaded, daemon=True).start()
-            self.logger.debug(f"{module.__class__.__name__} thread started")
+            module.start()
+            self.logger.debug(f"Module: {module.name} -> started")
 
     def shutdown_module_threads(self):
         for module in self.threaded_modules:
             module.shutdown()
+
+        if self.transform_file is not None and self.transform_file.closed is False and self.should_save_sensor_data:
+            self.transform_file.close()

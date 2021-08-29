@@ -100,7 +100,6 @@ class LatPIDController(Controller):
         Args:
             next_waypoint ():
             **kwargs ():
-
         Returns:
             lat_control
         """
@@ -123,6 +122,7 @@ class LatPIDController(Controller):
 
         v_vec_normed = v_vec / np.linalg.norm(v_vec)
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
+
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
 
@@ -141,4 +141,5 @@ class LatPIDController(Controller):
         lat_control = float(
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), self.steering_boundary[0], self.steering_boundary[1])
         )
+
         return lat_control

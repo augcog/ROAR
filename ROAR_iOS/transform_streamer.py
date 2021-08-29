@@ -8,21 +8,17 @@ from websocket import create_connection
 
 class TransformStreamer(Module):
     def save(self, **kwargs):
-        self.file.write(self.transform.record())
+        # no need to save. use Agent's saving mechanism
+        pass
 
     def __init__(self, host: str, port: int, name: str = "transform",
-                 threaded: bool = True,
-                 should_record: bool = True, file_path: Path = Path("./data/transforms.txt")):
-        super().__init__(threaded=threaded, name=name)
+                 threaded: bool = True, update_interval: float = 0.01):
+        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
         self.logger = logging.getLogger(f"{self.name} server [{host}:{port}]")
         self.host = host
         self.port = port
         self.transform: Transform = Transform()
         self.ws = None
-        self.should_record = should_record
-        self.file_path: Path = file_path
-        self.file = open(self.file_path.as_posix(), "a")
-        self.transform_history: List[str] = []
         self.logger.info(f"{name} initialized")
 
     def receive(self):
@@ -31,19 +27,14 @@ class TransformStreamer(Module):
             result: bytes = self.ws.recv()
             try:
                 self.transform = Transform.fromBytes(result)
-                if self.should_record:
-                    self.transform_history.append(self.transform)
             except Exception as e:
-                pass
-                # self.logger.error(f"Failed to parse data {e}. {result}")
+                self.logger.error(f"Failed to parse data {e}. {result}")
 
         except Exception as e:
-            pass
-            # self.logger.error(f"Failed to get data: {e}")
+            self.logger.error(f"Failed to get data: {e}")
 
     def run_in_series(self, **kwargs):
         self.receive()
 
     def shutdown(self):
         super(TransformStreamer, self).shutdown()
-        self.file.close()

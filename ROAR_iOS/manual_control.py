@@ -3,6 +3,7 @@ import logging
 import pygame
 from ROAR.utilities_module.vehicle_models import VehicleControl
 import numpy as np
+from typing import Tuple
 
 
 class ManualControl:
@@ -13,12 +14,20 @@ class ManualControl:
         self.max_throttle = max_throttle
         self.max_steering = max_steering
 
+        self.steering_offset = 0
+
+        self.gear_throttle_step = 0.05
+        self.gear_steering_step = 0.05
+
+        self.vertical_view_offset = 0
+
         self.left_trigger = 0
         self.right_trigger = 0
         self.use_joystick = False
         try:
             pygame.joystick.init()
             self.joystick = pygame.joystick.Joystick(0)
+            self.joystick.init()
             self.logger.info(f"Joystick [{self.joystick.get_name()}] detected, Using Joytick")
             self.use_joystick = True
         except Exception as e:
@@ -43,27 +52,52 @@ class ManualControl:
         for event in events:
             if event.type == pygame.QUIT or key_pressed[K_q] or key_pressed[K_ESCAPE]:
                 return False, VehicleControl()
+            if event.type == pygame.JOYHATMOTION:
+                hori, vert = self.joystick.get_hat(0)
+                if vert > 0:
+                    self.max_throttle = np.clip(self.max_throttle + self.gear_throttle_step, 0, 1)
+                elif vert < 0:
+                    self.max_throttle = np.clip(self.max_throttle - self.gear_throttle_step, 0, 1)
+
+                if hori > 0:
+                    self.steering_offset = np.clip(self.steering_offset + self.gear_steering_step, -1, 1)
+                elif hori < 0:
+                    self.steering_offset = np.clip(self.steering_offset - self.gear_steering_step, -1, 1)
 
         if self.use_joystick:
-            self._parse_joystick()
+            self.throttle, self.steering = self._parse_joystick()
         else:
-            self._parse_vehicle_keys(key_pressed)
+            self.throttle, self.steering = self._parse_vehicle_keys(key_pressed)
+
         return True, VehicleControl(throttle=np.clip(self.throttle, -self.max_throttle, self.max_throttle),
                                     steering=np.clip(self.steering, -self.max_steering, self.max_steering))
 
-    def _parse_joystick(self):
+    def _parse_joystick(self) -> Tuple[float, float]:
         # code to test which axis is your controller using
         # vals = [self.joystick.get_axis(i) for i in range(self.joystick.get_numaxes())]
         # print(vals)
-        steering = self.joystick.get_axis(2)
-        throttle = -self.joystick.get_axis(1)
+        left_trigger_val: float = self.joystick.get_axis(5)
+        right_trigger_val: float = self.joystick.get_axis(4)
+        left_joystick_vertical_val = self.joystick.get_axis(1)
+        left_joystick_horizontal_val = self.joystick.get_axis(0)
+        right_joystick_vertical_val = self.joystick.get_axis(3)
+        right_joystick_horizontal_val = self.joystick.get_axis(2)
 
-        self.steering = int(steering * 10) / 10
-        self.throttle = int(throttle * 10) / 10
-        self.left_trigger = self.joystick.get_axis(4)
-        self.right_trigger = self.joystick.get_axis(5)
+        # post processing on raw values
+        left_trigger_val = (1 + left_trigger_val) / 2
+        right_trigger_val = (1 + right_trigger_val) / 2
+        throttle = left_trigger_val + (-1 * right_trigger_val)
+        steering = right_joystick_horizontal_val
+        left_joystick_vertical_val = -1 * left_joystick_vertical_val
 
-    def _parse_vehicle_keys(self, keys):
+        if left_joystick_vertical_val > 0.5:
+            self.vertical_view_offset = min(500, self.vertical_view_offset + 5)
+        elif left_joystick_vertical_val < -0.5:
+            self.vertical_view_offset = max(0, self.vertical_view_offset - 5)
+
+        return throttle, steering
+
+    def _parse_vehicle_keys(self, keys) -> Tuple[float, float]:
         """
         Parse a single key press and set the throttle & steering
         Args:
@@ -87,4 +121,4 @@ class ManualControl:
         else:
             self.steering = 0
 
-        self.throttle, self.steering = round(self.throttle, 5), round(self.steering, 5)
+        return round(self.throttle, 5), round(self.steering, 5)

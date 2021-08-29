@@ -37,10 +37,12 @@ class OccupancyMapAgent(Agent):
             closeness_threshold=1.5
         )
 
-        self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
-        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self, threaded=True)
+        # self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
+        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self, threaded=True,
+                                                              name="Obstacle From Depth",
+                                                              update_interval=0.5)
         self.add_threaded_module(self.obstacle_from_depth_detector)
-        self.add_threaded_module(self.occupancy_map)
+        # self.add_threaded_module(self.occupancy_map)
         self.vis = o3d.visualization.Visualizer()
         self.vis.create_window(width=500, height=500)
         self.pcd = o3d.geometry.PointCloud()
@@ -49,14 +51,14 @@ class OccupancyMapAgent(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         control = self.local_planner.run_in_series()
-        option = "obstacle_coords"  # ground_coords, obstacle_coords
+
+        option = "point_cloud_obstacle_from_depth"  # ground_coords, obstacle_coords, point_cloud_obstacle_from_depth
         if self.kwargs.get(option, None) is not None:
             points = self.kwargs[option]
-            self.occupancy_map.update_async(points)
-            # self.occupancy_map.visualize()
-            self.occupancy_map.visualize(transform=self.vehicle.transform,
-                                         view_size=(400, 400))
-
+        #     self.occupancy_map.update_async(points)
+        #     # self.occupancy_map.visualize()
+        #     self.occupancy_map.visualize(transform=self.vehicle.transform,
+        #                                  view_size=(400, 400))
             if self.points_added is False:
                 self.pcd = o3d.geometry.PointCloud()
                 point_means = np.mean(points, axis=0)
@@ -71,9 +73,10 @@ class OccupancyMapAgent(Agent):
                 self.vis.update_geometry(self.pcd)
                 self.vis.poll_events()
                 self.vis.update_renderer()
+        #
+        # if self.local_planner.is_done():
+        #     self.mission_planner.restart()
+        #     self.local_planner.restart()
 
-        if self.local_planner.is_done():
-            self.mission_planner.restart()
-            self.local_planner.restart()
-
-        return control
+        # return control
+        return VehicleControl()

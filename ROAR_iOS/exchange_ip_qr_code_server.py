@@ -23,7 +23,5 @@ conn, addr = s.accept()
 cv2.destroyWindow("qr code")
 conn.close()
 s.close()
-with open("./data/iphone_ip.txt", 'w') as f:
-    f.write(addr[0] + "\n")
 print(f"Iphone IP = ", addr[0])
 
