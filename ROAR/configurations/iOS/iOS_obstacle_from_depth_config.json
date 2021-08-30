@@ -1,0 +1,6 @@
+{
+  "max_detectable_distance": 0.5,
+  "max_points_to_convert": 10000,
+  "min_obstacle_height": 2,
+  "update_interval": 0.01
+}

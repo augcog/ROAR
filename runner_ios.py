@@ -3,6 +3,7 @@ from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
 from ROAR.agent_module.ios_agent import iOSAgent
+from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
 import argparse
@@ -29,14 +30,14 @@ if __name__ == '__main__':
 
     try:
         agent_config = AgentConfig.parse_file(
-            Path("ROAR_iOS/configurations/agent_config.json")
+            Path("ROAR/configurations/iOS/iOS_agent_configuration.json")
         )
         ios_config = iOSConfig.parse_file(
             Path("ROAR_iOS/configurations/ios_config.json")
         )
         ios_config.ar_mode = True if args.mode == "ar" else False
 
-        agent = iOSAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+        agent = FreeSpaceAutoAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
         ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
         ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:
