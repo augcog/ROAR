@@ -128,6 +128,7 @@ class OccupancyGridMap(Module):
                 occu_cords_x, occu_cords_y = \
                     self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:,1]
                 # self._map += self._free_prob
+                self._initialize_map()
                 self._map[occu_cords_y, occu_cords_x] += self._occu_prob
                 # self._map = self._map.clip(0, 1)
         except Exception as e:
@@ -142,7 +143,7 @@ class OccupancyGridMap(Module):
         Returns:
             None
         """
-        world_coords_xy = world_coords[:, [2, 0]] * self._world_coord_resolution
+        world_coords_xy = world_coords[:, [0, 2]] * self._world_coord_resolution
         self._update_grid_map_from_world_cord(world_cords_xy=world_coords_xy)
 
     def run_in_series(self, **kwargs):

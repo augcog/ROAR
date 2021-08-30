@@ -31,7 +31,6 @@ class FreeSpaceAutoAgent(Agent):
         self.vis.create_window(width=500, height=500)
         self.pcd = o3d.geometry.PointCloud()
         self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame()
-
         self.points_added = False
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -49,8 +48,8 @@ class FreeSpaceAutoAgent(Agent):
                 colors[inliers] = [0, 0, 1]
                 pcd.colors = o3d.utility.Vector3dVector(colors)
 
-                # self.non_blocking_pcd_visualization(pcd=pcd, should_center=True, should_show_axis=True, axis_size=10)
-            #     # get world coords of the ground plane
+                self.non_blocking_pcd_visualization(pcd=pcd, should_center=True, should_show_axis=True, axis_size=10)
+                # get world coords of the ground plane
                 points: np.ndarray = np.asarray(pcd.points)
                 ground_points: np.ndarray = points[inliers]
                 self.occu_map.update(ground_points)
@@ -70,6 +69,7 @@ class FreeSpaceAutoAgent(Agent):
             self.pcd = o3d.geometry.PointCloud()
             self.pcd.points = o3d.utility.Vector3dVector(points)
             self.pcd.colors = o3d.utility.Vector3dVector(colors)
+
             if should_show_axis:
                 self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=axis_size,
                                                                                           origin=np.mean(points,
@@ -78,6 +78,7 @@ class FreeSpaceAutoAgent(Agent):
             self.vis.add_geometry(self.pcd)
             self.points_added = True
         else:
+            # print(np.shape(np.vstack((np.asarray(self.pcd.points), points))))
             self.pcd.points = o3d.utility.Vector3dVector(points)
             self.pcd.colors = o3d.utility.Vector3dVector(colors)
             if should_show_axis:

@@ -31,12 +31,11 @@ class CarlaBridge(Bridge):
         invert the Z axis to make it into right hand coordinate system
         Args:
             source: carla.location
-
         Returns:
-
         """
-        return Location(x=source.x, y=source.z, z=source.y)  # checked
-        # return Location(x=source.x, y=-source.y, z=-source.z)
+        l = Location(x=source.x, y=source.z, z=source.y) # checked
+        return l
+        # return Location(x=source.x, y=source.y, z=source.z)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
@@ -45,7 +44,9 @@ class CarlaBridge(Bridge):
             yaw = yaw+90
         else:
             yaw = yaw - 270
-        return Rotation(roll=roll, pitch=pitch, yaw=-yaw)
+        r = Rotation(roll=roll, pitch=pitch, yaw=yaw)  # checked
+        print(r)
+        return r
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform

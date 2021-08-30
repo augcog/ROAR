@@ -22,9 +22,9 @@ class GroundPlaneDetector(Detector):
             pcd: o3d.geometry.PointCloud = kwargs["point_cloud"]
             # # remove all points that are too tall
             points = np.asarray(pcd.points)
-            colors =  np.asarray(pcd.colors)
+            colors = np.asarray(pcd.colors)
 
-            ground_locs = np.where(points[:, 1] < np.mean(points[:, 1]))
+            ground_locs = np.where(points[:, 1] > np.mean(points[:, 1]))
             pcd.points = o3d.utility.Vector3dVector(points[ground_locs])
             pcd.colors = o3d.utility.Vector3dVector(colors[ground_locs])
 
