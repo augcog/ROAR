@@ -45,38 +45,6 @@ class iOSAgent(Agent):
             self.occu_map.visualize()
         return VehicleControl()
 
-    def generate_pcd(self) -> o3d.geometry.PointCloud:
-        depth_data = self.front_depth_camera.data.copy().astype(np.float32)
-        rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
-                                          dsize=(depth_data.shape[1], depth_data.shape[0]))
-        rgb_data = cv2.cvtColor(rgb_data, cv2.COLOR_RGB2BGR)
-        rgb = o3d.geometry.Image(rgb_data)
-        depth = o3d.geometry.Image(depth_data)
-        rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color=rgb,
-                                                                  depth=depth,
-                                                                  convert_rgb_to_intensity=False,
-                                                                  depth_scale=1,
-                                                                  depth_trunc=3)
-        intrinsic = o3d.camera.PinholeCameraIntrinsic(width=rgb_data.shape[0],
-                                                      height=rgb_data.shape[1],
-                                                      fx=self.front_depth_camera.intrinsics_matrix[0][0],
-                                                      fy=self.front_depth_camera.intrinsics_matrix[1][1],
-                                                      cx=self.front_depth_camera.intrinsics_matrix[0][2],
-                                                      cy=self.front_depth_camera.intrinsics_matrix[1][2]
-                                                      )
-        rot = self.vehicle.transform.rotation
-        loc = self.vehicle.transform.location
-        R = o3d.geometry.get_rotation_matrix_from_xyz(np.array(np.deg2rad([rot.pitch, rot.yaw, rot.roll])))
-        T = np.array([loc.x, loc.y, loc.z])
-        extrinsic = np.eye(4)
-        extrinsic[0:3, 0:3] = R
-        extrinsic[:3, 3] = T
-
-        pcd: o3d.geometry.PointCloud = o3d.geometry.PointCloud.create_from_rgbd_image(image=rgbd,
-                                                                                      intrinsic=intrinsic,
-                                                                                      extrinsic=extrinsic)
-        return pcd
-
     def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud, should_center=False):
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)

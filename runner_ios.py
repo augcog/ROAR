@@ -2,26 +2,11 @@ from pathlib import Path
 from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
-from ROAR.agent_module.line_following_agent import LineFollowingAgent
-from ROAR.agent_module.michael_pid_agent import PIDAgent
-from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
-from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
-from ROAR.agent_module.special_agents.real_time_plotter_agent import RealtimePlotterAgent
 from ROAR.agent_module.ios_agent import iOSAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
 import argparse
-
-
-def str2bool(v):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+from misc.utils import str2bool
 
 
 class mode_list(list):

@@ -81,7 +81,7 @@ class LongPIDController(Controller):
                                self.throttle_boundary[1]))
         # self.logger.debug(f"curr_speed: {round(current_speed, 2)} | kp: {round(k_p, 2)} | kd: {k_d} | ki = {k_i} | "
         #       f"err = {round(error, 2)} | de = {round(_de, 2)} | ie = {round(_ie, 2)}")
-              # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
+        # f"self._error_buffer[-1] {self._error_buffer[-1]} | self._error_buffer[-2] = {self._error_buffer[-2]}")
         return output
 
 
@@ -105,9 +105,10 @@ class LatPIDController(Controller):
         """
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
-        direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
+        direction_vector = np.array([-np.sin(np.deg2rad(-self.agent.vehicle.transform.rotation.yaw)),
                                      0,
-                                     -np.cos(np.deg2rad(self.agent.vehicle.transform.rotation.yaw))])
+                                     -np.cos(np.deg2rad(-self.agent.vehicle.transform.rotation.yaw))])
+
         v_end = v_begin + direction_vector
 
         v_vec = np.array([(v_end[0] - v_begin[0]), 0, (v_end[2] - v_begin[2])])
@@ -128,6 +129,7 @@ class LatPIDController(Controller):
 
         if _cross[1] > 0:
             error *= -1
+
         self._error_buffer.append(error)
         if len(self._error_buffer) >= 2:
             _de = (self._error_buffer[-1] - self._error_buffer[-2]) / self._dt
