@@ -1,9 +1,0 @@
-{
-  "ios_ip_addr": "10.0.0.16",
-  "ios_port": 8005,
-  "pygame_display_width": 1080,
-  "pygame_display_height": 810,
-  "max_throttle": 0.2,
-  "max_steering": 1,
-  "steering_offset": 0.1
-}
