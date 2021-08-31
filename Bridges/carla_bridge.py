@@ -33,8 +33,7 @@ class CarlaBridge(Bridge):
             source: carla.location
         Returns:
         """
-        l = Location(x=source.x, y=source.z, z=source.y) # checked
-        return l
+        return Location(x=source.x, y=source.z, z=source.y)
         # return Location(x=source.x, y=source.y, z=source.z)
 
     def convert_rotation_from_source_to_agent(self, source: carla.Rotation) -> Rotation:
@@ -44,9 +43,7 @@ class CarlaBridge(Bridge):
             yaw = yaw+90
         else:
             yaw = yaw - 270
-        r = Rotation(roll=roll, pitch=pitch, yaw=yaw)  # checked
-        print(r)
-        return r
+        return Rotation(roll=roll, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_source_to_agent(
             self, source: carla.Transform

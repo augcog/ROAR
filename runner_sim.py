@@ -14,7 +14,6 @@ def main(args):
     """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/carla/carla_agent_configuration.json"))
     carla_config = CarlaConfig.parse_file(Path("./ROAR_Sim/configurations/configuration.json"))
-
     carla_runner = CarlaRunner(carla_settings=carla_config,
                                agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent)

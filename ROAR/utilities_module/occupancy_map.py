@@ -127,10 +127,10 @@ class OccupancyGridMap(Module):
 
                 occu_cords_x, occu_cords_y = \
                     self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:,1]
-                self._map += self._free_prob
+                # self._map += self._free_prob
                 # self._initialize_map()
                 self._map[occu_cords_y, occu_cords_x] += self._occu_prob
-                self._map = self._map.clip(0, 1)
+                # self._map = self._map.clip(0, 1)
         except Exception as e:
             self.logger.error(f"Unable to update: {e}")
 
