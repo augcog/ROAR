@@ -36,25 +36,29 @@ class FreeSpaceAutoAgent(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(FreeSpaceAutoAgent, self).run_step(sensors_data, vehicle)
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
-
             pcd = self.depth_to_pcd.run_in_series()
-
-            self.non_blocking_pcd_visualization(pcd=pcd, should_center=True, should_show_axis=True)
+            # self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
+            #                                     should_show_axis=True, axis_size=1)
+            # points: np.ndarray = np.asarray(pcd.points)
+            # self.occu_map.update(points)
+            # self.occu_map.visualize()
             # find plane
-            # output = self.ground_plane_detector.run_in_series(point_cloud=pcd)
-            # if output is not None:
-            #     plane_eq, inliers = output
-            #     # annotate plane on pcd
-            #     colors = np.asarray(pcd.colors)
-            #     colors[inliers] = [0, 0, 1]
-            #     pcd.colors = o3d.utility.Vector3dVector(colors)
-            #
-            #     self.non_blocking_pcd_visualization(pcd=pcd, should_center=True, should_show_axis=True, axis_size=10)
-            #     # get world coords of the ground plane
-            #     points: np.ndarray = np.asarray(pcd.points)
-            #     ground_points: np.ndarray = points[inliers]
-            #     self.occu_map.update(ground_points)
-            #     self.occu_map.visualize()
+            output = self.ground_plane_detector.run_in_series(point_cloud=pcd)
+            if output is not None:
+                plane_eq, inliers = output
+                # annotate plane on pcd
+                colors = np.asarray(pcd.colors)
+                colors[inliers] = [0, 0, 1]
+                pcd.colors = o3d.utility.Vector3dVector(colors)
+
+                self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
+                                                    should_show_axis=True, axis_size=1)
+                # get world coords of the ground plane
+                points: np.ndarray = np.asarray(pcd.points)
+                points: np.ndarray = points[inliers]
+
+                self.occu_map.update(points)
+                self.occu_map.visualize()
         return VehicleControl()
 
     def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud,

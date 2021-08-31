@@ -12,15 +12,15 @@ class iOSBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
         return Location(
             x=source.x,
-            y=source.z,
+            y=-source.z,
             z=source.y
         )
 
     def convert_rotation_from_source_to_agent(self, source: Rotation) -> Rotation:
         r = Rotation(
-            roll=np.rad2deg(source.pitch),
-            pitch=np.rad2deg(source.yaw)+90+180,
-            yaw=-np.rad2deg(source.roll)
+            roll=-np.rad2deg(source.pitch),
+            pitch=np.rad2deg(source.yaw)+90,
+            yaw=np.rad2deg(source.roll)
         )
         return r
 

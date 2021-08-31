@@ -3,7 +3,7 @@
   "map_padding": 40,
   "vehicle_height": 2,
   "vehicle_width": 2,
-  "world_coord_resolution": 1,
+  "world_coord_resolution": 100,
   "occu_prob": 0.7,
   "update_interval": 0.01
 }

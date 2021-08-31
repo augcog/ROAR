@@ -75,14 +75,15 @@ class Configuration(BaseModel):
     target_speed: int = 80
     pid_config_file_path: str = Field(default="./ROAR/configurations/carla_pid_config.json")
     pid_config: dict = Field(
-        default= {
-            60: {1,23,}
+        default={
+            60: {1, 23, }
         }
     )
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")
     occu_map_config_path: str = Field(default="./ROAR/configurations/carla/carla_occu_map_config.json")
     depth_to_pcd_config_path: str = Field(default="./ROAR/configurations/carla/carla_depth_to_pcd_config.json")
-    ground_plane_detection_config_path: str = Field(default="./ROAR/configurations/carla/carla_ground_plane_detection_config.json")
+    ground_plane_detection_config_path: str = Field(
+        default="./ROAR/configurations/carla/carla_ground_plane_detection_config.json")
     simple_waypoint_local_planner_config_file_path: str = \
         Field(default="./ROAR/configurations/carla/carla_simple_waypoint_local_planner_config.json")
     max_speed: float = Field(default=200, description="maximum speed in which the vehicle can drive at")

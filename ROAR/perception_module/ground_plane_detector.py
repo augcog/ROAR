@@ -24,7 +24,7 @@ class GroundPlaneDetector(Detector):
             points = np.asarray(pcd.points)
             colors = np.asarray(pcd.colors)
 
-            ground_locs = np.where(points[:, 1] > np.mean(points[:, 1]))
+            ground_locs = np.where(points[:, 1] < np.mean(points[:, 1]))
             pcd.points = o3d.utility.Vector3dVector(points[ground_locs])
             pcd.colors = o3d.utility.Vector3dVector(colors[ground_locs])
 
@@ -32,7 +32,7 @@ class GroundPlaneDetector(Detector):
             # pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(knn=10),
             #                      fast_normal_computation=True)
             # normals = np.abs(np.asarray(pcd.normals))
-            # flat_locs = np.where(normals[:, 1] > 0.7)
+            # flat_locs = np.where(normals[:, 1] > 0.5)
             # normals = normals[flat_locs]
             # points = points[flat_locs]
             # colors = colors[flat_locs]
