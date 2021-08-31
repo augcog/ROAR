@@ -19,13 +19,14 @@ class DepthToPointCloudDetector(Detector):
         while True:
             self.agent.kwargs["point_cloud"] = self.run_in_series()
 
-    def run_in_series(self) -> o3d.geometry.PointCloud:
+    def run_in_series(self, **kwargs) -> o3d.geometry.PointCloud:
         """
 
         :return: 3 x N array of point cloud
         """
-
-        return self.old_way()
+        if "depth_image" in kwargs:
+            return self.old_way(kwargs["depth_image"])
+        return self.old_way(depth_img=self.agent.front_depth_camera.data.copy())
 
     def pcd_via_open3d(self):
         depth_data = self.agent.front_depth_camera.data.copy().astype(np.float32) * 1000
@@ -59,8 +60,8 @@ class DepthToPointCloudDetector(Detector):
             pcd = pcd.voxel_down_sample(self.settings.voxel_down_sample_size)
         return pcd
 
-    def old_way(self):
-        depth_img = self.agent.front_depth_camera.data.copy()
+    def old_way(self, depth_img):
+
         coords = np.where(depth_img < self.settings.depth_trunc)  # it will just return all coordinate pairs
         Is = coords[0][::self.settings.depth_image_sample_step_size]
         Js = coords[1][::self.settings.depth_image_sample_step_size]
