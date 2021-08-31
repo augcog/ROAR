@@ -37,12 +37,11 @@ class FreeSpaceAutoAgent(Agent):
         super(FreeSpaceAutoAgent, self).run_step(sensors_data, vehicle)
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             pcd = self.depth_to_pcd.run_in_series()
-            print(self.vehicle.transform)
             # points: np.ndarray = np.asarray(pcd.points)
             # self.occu_map.update(points)
             # self.occu_map.visualize()
             # self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
-            #                                     should_show_axis=True, axis_size=10)
+            #                                     should_show_axis=True, axis_size=1)
             # find plane
             output = self.ground_plane_detector.run_in_series(point_cloud=pcd)
             if output is not None:

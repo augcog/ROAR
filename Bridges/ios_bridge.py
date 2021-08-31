@@ -20,7 +20,7 @@ class iOSBridge(Bridge):
         r = Rotation(
             roll=-np.rad2deg(source.pitch),
             pitch=np.rad2deg(source.yaw)+90,
-            yaw=np.rad2deg(source.roll)
+            yaw=-np.rad2deg(source.roll)
         )
         return r
 
