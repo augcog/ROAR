@@ -37,7 +37,7 @@
     },
     "image_size_x": 800,
     "image_size_y": 600,
-      "intrinsics_transformation": [
+    "intrinsics_transformation": [
       [1,0,0],
       [0,-1,0],
       [0,0,-1]
