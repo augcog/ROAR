@@ -20,13 +20,13 @@ class LineFollowingAgent(Agent):
         self.controller = SimplePIDController(agent=self)
         self.error_scaling: List[Tuple[float, float]] = [
             (20, 0.1),
-            (40, 0.5),
+            (40, 0.75),
             (60, 1),
             (80, 1.5),
             (100, 1.75),
             (200, 3)
         ]
-        self.prev_control:VehicleControl = VehicleControl()
+        self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
@@ -39,17 +39,23 @@ class LineFollowingAgent(Agent):
             # find the lane
             y = rgb_data.shape[0] - 10
             lane_x = []
+            mask = cv2.inRange(src=rgb_data, lowerb=self.lower_range, upperb=self.upper_range)
+            kernel = np.ones((5, 5), np.uint8)
+            mask = cv2.erode(mask, kernel, iterations=1)
+            mask = cv2.dilate(mask, kernel, iterations=1)
+
             for x in range(0, rgb_data.shape[1], 5):
-                if self.lower_range[0] < rgb_data[y][x][0] < self.upper_range[0] \
-                        and self.lower_range[1] < rgb_data[y][x][1] < self.upper_range[1] \
-                        and self.lower_range[2] < rgb_data[y][x][2] < self.upper_range[2]:
+                if mask[y][x] > 0:
                     lane_x.append(x)
 
             if len(lane_x) == 0:
                 # no lane found, execute the previous control with a decaying factor
-
-                self.vehicle.control.throttle *= 1
-                self.vehicle.control.steering *= 0.98
+                if np.average(self.prev_steerings) < 0:
+                    self.vehicle.control.steering = -1
+                else:
+                    self.vehicle.control.steering = 1
+                self.prev_steerings.append(self.vehicle.control.steering)
+                self.vehicle.control.throttle = 0.2
                 self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
                 return self.vehicle.control
 
@@ -61,7 +67,6 @@ class LineFollowingAgent(Agent):
 
             error = avg_x - center_x
             # we want small error to be almost ignored, only big errors matter.
-
             for e, scale in self.error_scaling:
                 if abs(error) <= e:
                     error = error * scale
@@ -69,6 +74,7 @@ class LineFollowingAgent(Agent):
 
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
+            self.prev_steerings.append(self.vehicle.control.steering)
             return self.vehicle.control
         else:
             # image feed is not available yet
