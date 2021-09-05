@@ -33,10 +33,10 @@ class PotentialFieldPlanner(LoopSimpleWaypointFollowingLocalPlanner):
         # super(PotentialFieldPlanner, self).run_in_series()
         goal_world = self.find_next_waypoint()
         try:
-            m = self.occu_map.get_map(transform=self.agent.vehicle.transform, vehicle_value=-10,
+            m = self.occu_map.get_map(transform=self.agent.vehicle.control, vehicle_value=-10,
                                       view_size=(self._view_size, self._view_size))
             goal_world_loc = goal_world.location
-            curr_location = self.agent.vehicle.transform.location
+            curr_location = self.agent.vehicle.control.location
             gx, gy = goal_world_loc.x - curr_location.x, goal_world_loc.y - curr_location.y
 
             obstacle_coords = np.where(m > 0.5)

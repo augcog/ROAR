@@ -84,7 +84,7 @@ class SmoothWaypointFollowingLocalPlanner(SimpleWaypointFollowingLocalPlanner):
             return VehicleControl()
 
         # get vehicle's location
-        vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
+        vehicle_transform: Union[Transform, None] = self.agent.vehicle.control
 
         if vehicle_transform is None:
             raise AgentException("I do not know where I am, I cannot proceed forward")
@@ -115,7 +115,7 @@ class SmoothWaypointFollowingLocalPlanner(SimpleWaypointFollowingLocalPlanner):
         control: VehicleControl = self.controller.run_in_series(next_waypoint=target_waypoint,
                                                                 speed_multiplier=speed_factor)
         self.logger.debug(f"\n"
-                          f"Curr Transform: {self.agent.vehicle.transform}\n"
+                          f"Curr Transform: {self.agent.vehicle.control}\n"
                           f"Target Location: {target_waypoint.location}\n"
                           f"Control: {control} | Speed: {Vehicle.get_speed(self.agent.vehicle)}\n")
         return control
@@ -134,12 +134,12 @@ class SmoothWaypointFollowingLocalPlanner(SimpleWaypointFollowingLocalPlanner):
             The angle difference in radians in the 0 to pi range.
         """
 
-        v_vec = np.array([np.cos(np.radians(self.agent.vehicle.transform.rotation.pitch)),
+        v_vec = np.array([np.cos(np.radians(self.agent.vehicle.control.rotation.pitch)),
                           0,
-                          np.sin(np.radians(self.agent.vehicle.transform.rotation.pitch))])
+                          np.sin(np.radians(self.agent.vehicle.control.rotation.pitch))])
         v_vec_norm = np.linalg.norm(v_vec)  # Already norm 1
 
-        w_vec = next_waypoint.location.to_array() - self.controller.agent.vehicle.transform.location.to_array()
+        w_vec = next_waypoint.location.to_array() - self.controller.agent.vehicle.control.location.to_array()
         w_vec[1] = 0.
         w_vec_norm = np.linalg.norm(w_vec)
 

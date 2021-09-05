@@ -7,7 +7,6 @@ from ROAR.utilities_module.data_structures_models import (
 )
 from typing import Optional
 import cv2
-from typing import List
 
 
 class Camera(BaseModel):
@@ -24,11 +23,6 @@ class Camera(BaseModel):
                                                          title="Distortion Coefficient from Intel Realsense")
     data: Optional[np.ndarray] = Field(default=None)
     intrinsics_matrix: Optional[np.ndarray] = Field(default=None)
-    intrinsics_transformation: List[List[float]] = Field(default=[
-        [1, 0, 0],
-        [0, -1, 0],
-        [0, 0, -1]
-    ])
 
     def calculate_default_intrinsics_matrix(self) -> np.ndarray:
         """
@@ -48,12 +42,11 @@ class Camera(BaseModel):
         intrinsics_matrix[0, 2] = self.image_size_x / 2.0
         intrinsics_matrix[1, 2] = self.image_size_y / 2.0
         intrinsics_matrix[0, 0] = self.image_size_x / (
-                2.0 * np.tan(self.fov * np.pi / 360.0)
+            2.0 * np.tan(self.fov * np.pi / 360.0)
         )
         intrinsics_matrix[1, 1] = self.image_size_y / (
-                2.0 * np.tan(self.fov * np.pi / 360.0)
+            2.0 * np.tan(self.fov * np.pi / 360.0)
         )
-        intrinsics_matrix = intrinsics_matrix @ np.array(self.intrinsics_transformation)
         self.intrinsics_matrix = intrinsics_matrix
         return intrinsics_matrix
 
