@@ -55,6 +55,7 @@ class Agent(ABC):
             self.output_folder_path / "rear_rgb"
         self.should_save_sensor_data = self.agent_settings.save_sensor_data
         self.transform_output_folder_path = self.output_folder_path / "transform"
+
         self.vehicle_state_output_folder_path = self.output_folder_path / "vehicle_state"
         self.local_planner_next_waypoint_output_foler_path = self.output_folder_path / "next_waypoints"
 
@@ -65,11 +66,9 @@ class Agent(ABC):
         self.threaded_modules: List[Module] = []
         self.time_counter = 0
 
-        self.transform_history: List[Transform] = []
-
         if should_init_default_cam:
             self.init_cam()
-
+        self.transform_file: Optional = None
         if self.should_save_sensor_data:
             self.front_depth_camera_output_folder_path.mkdir(parents=True,
                                                              exist_ok=True)
@@ -83,6 +82,8 @@ class Agent(ABC):
                                                         exist_ok=True)
             self.local_planner_next_waypoint_output_foler_path.mkdir(parents=True, exist_ok=True)
             self.write_meta_data()
+            self.transform_file = (Path(self.transform_output_folder_path) /
+                                   f"{datetime.now().strftime('%m_%d_%Y_%H')}.txt").open('w+')
         self.kwargs: Dict[str, Any] = kwargs  # additional info
 
     def write_meta_data(self):
@@ -158,7 +159,6 @@ class Agent(ABC):
         """
 
         self.vehicle = vehicle
-        self.transform_history.append(self.vehicle.transform)
         if self.front_rgb_camera is not None:
             self.front_rgb_camera.data = (
                 sensors_data.front_rgb.data
@@ -224,11 +224,7 @@ class Agent(ABC):
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
         try:
-            transform_file = (Path(self.transform_output_folder_path) /
-                              f"{datetime.now().strftime('%m_%d_%Y_%H')}.txt").open('a')
-            print(f"Recording -> {self.vehicle.transform.record()}")
-            transform_file.write(self.vehicle.transform.record() + "\n")
-            transform_file.close()
+            self.transform_file.write(self.vehicle.transform.record() + "\n")
         except Exception as e:
             self.logger.error(
                 f"Failed to save at Frame {self.time_counter}. Error: {e}")
@@ -254,9 +250,12 @@ class Agent(ABC):
 
     def start_module_threads(self):
         for module in self.threaded_modules:
-            threading.Thread(target=module.run_in_threaded, daemon=True).start()
-            self.logger.debug(f"{module.__class__.__name__} thread started")
+            module.start()
+            self.logger.debug(f"Module: {module.name} -> started")
 
     def shutdown_module_threads(self):
         for module in self.threaded_modules:
             module.shutdown()
+
+        if self.transform_file is not None and self.transform_file.closed is False and self.should_save_sensor_data:
+            self.transform_file.close()

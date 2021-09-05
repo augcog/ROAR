@@ -69,7 +69,7 @@ class LoopSimpleWaypointFollowingLocalPlanner(LocalPlanner):
 
     def run_in_series(self) -> VehicleControl:
         # get vehicle's location
-        vehicle_transform: Union[Transform, None] = self.agent.vehicle.control
+        vehicle_transform: Union[Transform, None] = self.agent.vehicle.transform
 
         if vehicle_transform is None:
             raise AgentException("I do not know where I am, I cannot proceed forward")

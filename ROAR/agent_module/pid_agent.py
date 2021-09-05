@@ -35,8 +35,6 @@ class PIDAgent(Agent):
                  sensors_data: SensorsData) -> VehicleControl:
         super(PIDAgent, self).run_step(vehicle=vehicle,
                                        sensors_data=sensors_data)
-        self.transform_history.append(self.vehicle.transform)
-        # print(self.vehicle.transform, self.vehicle.velocity)
         if self.is_done:
             control = VehicleControl()
             self.logger.debug("Path Following Agent is Done. Idling.")
