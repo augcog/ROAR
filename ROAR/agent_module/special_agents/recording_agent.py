@@ -17,7 +17,6 @@ from ROAR.planning_module.local_planner.loop_simple_waypoint_following_local_pla
 
 
 class RecordingAgent(Agent):
-    # TODO: make this agent work again
     def __init__(self, target_speed=20, **kwargs):
         super().__init__(**kwargs)
         # ensure recording status is ON
@@ -59,10 +58,11 @@ class RecordingAgent(Agent):
     def run_step(self, sensors_data: SensorsData,
                  vehicle: Vehicle) -> VehicleControl:
         super(RecordingAgent, self).run_step(sensors_data=sensors_data, vehicle=vehicle)
+        self.transform_history.append(self.vehicle.transform)
 
-        # control = self.local_planner.run_in_series()
+        control = self.local_planner.run_in_series()
         # if self.kwargs.get(self.option, None) is not None:
         #     points = self.kwargs[self.option]
         #     self.occupancy_map.update_async(points)
         #     self.occupancy_map.visualize(transform=self.vehicle.transform, view_size=(200, 200))
-        return VehicleControl()
+        return control

@@ -45,7 +45,6 @@ class OccupancyGridMap(Module):
         config = OccupancyGridMapConfig.parse_file(self._agent.agent_settings.occu_map_config_path)
         self._map: Optional[np.ndarray] = None
         self._world_coord_resolution = config.world_coord_resolution
-        self.tmp = self._world_coord_resolution
         self._absolute_maximum_map_size = config.absolute_maximum_map_size
 
         self._min_x = -math.floor(self._absolute_maximum_map_size)
@@ -63,6 +62,7 @@ class OccupancyGridMap(Module):
         self._occu_prob = np.clip(np.log(config.occu_prob / (1 - config.occu_prob)), 0, 1)
         self._free_prob = - (1 - self._occu_prob)
 
+        self._max_points_to_convert = config.max_points_to_convert
         self.curr_obstacle_world_coords = None
         self._curr_obstacle_occu_coords = None
         self._static_obstacles: Optional[np.ndarray] = None
@@ -103,7 +103,6 @@ class OccupancyGridMap(Module):
              [x, y]
             ]
         """
-        # print(np.min(world_cords_xy, axis=0), np.max(world_cords_xy, axis=0))
         transformed = np.round(world_cords_xy - [self._min_x, self._min_y]).astype(np.int64)
         return transformed
 
@@ -125,10 +124,11 @@ class OccupancyGridMap(Module):
                 self._curr_obstacle_occu_coords = self.cord_translation_from_world(
                     world_cords_xy=world_cords_xy)
 
-                occu_cords_x, occu_cords_y = \
-                    self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:,1]
-                # self._map += self._free_prob
-                self._initialize_map()
+                occu_cords_x, occu_cords_y = self._curr_obstacle_occu_coords[:, 0], self._curr_obstacle_occu_coords[:,
+                                                                                    1]
+                min_x, max_x, min_y, max_y = np.min(occu_cords_x), np.max(occu_cords_x), \
+                                             np.min(occu_cords_y), np.max(occu_cords_y)
+                self._map[min_y:max_y, min_x:max_x] = 0  # free
                 self._map[occu_cords_y, occu_cords_x] += self._occu_prob
                 # self._map = self._map.clip(0, 1)
         except Exception as e:
@@ -143,9 +143,10 @@ class OccupancyGridMap(Module):
         Returns:
             None
         """
-
+        indices_to_select = np.random.choice(np.shape(world_coords)[0], size=min(self._max_points_to_convert,
+                                                                                 np.shape(world_coords)[0]))
+        world_coords = world_coords[indices_to_select]
         world_coords_xy = world_coords[:, [0, 2]] * self._world_coord_resolution
-        # print(np.min(world_coords_xy, axis=0), np.max(world_coords_xy, axis=0), self._world_coord_resolution)
         self._update_grid_map_from_world_cord(world_cords_xy=world_coords_xy)
 
     def run_in_series(self, **kwargs):
@@ -289,4 +290,5 @@ class OccupancyGridMapConfig(BaseModel):
     vehicle_width: int = Field(default=2)
     world_coord_resolution: int = Field(default=1)
     occu_prob: float = Field(default=0.7)
+    max_points_to_convert: int = Field(default=1000)
     update_interval: float = Field(default=0.1)
