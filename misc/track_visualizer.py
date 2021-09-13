@@ -152,7 +152,7 @@ def save(data: List[List[float]]):
 
 
 if __name__ == "__main__":
-    file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_8_22_01_revised.txt")
+    file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_6_19_orig_1.txt")
     track_data: List[List[float]] = read_txt(file_name)
     # track_data = swapCols(track_data)
     # save(track_data)
