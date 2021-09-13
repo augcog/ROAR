@@ -38,32 +38,12 @@ class FreeSpaceAutoAgent(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(FreeSpaceAutoAgent, self).run_step(sensors_data, vehicle)
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
-            depth_img = self.front_depth_camera.data.copy()
-            lane_mask = self.lane_detector.run_in_series()
-            none_lane = np.where(lane_mask < 0.5)
-            depth_img[none_lane] = 0
-            pcd = self.depth_to_pcd.run_in_series(depth_image=depth_img)
+            pcd = self.depth_to_pcd.run_in_series()
             points: np.ndarray = np.asarray(pcd.points)
             self.occu_map.update(points)
             self.occu_map.visualize()
             self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
                                                 should_show_axis=True, axis_size=1)
-            # # find plane
-            # output = self.ground_plane_detector.run_in_series(point_cloud=pcd)
-            # if output is not None:
-            #     plane_eq, inliers = output
-            #     # annotate plane on pcd
-            #     colors = np.asarray(pcd.colors)
-            #     colors[inliers] = [0, 0, 1]
-            #     pcd.colors = o3d.utility.Vector3dVector(colors)
-            #
-            #     self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
-            #                                         should_show_axis=True, axis_size=1)
-            #     # get world coords of the ground plane
-            #     points: np.ndarray = np.asarray(pcd.points)
-            #     points: np.ndarray = points[inliers]
-            #     self.occu_map.update(points)
-            #     self.occu_map.visualize()
         return VehicleControl()
 
     def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud,
