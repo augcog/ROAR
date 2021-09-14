@@ -19,14 +19,14 @@ class LineFollowingAgent(Agent):
         self.lower_range = (0, 170, 200)  # low range of color
         self.upper_range = (150, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
-        self.error_scaling: List[Tuple[float, float]] = [
-            (20, 0.1),
-            (40, 0.75),
-            (60, 1),
-            (80, 1.5),
-            (100, 1.75),
-            (200, 3)
-        ]
+        # self.error_scaling: List[Tuple[float, float]] = [
+        #     (20, 0.1),
+        #     (40, 0.75),
+        #     (60, 1),
+        #     (80, 1.5),
+        #     (100, 1.75),
+        #     (200, 3)
+        # ]
         self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -38,11 +38,32 @@ class LineFollowingAgent(Agent):
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
             # find the lane
-            error_at_10 = self.find_error_at(rgb_data=rgb_data, y_offset=10, error_scaling=self.error_scaling)
-            if error_at_10 is None:
+            error_at_10 = self.find_error_at(rgb_data=rgb_data, y_offset=10, error_scaling=[
+                (20, 0.1),
+                (40, 0.75),
+                (60, 1),
+                (80, 1.5),
+                (100, 1.75),
+                (200, 3)
+            ])
+            error_at_50 = self.find_error_at(rgb_data=rgb_data, y_offset=50, error_scaling=[
+                (20, 0.1),  # TUNE THIS!
+                (40, 0.75),
+                (60, 1),
+                (80, 1.5),
+                (100, 1.75),
+                (200, 3)
+            ])
+            if error_at_10 is None and error_at_50 is None:
                 return self.execute_prev_command()
 
-            error = error_at_10
+            # we only want to follow the furthest thing we see.
+            error = 0
+            if error_at_10 is not None:
+                error = error_at_10
+            if error_at_50 is not None:
+                error = error_at_50
+
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
