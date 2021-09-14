@@ -15,8 +15,9 @@ class LineFollowingAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
         # declare color tolerance
+        # BGR
         self.lower_range = (0, 170, 200)  # low range of color
-        self.upper_range = (150, 240, 255)  # high range of color
+        self.upper_range = (150, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.error_scaling: List[Tuple[float, float]] = [
             (20, 0.1),
