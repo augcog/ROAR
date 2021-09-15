@@ -61,8 +61,8 @@ class LineFollowingAgent(Agent):
             error = 0
             if error_at_10 is not None:
                 error = error_at_10
-            if error_at_50 is not None:
-                error = error_at_50
+            # if error_at_50 is not None:
+            #     error = error_at_50
 
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()

@@ -22,7 +22,7 @@ class SimplePIDController(Controller):
         self.lat_kd = 0.075  # this is how much you want to resist change
         self.lat_ki = 0  # this is the correction on past error
 
-        self.long_kp = 0.2  # this is how much you want to go forward
+        self.long_kp = 0.18  # this is how much you want to go forward
         self.long_kd = 0.1  # this is how much you want to resist change
         self.long_ki = 0.005  # this is how much correction on past error
 
