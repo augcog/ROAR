@@ -79,7 +79,8 @@ class LineFollowingAgent(Agent):
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
-
+        cv2.imshow("mask", mask)
+        cv2.waitKey(1)
         for x in range(0, rgb_data.shape[1], 5):
             if mask[y][x] > 0:
                 lane_x.append(x)

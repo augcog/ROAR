@@ -15,9 +15,6 @@ class SimplePIDController(Controller):
         self.target_speed = 1  # m / s
         self.min_throttle, self.max_throttle = 0.16, 0.5
 
-        # self.lat_kp = 0.0025  # this is how much you want to steer
-        # self.lat_kd = 0.01  # this is how much you want to resist change
-        # self.lat_ki = 0.00001  # this is the correction on past error
         self.lat_kp = 0.005  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
         self.lat_ki = 0  # this is the correction on past error
