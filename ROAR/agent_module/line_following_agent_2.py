@@ -16,44 +16,47 @@ class LineFollowingAgent(Agent):
         super().__init__(vehicle, agent_settings, **kwargs)
         # declare color tolerance
         # BGR
-        self.lower_range = (0, 170, 200)  # low range of color
-        self.upper_range = (150, 255, 255)  # high range of color
+        # self.lower_range = (0, 0, 170)  # low range of color
+        # self.upper_range = (130, 130, 255)  # high range of color
+        self.lower_range = (0, 150, 170)  # low range of color
+        self.upper_range = (100, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
-        # self.error_scaling: List[Tuple[float, float]] = [
-        #     (20, 0.1),
-        #     (40, 0.75),
-        #     (60, 1),
-        #     (80, 1.5),
-        #     (100, 1.75),
-        #     (200, 3)
-        # ]
         self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
-
             # make rgb and depth into the same shape
             depth_data = self.front_depth_camera.data
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
             # find the lane
-            error_at_10 = self.find_error_at(rgb_data=rgb_data, y_offset=10, error_scaling=[
-                (20, 0.1),
-                (40, 0.75),
-                (60, 1),
-                (80, 1.5),
-                (100, 1.75),
-                (200, 3)
-            ])
-            error_at_50 = self.find_error_at(rgb_data=rgb_data, y_offset=50, error_scaling=[
-                (20, 0.1),  # TUNE THIS!
-                (40, 0.75),
-                (60, 1),
-                (80, 1.5),
-                (100, 1.75),
-                (200, 3)
-            ])
+            error_at_10 = self.find_error_at(data=rgb_data,
+                                             y_offset=10,
+                                             lower_range=self.lower_range,
+                                             upper_range=self.upper_range,
+                                             error_scaling=[
+                                                 (20, 0.1),
+                                                 (40, 0.75),
+                                                 (60, 1),
+                                                 (80, 1.5),
+                                                 (100, 1.75),
+                                                 (200, 3)
+                                             ])
+            error_at_50 = self.find_error_at(data=rgb_data,
+                                             y_offset=50,
+                                             lower_range=self.lower_range,
+                                             upper_range=self.upper_range,
+                                             error_scaling=[
+                                                 (20, 0.1),
+                                                 (40, 0.5),
+                                                 (60, 1),
+                                                 (80, 1.5),
+                                                 (100, 1.75),
+                                                 (200, 3)
+                                             ]
+            )
+
             if error_at_10 is None and error_at_50 is None:
                 return self.execute_prev_command()
 
@@ -61,27 +64,27 @@ class LineFollowingAgent(Agent):
             error = 0
             if error_at_10 is not None:
                 error = error_at_10
-            # if error_at_50 is not None:
-            #     error = error_at_50
-
+            if error_at_50 is not None:
+                error = error_at_50
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
+            self.logger.info(f"line recognized: {error}| control: {self.vehicle.control}")
             return self.vehicle.control
         else:
             # image feed is not available yet
             return VehicleControl()
 
-    def find_error_at(self, rgb_data, y_offset, error_scaling) -> Optional[float]:
-        y = rgb_data.shape[0] - y_offset
+    def find_error_at(self, data, y_offset, error_scaling, lower_range, upper_range) -> Optional[float]:
+        y = data.shape[0] - y_offset
         lane_x = []
-        mask = cv2.inRange(src=rgb_data, lowerb=self.lower_range, upperb=self.upper_range)
+        mask = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
         cv2.imshow("mask", mask)
         cv2.waitKey(1)
-        for x in range(0, rgb_data.shape[1], 5):
+        for x in range(0, data.shape[1], 5):
             if mask[y][x] > 0:
                 lane_x.append(x)
 
@@ -92,7 +95,7 @@ class LineFollowingAgent(Agent):
         avg_x = int(np.average(lane_x))
 
         # find error
-        center_x = rgb_data.shape[1] // 2
+        center_x = data.shape[1] // 2
 
         error = avg_x - center_x
         # we want small error to be almost ignored, only big errors matter.
@@ -109,6 +112,9 @@ class LineFollowingAgent(Agent):
         else:
             self.vehicle.control.steering = 1
         self.prev_steerings.append(self.vehicle.control.steering)
-        self.vehicle.control.throttle = 0.2
+        if self.vehicle.control.throttle < 0.1:
+            self.vehicle.control.throttle = -0.13
+        else:
+            self.vehicle.control.throttle = 0.13
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control

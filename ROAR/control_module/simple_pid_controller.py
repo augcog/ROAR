@@ -13,12 +13,15 @@ class SimplePIDController(Controller):
         self.long_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
 
         self.target_speed = 1  # m / s
-        self.min_throttle, self.max_throttle = 0.16, 0.5
+        self.min_throttle, self.max_throttle = -0.5, 0.5
 
         self.lat_kp = 0.005  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
         self.lat_ki = 0  # this is the correction on past error
 
+        # self.long_kp = 0.14  # this is how much you want to go forward
+        # self.long_kd = 0.01  # this is how much you want to resist change
+        # self.long_ki = 0  # this is how much correction on past error
         self.long_kp = 0.18  # this is how much you want to go forward
         self.long_kd = 0.1  # this is how much you want to resist change
         self.long_ki = 0.005  # this is how much correction on past error
