@@ -113,8 +113,8 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = 1
         self.prev_steerings.append(self.vehicle.control.steering)
         if self.vehicle.control.throttle < 0.1:
-            self.vehicle.control.throttle = -0.13
+            self.vehicle.control.throttle = -0.18
         else:
-            self.vehicle.control.throttle = 0.13
+            self.vehicle.control.throttle = 0.18
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control
