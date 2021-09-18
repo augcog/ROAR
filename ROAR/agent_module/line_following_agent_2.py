@@ -18,8 +18,8 @@ class LineFollowingAgent(Agent):
         # BGR
         # self.lower_range = (0, 0, 170)  # low range of color
         # self.upper_range = (130, 130, 255)  # high range of color
-        self.lower_range = (0, 150, 170)  # low range of color
-        self.upper_range = (100, 255, 255)  # high range of color
+        self.lower_range = (0, 170, 170)  # low range of color
+        self.upper_range = (120, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
 
@@ -39,8 +39,8 @@ class LineFollowingAgent(Agent):
                                                  (20, 0.1),
                                                  (40, 0.75),
                                                  (60, 1),
-                                                 (80, 1.5),
-                                                 (100, 1.75),
+                                                 (80, 1.25),
+                                                 (100, 1.5),
                                                  (200, 3)
                                              ])
             error_at_50 = self.find_error_at(data=rgb_data,
@@ -49,10 +49,11 @@ class LineFollowingAgent(Agent):
                                              upper_range=self.upper_range,
                                              error_scaling=[
                                                  (20, 0.1),
-                                                 (40, 0.5),
-                                                 (60, 1),
-                                                 (80, 1.5),
-                                                 (100, 1.75),
+                                                 (40, 0.2),
+                                                 (60, 0.6),
+                                                 (70, 0.7),
+                                                 (80, 0.8),
+                                                 (100, 1),
                                                  (200, 3)
                                              ]
             )
@@ -69,7 +70,7 @@ class LineFollowingAgent(Agent):
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
-            self.logger.info(f"line recognized: {error}| control: {self.vehicle.control}")
+            # self.logger.info(f"line recognized: {error}| control: {self.vehicle.control}")
             return self.vehicle.control
         else:
             # image feed is not available yet
@@ -101,6 +102,7 @@ class LineFollowingAgent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
+                # print(f"Error at {y_offset} -> {error, scale}")
                 error = error * scale
                 break
         return error
@@ -111,10 +113,8 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = -1
         else:
             self.vehicle.control.steering = 1
+        self.logger.info("Cannot see line, executing prev cmd")
         self.prev_steerings.append(self.vehicle.control.steering)
-        if self.vehicle.control.throttle < 0.1:
-            self.vehicle.control.throttle = -0.2
-        else:
-            self.vehicle.control.throttle = 0.18
+        self.vehicle.control.throttle = 0.2
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control

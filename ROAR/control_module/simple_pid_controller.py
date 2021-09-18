@@ -15,16 +15,25 @@ class SimplePIDController(Controller):
         self.target_speed = 1  # m / s
         self.min_throttle, self.max_throttle = -0.6, 0.4
 
-        self.lat_kp = 0.005  # this is how much you want to steer
+        self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
         self.lat_ki = 0  # this is the correction on past error
 
-        # self.long_kp = 0.14  # this is how much you want to go forward
-        # self.long_kd = 0.01  # this is how much you want to resist change
-        # self.long_ki = 0  # this is how much correction on past error
-        self.long_kp = 0.18  # this is how much you want to go forward
-        self.long_kd = 0.15  # this is how much you want to resist change
-        self.long_ki = 0.005  # this is how much correction on past error
+        self.uphill_long_pid = {
+            "long_kp": 0.20,
+            "long_kd": 0.10,
+            "long_ki": 0.005,
+        }
+        self.flat_long_pid = {
+            "long_kp": 0.16,
+            "long_kd": 0.14,
+            "long_ki": 0.005,
+        }
+        self.downhill_long_pid = {
+            "long_kp": 0.25,
+            "long_kd": 0.15,
+            "long_ki": 0.01
+        }
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         steering = self.lateral_pid_control()
@@ -44,14 +53,30 @@ class SimplePIDController(Controller):
         return lat_control
 
     def long_pid_control(self) -> float:
+        kp = 1
+        kd = 0
+        ki = 0
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         error = curr_speed - self.target_speed
+
+        if self.agent.vehicle.transform.rotation.pitch > 10:
+            # up hill
+            kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
+                "long_ki"]
+        elif self.agent.vehicle.transform.rotation.pitch < -10:
+            kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
+                         self.downhill_long_pid["long_ki"]
+            if error < -0.2:
+                error = -0.5*error
+        else:
+            kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
+
+
         self.long_error_queue.append(error)
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
         error_it = sum(self.long_error_queue)
-
-        e_p = self.long_kp * error
-        e_d = self.long_kd * error_dt
-        e_i = self.long_ki * error_it
+        e_p = kp * error
+        e_d = kd * error_dt
+        e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
         return long_control
