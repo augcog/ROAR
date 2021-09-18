@@ -18,7 +18,7 @@ class LineFollowingAgent(Agent):
         # BGR
         # self.lower_range = (0, 0, 170)  # low range of color
         # self.upper_range = (130, 130, 255)  # high range of color
-        self.lower_range = (0, 170, 170)  # low range of color
+        self.lower_range = (0, 160, 160)  # low range of color
         self.upper_range = (120, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
@@ -59,7 +59,13 @@ class LineFollowingAgent(Agent):
             )
 
             if error_at_10 is None and error_at_50 is None:
-                return self.execute_prev_command()
+                # did not see the line
+                if self.vehicle.transform.rotation.pitch > -10:
+                    # is flat or up slope, execute adjusted previous command
+                    return self.execute_prev_command()
+                else:
+                    # is down slope, execute previous command as-is
+                    return self.vehicle.control
 
             # we only want to follow the furthest thing we see.
             error = 0

@@ -67,10 +67,9 @@ class SimplePIDController(Controller):
             kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
                          self.downhill_long_pid["long_ki"]
             if error < -0.2:
-                error = -0.5*error
+                error = -0.5 * error
         else:
             kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
-
 
         self.long_error_queue.append(error)
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
