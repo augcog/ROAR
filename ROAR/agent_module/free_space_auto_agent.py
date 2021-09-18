@@ -39,11 +39,33 @@ class FreeSpaceAutoAgent(Agent):
         super(FreeSpaceAutoAgent, self).run_step(sensors_data, vehicle)
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             pcd = self.depth_to_pcd.run_in_series()
+            # _, inliers = self.ground_plane_detector.run_in_series(point_cloud=pcd)
+            # new_points = np.asarray(pcd.points)[inliers]
+            # new_colors = np.asarray(pcd.colors)[inliers]
+            # new_points = np.asarray(pcd.points)
+            # new_colors = np.asarray(pcd.colors)
+            # old_points = np.asarray(self.pcd.points)
+            # old_colors = np.asarray(self.pcd.colors)
+            # total_points = np.concatenate([old_points, new_points])
+            # total_colors = np.concatenate([new_colors, old_colors])
+            # pcd.points = o3d.utility.Vector3dVector(total_points)
+            # pcd.colors = o3d.utility.Vector3dVector(total_colors)
+            # pcd = pcd.voxel_down_sample(0.075)
+            # print(pcd)
+            # print(np.shape(new_points))
+            # self.pcd.points = np.asarray(self.pcd.points)
+
+            # pcd.points = o3d.utility.Vector3dVector(new_points)
+            # pcd.colors = o3d.utility.Vector3dVector(new_colors)
+            #
             points: np.ndarray = np.asarray(pcd.points)
+
+            self.logger.info(f"{self.vehicle.transform}")
             self.occu_map.update(points)
             self.occu_map.visualize()
-            self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
+            self.non_blocking_pcd_visualization(pcd=pcd, should_center=False,
                                                 should_show_axis=True, axis_size=1)
+            # self.pcd = pcd
         return VehicleControl()
 
     def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud,

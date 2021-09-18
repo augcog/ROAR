@@ -24,12 +24,13 @@ class DepthToPointCloudDetector(Detector):
 
         :return: 3 x N array of point cloud
         """
-        if "depth_image" in kwargs:
-            return self.old_way(kwargs["depth_image"])
-        return self.old_way(depth_img=self.agent.front_depth_camera.data.copy())
+        # if "depth_image" in kwargs:
+        #     return self.old_way(kwargs["depth_image"])
+        # return self.old_way(depth_img=self.agent.front_depth_camera.data.copy())
+        return self.pcd_via_open3d()
 
     def pcd_via_open3d(self):
-        depth_data = self.agent.front_depth_camera.data.copy().astype(np.float32) * 1000
+        depth_data = self.agent.front_depth_camera.data.copy().astype(np.float32)
         rgb_data: np.ndarray = cv2.resize(self.agent.front_rgb_camera.data.copy(),
                                           dsize=(depth_data.shape[1], depth_data.shape[0]))
 
@@ -51,7 +52,7 @@ class DepthToPointCloudDetector(Detector):
         extrinsics = self.agent.vehicle.transform.get_matrix()
         rot = self.agent.vehicle.transform.rotation
         extrinsics[0:3, 0:3] = o3d.geometry.get_rotation_matrix_from_xyz(rotation=
-                np.deg2rad([0, 180, rot.yaw]))
+                                                                         np.deg2rad([rot.roll, rot.yaw, rot.pitch]))
         pcd: o3d.geometry.PointCloud = o3d.geometry.PointCloud. \
             create_from_rgbd_image(image=rgbd,
                                    intrinsic=intrinsic,

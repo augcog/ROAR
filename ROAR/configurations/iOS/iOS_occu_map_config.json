@@ -1,5 +1,5 @@
 {
-  "absolute_maximum_map_size": 500,
+  "absolute_maximum_map_size": 1000,
   "map_padding": 40,
   "vehicle_height": 2,
   "vehicle_width": 2,
