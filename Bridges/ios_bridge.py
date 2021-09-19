@@ -11,9 +11,9 @@ import cv2
 class iOSBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
         return Location(
-            x=source.x,
+            x=-source.x,
             y=-source.z,
-            z=source.y
+            z=-source.y
         )
 
     def convert_rotation_from_source_to_agent(self, source: Rotation) -> Rotation:
