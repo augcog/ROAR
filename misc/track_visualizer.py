@@ -82,7 +82,7 @@ def visualize_track_data(track_data: List[List[float]], file_name: Optional[Path
     fig.show()
 
 
-def visualize_tracks(data_dir: Path = Path("./data"), width: int = 1000, height: int = 1000,
+def visualize_tracks(data_dir: Path = Path("../ROAR_Gym/data"), width: int = 1000, height: int = 1000,
                      regex: str = "transforms_*"):
     # load tracks
     tracks: Dict[str, List[List[float]]] = dict()  # track_name -> track waypoints
@@ -117,7 +117,7 @@ def visualize_tracks(data_dir: Path = Path("./data"), width: int = 1000, height:
     fig.show()
 
 
-def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000, height: int = 1000,
+def visualize_tracks_together(data_dir: Path = Path("../ROAR_Gym/data"), width: int = 1000, height: int = 1000,
                               regex: str = "transforms_*"):
     # load tracks
     tracks: Dict[str, List[List[float]]] = dict()  # track_name -> track waypoints
