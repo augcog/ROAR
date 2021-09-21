@@ -17,7 +17,7 @@ class SimplePIDController(Controller):
 
         self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
-        self.lat_ki = 0  # this is the correction on past error
+        self.lat_ki = 0.00025  # this is the correction on past error
 
         self.uphill_long_pid = {
             "long_kp": 0.20,
@@ -26,13 +26,13 @@ class SimplePIDController(Controller):
         }
         self.flat_long_pid = {
             "long_kp": 0.16,
-            "long_kd": 0.14,
-            "long_ki": 0.005,
+            "long_kd": 0.16,
+            "long_ki": 0.0075,
         }
         self.downhill_long_pid = {
-            "long_kp": 0.25,
-            "long_kd": 0.15,
-            "long_ki": 0.01
+            "long_kp": 0.2,
+            "long_kd": 0.1,
+            "long_ki": 0
         }
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
@@ -59,18 +59,15 @@ class SimplePIDController(Controller):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         error = curr_speed - self.target_speed
 
-        if self.agent.vehicle.transform.rotation.pitch > 10:
+        if self.agent.vehicle.transform.rotation.pitch > 8:
             # up hill
             kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
                 "long_ki"]
         elif self.agent.vehicle.transform.rotation.pitch < -8:
             kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
                          self.downhill_long_pid["long_ki"]
-            if error < -0.2:
-                error = -0.5 * error
         else:
             kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
-
         self.long_error_queue.append(error)
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
         error_it = sum(self.long_error_queue)
@@ -78,4 +75,6 @@ class SimplePIDController(Controller):
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
+        if self.agent.vehicle.transform.rotation.pitch < -8:
+            long_control = np.clip(long_control, -1, 0.2)
         return long_control

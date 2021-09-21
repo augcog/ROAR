@@ -38,7 +38,7 @@ class LineFollowingAgent(Agent):
                                              error_scaling=[
                                                  (20, 0.1),
                                                  (40, 0.75),
-                                                 (60, 1),
+                                                 (60, 1.15),
                                                  (80, 1.25),
                                                  (100, 1.5),
                                                  (200, 3)
@@ -49,11 +49,11 @@ class LineFollowingAgent(Agent):
                                              upper_range=self.upper_range,
                                              error_scaling=[
                                                  (20, 0.1),
-                                                 (40, 0.2),
+                                                 (40, 0.4),
                                                  (60, 0.6),
                                                  (70, 0.7),
-                                                 (80, 0.8),
-                                                 (100, 1),
+                                                 (80, 1),
+                                                 (100, 1.5),
                                                  (200, 3)
                                              ]
             )
@@ -65,6 +65,9 @@ class LineFollowingAgent(Agent):
                     return self.execute_prev_command()
                 else:
                     # is down slope, execute previous command as-is
+                    # get the PID for downhill
+                    long_control = self.controller.long_pid_control()
+                    self.vehicle.control.throttle = long_control
                     return self.vehicle.control
 
             # we only want to follow the furthest thing we see.
@@ -121,6 +124,6 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = 1
         self.logger.info("Cannot see line, executing prev cmd")
         self.prev_steerings.append(self.vehicle.control.steering)
-        self.vehicle.control.throttle = 0.2
+        self.vehicle.control.throttle = 0.18
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control
