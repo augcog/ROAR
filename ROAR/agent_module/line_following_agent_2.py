@@ -19,7 +19,7 @@ class LineFollowingAgent(Agent):
         # self.lower_range = (0, 0, 170)  # low range of color
         # self.upper_range = (130, 130, 255)  # high range of color
         self.lower_range = (0, 160, 160)  # low range of color
-        self.upper_range = (120, 255, 255)  # high range of color
+        self.upper_range = (140, 255, 255)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
 
