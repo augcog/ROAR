@@ -3,7 +3,7 @@ from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
 # from ROAR.agent_module.ios_agent import iOSAgent
-from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
+# from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
