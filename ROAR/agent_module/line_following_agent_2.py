@@ -30,6 +30,12 @@ class LineFollowingAgent(Agent):
             depth_data = self.front_depth_camera.data
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
+
+
+            # im2 = self.rgb2ycbcr(rgb_data)
+            # cv2.imshow("im2", im2)
+            # cv2.waitKey(1)
+
             # find the lane
             error_at_10 = self.find_error_at(data=rgb_data,
                                              y_offset=10,
@@ -127,3 +133,9 @@ class LineFollowingAgent(Agent):
         self.vehicle.control.throttle = 0.18
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control
+
+    def rgb2ycbcr(self, im):
+        xform = np.array([[.299, .587, .114], [-.1687, -.3313, .5], [.5, -.4187, -.0813]])
+        ycbcr = im.dot(xform.T)
+        ycbcr[:, :, [1, 2]] += 128
+        return np.uint8(ycbcr)
