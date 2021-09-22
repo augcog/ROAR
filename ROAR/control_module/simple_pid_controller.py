@@ -66,7 +66,7 @@ class SimplePIDController(Controller):
         elif self.agent.vehicle.transform.rotation.pitch < -10:
             kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
                          self.downhill_long_pid["long_ki"]
-            return -0.5
+            return -0.2
         else:
             kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
         self.long_error_queue.append(error)
