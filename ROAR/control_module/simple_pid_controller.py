@@ -76,5 +76,5 @@ class SimplePIDController(Controller):
         e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
         if self.agent.vehicle.transform.rotation.pitch < -8:
-            long_control = np.clip(long_control, -1, -.1)
+            long_control = np.clip(long_control, -1, -.05)
         return long_control
