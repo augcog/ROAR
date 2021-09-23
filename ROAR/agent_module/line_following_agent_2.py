@@ -34,8 +34,8 @@ class LineFollowingAgent(Agent):
             cv2.imshow("depth", self.front_depth_camera.data)
             cropped_depth = self.front_depth_camera.data[150:, :]
             avg_depth = np.average(cropped_depth)
-            print(avg_depth)
-            if avg_depth < 1:
+            print("avg depth", avg_depth)
+            if avg_depth < 0.65:
                 return VehicleControl(throttle=0, steering=0)
             # im2 = self.rgb2ycbcr(rgb_data)
             # cv2.imshow("im2", im2)
