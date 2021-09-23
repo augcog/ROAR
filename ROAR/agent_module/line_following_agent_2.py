@@ -31,7 +31,11 @@ class LineFollowingAgent(Agent):
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
 
-
+            cv2.imshow("depth", self.front_depth_camera.data)
+            cropped_depth = self.front_depth_camera.data[150:, :]
+            avg_depth = np.average(cropped_depth)
+            if avg_depth < 1:
+                return VehicleControl(0, 0)
             # im2 = self.rgb2ycbcr(rgb_data)
             # cv2.imshow("im2", im2)
             # cv2.waitKey(1)
@@ -62,7 +66,7 @@ class LineFollowingAgent(Agent):
                                                  (100, 1.5),
                                                  (200, 3)
                                              ]
-            )
+                                             )
 
             if error_at_10 is None and error_at_50 is None:
                 # did not see the line
@@ -85,6 +89,7 @@ class LineFollowingAgent(Agent):
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
+
             # self.logger.info(f"line recognized: {error}| control: {self.vehicle.control}")
             return self.vehicle.control
         else:
@@ -128,7 +133,7 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = -1
         else:
             self.vehicle.control.steering = 1
-        self.logger.info("Cannot see line, executing prev cmd")
+        # self.logger.info("Cannot see line, executing prev cmd")
         self.prev_steerings.append(self.vehicle.control.steering)
         self.vehicle.control.throttle = 0.18
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
