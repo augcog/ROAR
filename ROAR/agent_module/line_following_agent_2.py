@@ -33,11 +33,12 @@ class LineFollowingAgent(Agent):
 
             regularized_depth = depth_data / np.max(depth_data)
             cv2.imshow("depth", regularized_depth)
-            cropped_depth = regularized_depth[150:, :]
+            cropped_depth = regularized_depth[150:170,:]
             avg_depth = np.average(cropped_depth)
+            cv2.imshow("cropped_depth", cropped_depth)
             print("avg depth", avg_depth)
-            if avg_depth < 0.13:
-                return VehicleControl(throttle=0, steering=0)
+            if avg_depth < 1:
+                return VehicleControl(throttle=-0.1, steering=0)
             # im2 = self.rgb2ycbcr(rgb_data)
             # cv2.imshow("im2", im2)
             # cv2.waitKey(1)
