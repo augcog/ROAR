@@ -31,8 +31,9 @@ class LineFollowingAgent(Agent):
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
 
-            cv2.imshow("depth", self.front_depth_camera.data)
-            cropped_depth = self.front_depth_camera.data[150:, :]
+            regularized_depth = depth_data / np.max(depth_data)
+            cv2.imshow("depth", regularized_depth)
+            cropped_depth = regularized_depth[150:, :]
             avg_depth = np.average(cropped_depth)
             print("avg depth", avg_depth)
             if avg_depth < 0.65:
