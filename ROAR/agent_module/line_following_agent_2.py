@@ -31,14 +31,14 @@ class LineFollowingAgent(Agent):
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
 
-            regularized_depth = depth_data / np.max(depth_data)
-            cv2.imshow("depth", regularized_depth)
-            cropped_depth = regularized_depth[150:170,:]
-            avg_depth = np.average(cropped_depth)
-            cv2.imshow("cropped_depth", cropped_depth)
-            print("avg depth", avg_depth)
-            if avg_depth < 1:
-                return VehicleControl(throttle=-0.1, steering=0)
+            # regularized_depth = depth_data / np.max(depth_data)
+            # cv2.imshow("depth", regularized_depth)
+            # cropped_depth = regularized_depth[150:170,:]
+            # avg_depth = np.average(cropped_depth)
+            # cv2.imshow("cropped_depth", cropped_depth)
+            # print("avg depth", avg_depth)
+            # if avg_depth < 1:
+            #     return VehicleControl(throttle=-0.1, steering=0)
             # im2 = self.rgb2ycbcr(rgb_data)
             # cv2.imshow("im2", im2)
             # cv2.waitKey(1)
