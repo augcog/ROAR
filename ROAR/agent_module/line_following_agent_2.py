@@ -18,8 +18,11 @@ class LineFollowingAgent(Agent):
         # BGR
         # self.lower_range = (0, 0, 170)  # low range of color
         # self.upper_range = (130, 130, 255)  # high range of color
-        self.lower_range = (0, 160, 160)  # low range of color
-        self.upper_range = (140, 255, 255)  # high range of color
+        # self.lower_range = (0, 160, 160)  # low range of color
+        # self.upper_range = (140, 255, 255)  # high range of color
+
+        self.lower_range = (0, 130, 15)  # low range of color
+        self.upper_range = (250, 170, 50)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
 
@@ -30,6 +33,7 @@ class LineFollowingAgent(Agent):
             depth_data = self.front_depth_camera.data
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
+            data = self.rgb2ycbcr(rgb_data)
 
             # regularized_depth = depth_data / np.max(depth_data)
             # cv2.imshow("depth", regularized_depth)
@@ -44,7 +48,7 @@ class LineFollowingAgent(Agent):
             # cv2.waitKey(1)
 
             # find the lane
-            error_at_10 = self.find_error_at(data=rgb_data,
+            error_at_10 = self.find_error_at(data=data,
                                              y_offset=10,
                                              lower_range=self.lower_range,
                                              upper_range=self.upper_range,
