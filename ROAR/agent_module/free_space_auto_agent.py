@@ -40,8 +40,13 @@ class FreeSpaceAutoAgent(Agent):
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             pcd = self.depth_to_pcd.run_in_series()
             points: np.ndarray = np.asarray(pcd.points)
-
-            self.logger.info(f"{self.vehicle.transform}")
+            colors: np.ndarray = np.asarray(pcd.colors)
+            ground_locs = np.where(points[:, 1] < np.mean(points[:, 1]))
+            points = points[ground_locs]
+            colors = colors[ground_locs]
+            pcd.points = o3d.utility.Vector3dVector(points)
+            pcd.colors = o3d.utility.Vector3dVector(colors)
+            # self.logger.info(f"{self.vehicle.transform}")
             self.occu_map.update(points)
             self.occu_map.visualize()
             self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,

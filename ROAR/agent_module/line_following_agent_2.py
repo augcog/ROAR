@@ -18,8 +18,11 @@ class LineFollowingAgent(Agent):
         # BGR
         # self.lower_range = (0, 0, 170)  # low range of color
         # self.upper_range = (130, 130, 255)  # high range of color
-        self.lower_range = (0, 160, 160)  # low range of color
-        self.upper_range = (120, 255, 255)  # high range of color
+        # self.lower_range = (0, 160, 160)  # low range of color
+        # self.upper_range = (140, 255, 255)  # high range of color
+
+        self.lower_range = (0, 130, 15)  # low range of color
+        self.upper_range = (250, 170, 50)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
 
@@ -30,15 +33,29 @@ class LineFollowingAgent(Agent):
             depth_data = self.front_depth_camera.data
             rgb_data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                               dsize=(depth_data.shape[1], depth_data.shape[0]))
+            data = self.rgb2ycbcr(rgb_data)
+
+            # regularized_depth = depth_data / np.max(depth_data)
+            # cv2.imshow("depth", regularized_depth)
+            # cropped_depth = regularized_depth[150:170,:]
+            # avg_depth = np.average(cropped_depth)
+            # cv2.imshow("cropped_depth", cropped_depth)
+            # print("avg depth", avg_depth)
+            # if avg_depth < 1:
+            #     return VehicleControl(throttle=-0.1, steering=0)
+            # im2 = self.rgb2ycbcr(rgb_data)
+            # cv2.imshow("im2", im2)
+            # cv2.waitKey(1)
+
             # find the lane
-            error_at_10 = self.find_error_at(data=rgb_data,
+            error_at_10 = self.find_error_at(data=data,
                                              y_offset=10,
                                              lower_range=self.lower_range,
                                              upper_range=self.upper_range,
                                              error_scaling=[
                                                  (20, 0.1),
                                                  (40, 0.75),
-                                                 (60, 1),
+                                                 (60, 1.15),
                                                  (80, 1.25),
                                                  (100, 1.5),
                                                  (200, 3)
@@ -49,14 +66,14 @@ class LineFollowingAgent(Agent):
                                              upper_range=self.upper_range,
                                              error_scaling=[
                                                  (20, 0.1),
-                                                 (40, 0.2),
+                                                 (40, 0.4),
                                                  (60, 0.6),
                                                  (70, 0.7),
-                                                 (80, 0.8),
-                                                 (100, 1),
+                                                 (80, 1),
+                                                 (100, 1.5),
                                                  (200, 3)
                                              ]
-            )
+                                             )
 
             if error_at_10 is None and error_at_50 is None:
                 # did not see the line
@@ -65,6 +82,9 @@ class LineFollowingAgent(Agent):
                     return self.execute_prev_command()
                 else:
                     # is down slope, execute previous command as-is
+                    # get the PID for downhill
+                    long_control = self.controller.long_pid_control()
+                    self.vehicle.control.throttle = long_control
                     return self.vehicle.control
 
             # we only want to follow the furthest thing we see.
@@ -76,6 +96,7 @@ class LineFollowingAgent(Agent):
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
+
             # self.logger.info(f"line recognized: {error}| control: {self.vehicle.control}")
             return self.vehicle.control
         else:
@@ -119,8 +140,14 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = -1
         else:
             self.vehicle.control.steering = 1
-        self.logger.info("Cannot see line, executing prev cmd")
+        # self.logger.info("Cannot see line, executing prev cmd")
         self.prev_steerings.append(self.vehicle.control.steering)
-        self.vehicle.control.throttle = 0.2
+        self.vehicle.control.throttle = 0.18
         # self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control
+
+    def rgb2ycbcr(self, im):
+        xform = np.array([[.299, .587, .114], [-.1687, -.3313, .5], [.5, -.4187, -.0813]])
+        ycbcr = im.dot(xform.T)
+        ycbcr[:, :, [1, 2]] += 128
+        return np.uint8(ycbcr)
