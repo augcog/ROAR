@@ -37,7 +37,7 @@ class NvidiaModel(nn.Module):
         return output
 
 
-class ForwardOnlyAgent(Agent):
+class BCAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.model = torch.load("/home/michael/Desktop/projects/ROAR/misc/model.h5")
@@ -52,5 +52,5 @@ class ForwardOnlyAgent(Agent):
             obs = torch.unsqueeze(obs, 0)
             obs = obs.float().to(self.device)
             steering = self.model(obs)
-            return VehicleControl(throttle=0.4, steering=steering.data.item())
-        return VehicleControl(throttle=0.4, steering=0)
+            return VehicleControl(throttle=0.5, steering=steering.data.item())
+        return VehicleControl(throttle=0.5, steering=0)
