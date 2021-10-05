@@ -13,7 +13,7 @@ class SimplePIDController(Controller):
         self.long_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
 
         self.target_speed = 1  # m / s
-        self.min_throttle, self.max_throttle = -0.6, 0.4
+        self.min_throttle, self.max_throttle = 0, 0.4
 
         self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
@@ -75,6 +75,6 @@ class SimplePIDController(Controller):
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
-        if self.agent.vehicle.transform.rotation.pitch < -15:
-            long_control = np.clip(long_control, -1, -.05)
+        # if self.agent.vehicle.transform.rotation.pitch < -15:
+        #     long_control = np.clip(long_control, -1, -.05)
         return long_control

@@ -16,28 +16,39 @@ class LineFollowingAgent(Agent):
         super().__init__(vehicle, agent_settings, **kwargs)
         # declare color tolerance
         # BGR
-        # self.lower_range = (0, 0, 170)  # low range of color
-        # self.upper_range = (130, 130, 255)  # high range of color
-        self.rgb_lower_range = (0, 160, 160)  # low range of color
+        # self.rgb_lower_range = (0, 0, 170)  # low range of color
+        # self.rgb_upper_range = (130, 130, 255)  # high range of color
+        self.rgb_lower_range = (0, 160, 160)  # low range of color YELLOW
         self.rgb_upper_range = (140, 255, 255)  # high range of color
 
         # (-128, -50; 0, 70) + 128
         # 150 - 200, 0 - 60; 150, 96
-        self.ycbcr_lower_range = (0, 140, 0)  # low range of color
-        self.ycbcr_upper_range = (250, 200, 80)  # high range of color
+        # self.ycbcr_lower_range = (0, 220, 60)  # low range of color YELLOW
+        # self.ycbcr_upper_range = (250, 240, 130)  # high range of color
+        self.ycbcr_lower_range = (0, 180, 60)  # low range of color
+        self.ycbcr_upper_range = (250, 240, 140)  # high range of color
         self.controller = SimplePIDController(agent=self)
         self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
+        if self.front_depth_camera.data is not None:
+            depth_data = self.front_depth_camera.data
+            roi = depth_data[3*depth_data.shape[0]//4:, :]
+            cv2.imshow("roi", roi)
+            cv2.imshow("depth", depth_data)
+            dist = np.average(roi)
+            print(dist)
+            if dist < 0.25:
+                return VehicleControl(throttle=0, steering=0)
+        if self.front_rgb_camera.data is not None:
             # make rgb and depth into the same shape
             depth_data = self.front_depth_camera.data
             data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
                                           dsize=(depth_data.shape[1], depth_data.shape[0]))
-            cv2.imshow("rgb_mask", cv2.inRange(data, self.rgb_lower_range, self.rgb_upper_range))
+            # cv2.imshow("rgb_mask", cv2.inRange(data, self.rgb_lower_range, self.rgb_upper_range))
             data = self.rgb2ycbcr(data)
-            cv2.imshow("ycbcr_mask", cv2.inRange(data, self.ycbcr_lower_range, self.ycbcr_upper_range))
+            # cv2.imshow("ycbcr_mask", cv2.inRange(data, self.ycbcr_lower_range, self.ycbcr_upper_range))
             # find the lane
             error_at_10 = self.find_error_at(data=data,
                                              y_offset=10,
@@ -97,7 +108,13 @@ class LineFollowingAgent(Agent):
     def find_error_at(self, data, y_offset, error_scaling, lower_range, upper_range) -> Optional[float]:
         y = data.shape[0] - y_offset
         lane_x = []
-        mask = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
+        mask_red = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
+        mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))
+        mask = mask_red | mask_yellow
+
+        cv2.imshow("mask", mask)
+        cv2.imshow("mask_red", mask_red)
+        cv2.imshow("mask_yellow", mask_yellow)
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
@@ -125,6 +142,8 @@ class LineFollowingAgent(Agent):
 
     def execute_prev_command(self):
         # no lane found, execute the previous control with a decaying factor
+        self.logger.info("Executing prev")
+
         if np.average(self.prev_steerings) < 0:
             self.vehicle.control.steering = -1
         else:
