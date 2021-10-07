@@ -22,7 +22,6 @@ for i in range(len(center_depth_paths)):
 
     # rgb = cv2.imread(center_rgb_paths[i].as_posix())
     # steering_angle = np.load(veh_states_paths[i])[-2]
-    print(np.shape(depth))
     # depth = crop_roi(depth, min_x=0, max_x=, min_y=, max_y=)
     cv2.imshow("depth", depth)
     # cv2.imshow("rgb", rgb)
