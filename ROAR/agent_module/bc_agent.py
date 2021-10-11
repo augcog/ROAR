@@ -6,33 +6,41 @@ import torch
 import torch.nn as nn
 
 
-class NvidiaModel(nn.Module):
+class CarModel(nn.Module):
     def __init__(self):
-        super(NvidiaModel, self).__init__()
+        super(CarModel, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(1, 24, 5, stride=2),
+            nn.Conv2d(in_channels=1, out_channels=24, kernel_size=5),
             nn.ELU(),
-            nn.Conv2d(24, 36, 5, stride=2),
+            nn.MaxPool2d(kernel_size=2),
+
+            nn.Conv2d(24, 48, 5),
             nn.ELU(),
-            nn.Conv2d(36, 48, 5, stride=2),
+            nn.MaxPool2d(kernel_size=2),
+
+            nn.Conv2d(48, 96, 5),
             nn.ELU(),
-            nn.Conv2d(48, 64, 3),
-            nn.ELU(),
-            nn.Conv2d(64, 64, 3),
-            nn.Dropout(0.25),
+            nn.MaxPool2d(2),
+            nn.Dropout(p=0.5)
         )
         self.linear_layers = nn.Sequential(
-            nn.Linear(in_features=404736, out_features=50),
+            nn.LazyLinear(out_features=100),
+            nn.Dropout(),
             nn.ELU(),
+
+            nn.Linear(in_features=100, out_features=50),
+            nn.Dropout(),
+            nn.ELU(),
+
             nn.Linear(in_features=50, out_features=10),
+            nn.ELU(),
             nn.Linear(in_features=10, out_features=1)
         )
 
     def forward(self, input):
-        input = input.view(input.size(0), 1, 600, 800)
+        input = torch.reshape(input, (1, 1, 600, 800))
         output = self.conv_layers(input)
-        output = torch.flatten(output)
-        self.linear_layers[0].forward(output)
+        output = output.flatten()
         output = self.linear_layers(output)
         return output
 
@@ -40,7 +48,7 @@ class NvidiaModel(nn.Module):
 class BCAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.model = torch.load("/home/michael/Desktop/projects/ROAR/misc/model.h5")
+        self.model = torch.load("/home/michael/Desktop/projects/ROAR/misc/data/best_model_oct_10.h5")
         self.model.training = False
         self.model.eval()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -51,6 +59,6 @@ class BCAgent(Agent):
             obs = torch.tensor(self.front_depth_camera.data)
             obs = torch.unsqueeze(obs, 0)
             obs = obs.float().to(self.device)
-            steering = self.model(obs)
-            return VehicleControl(throttle=0.5, steering=steering.data.item())
+            steering = self.model(obs).data.item()
+            return VehicleControl(throttle=0.5, steering=steering)
         return VehicleControl(throttle=0.5, steering=0)
