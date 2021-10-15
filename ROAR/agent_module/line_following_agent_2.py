@@ -38,14 +38,12 @@ class LineFollowingAgent(Agent):
             cv2.imshow("roi", roi)
             cv2.imshow("depth", depth_data)
             dist = np.average(roi)
-            print(dist)
             if dist < 0.25:
                 return VehicleControl(throttle=0, steering=0)
         if self.front_rgb_camera.data is not None:
             # make rgb and depth into the same shape
-            depth_data = self.front_depth_camera.data
             data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
-                                          dsize=(depth_data.shape[1], depth_data.shape[0]))
+                                          dsize=(192, 256))
             # cv2.imshow("rgb_mask", cv2.inRange(data, self.rgb_lower_range, self.rgb_upper_range))
             data = self.rgb2ycbcr(data)
             # cv2.imshow("ycbcr_mask", cv2.inRange(data, self.ycbcr_lower_range, self.ycbcr_upper_range))

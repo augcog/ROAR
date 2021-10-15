@@ -5,6 +5,7 @@ from ROAR_iOS.config_model import iOSConfig
 # from ROAR.agent_module.ios_agent import iOSAgent
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
+# from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
 import argparse
