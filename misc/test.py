@@ -6,7 +6,7 @@ from utils import flip, depth2colorjet, crop_roi
 
 img_width, img_height = 64, 64
 
-data_dir = Path("/home/michael/Desktop/projects/ROAR/data/output")
+data_dir = Path("/data/output_oct_10")
 center_depth_dir = data_dir / "front_depth"
 center_depth_paths = [p for p in sorted(center_depth_dir.glob("*.npy", ), key=os.path.getmtime)]
 center_rgb_dir = data_dir / "front_rgb"
