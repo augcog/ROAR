@@ -40,7 +40,7 @@ class NvidiaModel(nn.Module):
 class ForwardOnlyAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.model = torch.load("/home/michael/Desktop/projects/ROAR/misc/model.h5")
+        self.model = torch.load("/home/michael/Desktop/projects/ROAR/misc/model_1.h5")
         self.model.training = False
         self.model.eval()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

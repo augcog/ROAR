@@ -5,12 +5,9 @@ from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.bc_agent import BCAgent
-from ROAR.agent_module.michael_pid_agent import PIDAgent
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
-# from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 import argparse
 from misc.utils import str2bool
-from misc.model import CarModel
 
 
 def main(args):

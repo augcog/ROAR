@@ -163,31 +163,36 @@ import torch.nn as nn
 import torch
 
 class CarModel(nn.Module):
-    def __init__(self, batch_size=1):
+    def __init__(self, batch_size=1, image_width=800, image_height=600):
         super(CarModel, self).__init__()
         self.batch_size = batch_size
+        self.image_width = image_width
+        self.image_height = image_height
         self.conv_layers = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=24, kernel_size=5),
-            nn.MaxPool2d(kernel_size=2),
             nn.ELU(),
+            nn.MaxPool2d(kernel_size=2),
+
 
             nn.Conv2d(24, 48, 5),
-            nn.MaxPool2d(kernel_size=2),
             nn.ELU(),
+            nn.MaxPool2d(kernel_size=2),
+
 
             nn.Conv2d(48, 96, 5),
-            nn.MaxPool2d(2),
             nn.ELU(),
+            nn.MaxPool2d(2),
+
             nn.Dropout(p=0.5)
         )
         self.linear_layers = nn.Sequential(
             nn.LazyLinear(out_features=256),
-            nn.Dropout(),
             nn.ELU(),
+            nn.Dropout(),
 
             nn.Linear(in_features=256, out_features=256 // 2),
-            nn.Dropout(),
             nn.ELU(),
+            nn.Dropout(),
 
             nn.Linear(in_features=256 // 2, out_features=256 // 4),
             nn.ELU(),
@@ -195,7 +200,7 @@ class CarModel(nn.Module):
         )
 
     def forward(self, input):
-        input = torch.reshape(input, (self.batch_size, 1, 60, 80))
+        input = torch.reshape(input, (self.batch_size, 1, self.image_height, self.image_width))
         output = self.conv_layers(input)
         output = output.flatten()
         output = self.linear_layers(output)
