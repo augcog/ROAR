@@ -4,8 +4,9 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
 # from ROAR.agent_module.ios_agent import iOSAgent
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
-from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
+# from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
 # from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
 import argparse
@@ -39,7 +40,7 @@ if __name__ == '__main__':
         )
         ios_config.ar_mode = True if args.mode == "ar" else False
 
-        agent = LineFollowingAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+        agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
         ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
         ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:

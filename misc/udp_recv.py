@@ -32,12 +32,10 @@ def main():
     while True:
         seg, addr = s.recvfrom(MAX_DGRAM)
         prefix_num = int(seg[0:3].decode('ascii'))
-        print(prefix_num)
         if prefix_num > 1:
             dat += seg[3:]
         else:
             dat += seg[3:]
-            print(len(dat))
             try:
                 img = np.frombuffer(dat, dtype=np.uint8)
                 img = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)
@@ -48,7 +46,6 @@ def main():
             except Exception as e:
                 print(e)
             dat = b''
-            print()
 
     cv2.destroyAllWindows()
     s.close()
