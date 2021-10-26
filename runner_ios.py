@@ -6,6 +6,7 @@ from ROAR_iOS.config_model import iOSConfig
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 # from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
 # from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.aruco_following_agent import ArucoFollowingAgent
 from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
 from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
@@ -17,7 +18,6 @@ import cv2
 import numpy as np
 import socket
 import json
-
 
 
 class mode_list(list):
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
 
         if success or args.reconnect is False:
-            agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = ArucoFollowingAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
             ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:

@@ -51,5 +51,6 @@ def loadCalib(caliberation_file: Path):
 
 if __name__ == '__main__':
     intrinsics, distortion, new_intrinsics, roi = loadCalib(Path("calib.npz"))
-    main(markerSize=5, totalMarkers=250, should_draw_axis=True,
-         intrinsics=intrinsics, distortion=distortion)
+    print(type(intrinsics), type(distortion))
+    # main(markerSize=5, totalMarkers=250, should_draw_axis=True,
+    #      intrinsics=intrinsics, distortion=distortion)
