@@ -12,7 +12,7 @@ class ArucoFollowingAgent(Agent):
         key = getattr(aruco, f'DICT_{5}X{5}_{250}')
         self.arucoDict = aruco.Dictionary_get(key)
         self.arucoParam = aruco.DetectorParameters_create()
-        self.tracking_id = 2
+        self.tracking_id = 0
         self.marker_length = 0.1  # in meters
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -27,23 +27,23 @@ class ArucoFollowingAgent(Agent):
                                                                                self.front_rgb_camera.distortion_coefficient)
                 x, y, z = tvec[0][0]
                 print(x,y,z)
-                cv2.aruco.drawAxis(img,
-                                   self.front_rgb_camera.intrinsics_matrix,
-                                   self.front_rgb_camera.distortion_coefficient,
-                                   rvec,
-                                   tvec,
-                                   self.marker_length)
+                # cv2.aruco.drawAxis(img,
+                #                    self.front_rgb_camera.intrinsics_matrix,
+                #                    self.front_rgb_camera.distortion_coefficient,
+                #                    rvec,
+                #                    tvec,
+                #                    self.marker_length)
 
                 cv2.putText(img, f"{tvec}",
                             (10, 50),
                             cv2.FONT_HERSHEY_SIMPLEX,
                             1,
                             (0, 0, 255), 2)
-                cv2.putText(img, f"{rvec}",
-                            (10, 100),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1,
-                            (0, 0, 255), 2)
+                # cv2.putText(img, f"{rvec}",
+                #             (10, 100),
+                #             cv2.FONT_HERSHEY_SIMPLEX,
+                #             1,
+                #             (0, 0, 255), 2)
 
                 cv2.imshow("img", img)
                 cv2.waitKey(1)
