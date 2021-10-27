@@ -15,7 +15,7 @@ def main():
 
     # Set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind(('192.168.1.10', 8001))
+    s.bind(('192.168.1.10', 8002))
     dat = b''
 
     while True:

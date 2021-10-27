@@ -12,6 +12,7 @@ import argparse
 from misc.utils import str2bool
 from ROAR.utilities_module.utilities import NvidiaModel
 
+
 def main(args):
     """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/carla/carla_agent_configuration.json"))
@@ -27,9 +28,6 @@ def main(args):
         logging.error(f"Something bad happened during initialization: {e}")
         carla_runner.on_finish()
         logging.error(f"{e}. Might be a good idea to restart Server")
-
-
-
 
 
 if __name__ == "__main__":
