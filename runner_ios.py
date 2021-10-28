@@ -91,7 +91,7 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
 
         if success or args.reconnect is False:
-            agent = TrafficLightDectectorAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
             ios_runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:

@@ -11,5 +11,8 @@ class ForwardOnlyAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
+        if self.front_depth_camera.data is not None:
+            cv2.imshow("depth", self.front_depth_camera.data)
+            cv2.waitKey(1)
         # self.logger.info(self.vehicle.get_speed(self.vehicle))
         return VehicleControl(throttle=0.4, steering=0)
