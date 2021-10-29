@@ -2,6 +2,7 @@ from pathlib import Path
 from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR_iOS.config_model import iOSConfig
+from ROAR_Unity.unity_runner import iOSUnityRunner
 # from ROAR.agent_module.ios_agent import iOSAgent
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 # from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
@@ -74,6 +75,8 @@ if __name__ == '__main__':
     parser.add_argument("--auto", type=str2bool, default=False, help="True to use auto control")
     parser.add_argument("-m", "--mode", choices=choices, help="AR or VR", default="vr")
     parser.add_argument("-r", "--reconnect", type=str2bool, default=True, help="Scan QR code to attach phone to PC")
+    parser.add_argument("-u", "--use_unity", type=str2bool, default=False,
+                        help="Use unity as rendering and control service")
     args = parser.parse_args()
 
     try:
@@ -92,7 +95,10 @@ if __name__ == '__main__':
 
         if success or args.reconnect is False:
             agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
-            ios_runner = iOSRunner(agent=agent, ios_config=ios_config)
-            ios_runner.start_game_loop(auto_pilot=args.auto)
+            if args.use_unity:
+                runner = iOSUnityRunner(agent=agent, ios_config=ios_config)
+            else:
+                runner = iOSRunner(agent=agent, ios_config=ios_config)
+            runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:
         print(f"Something bad happened: {e}")
