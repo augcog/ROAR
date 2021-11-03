@@ -21,17 +21,4 @@ class ForwardOnlyAgent(Agent):
         if self.front_depth_camera.data is not None:
             cv2.imshow("depth", self.front_depth_camera.data)
             cv2.waitKey(1)
-        fps = 1 / (time.time() - self.start)
-        self.log.append(fps)
-        self.start = time.time()
-        # self.logger.info(self.vehicle.get_speed(self.vehicle))
-        # if self.front_rgb_camera.data is not None:
-        #     frame = self.front_rgb_camera.data.copy()
-        #     s = frame.shape
-        #     height = 3 * s[1] // 4
-        #     min_y = s[0] - height
-        #     max_y = s[0]
-        #     display_view = frame[min_y:max_y, :]
-        #     cv2.imshow("front rgb", cv2.resize(display_view, dsize=(1080, 810)))
-        #     cv2.waitKey(1)
         return VehicleControl(throttle=0.4, steering=0)
