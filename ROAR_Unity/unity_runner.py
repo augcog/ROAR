@@ -10,7 +10,7 @@ from typing import Optional, Tuple
 from ROAR_Unity.unity_server import UnityServer
 from ROAR_iOS.depth_cam_streamer import DepthCamStreamer
 from ROAR_iOS.rgb_camera_streamer import RGBCamStreamer
-from ROAR_iOS.transform_streamer import VehStateStreamer
+from ROAR_iOS.veh_state_streamer import VehicleStateStreamer
 from ROAR_iOS.control_streamer import ControlStreamer
 import numpy as np
 import cv2
@@ -38,10 +38,10 @@ class iOSUnityRunner:
                                                    update_interval=0.025,
                                                    pc_port=8002
                                                    )
-        self.veh_state_streamer = VehStateStreamer(ios_addr=self.ios_config.ios_ip_addr,
-                                                   ios_port=self.ios_config.ios_port,
-                                                   name=self.ios_config.veh_state_route_name,
-                                                   update_interval=0.01)
+        self.veh_state_streamer = VehicleStateStreamer(pc_port=8003,
+                                                       threaded=True,
+                                                       name="vehicle state streamer",
+                                                       update_interval=0.025)
         self.control_streamer = ControlStreamer(ios_addr=self.ios_config.ios_ip_addr,
                                                 ios_port=self.ios_config.ios_port,
                                                 name=self.ios_config.control_route_name)
