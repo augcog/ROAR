@@ -43,7 +43,7 @@ def showIPUntilAck():
             try:
                 s.listen()
 
-                cv2.imshow("Scan this code to connect to phone", img)
+                cv2.imshow("Scan this code  to connect to phone", img)
                 k = cv2.waitKey(1) & 0xff
                 if k == ord('q') or k == 27:
                     s.close()
@@ -55,7 +55,7 @@ def showIPUntilAck():
                     success = True
                     break
             except socket.timeout as e:
-                logging.info(f"Please tap on the ip address to scan QR code. {e}")
+                logging.info(f"Please tap on the ip address to scan QR code. ({get_ip()}:{8008}). {e}")
     except Exception as e:
         logging.error(f"Unable to bind socket: {e}")
     finally:
