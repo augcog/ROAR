@@ -43,7 +43,7 @@ def showIPUntilAck():
             try:
                 s.listen()
 
-                cv2.imshow("Scan this code  to connect to phone", img)
+                cv2.imshow("Scan this code to connect to phone", img)
                 k = cv2.waitKey(1) & 0xff
                 if k == ord('q') or k == 27:
                     s.close()
@@ -72,9 +72,9 @@ if __name__ == '__main__':
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--auto", type=str2bool, default=False, help="True to use auto control")
-    parser.add_argument("-m", "--mode", choices=choices, help="AR or VR", default="vr")
-    parser.add_argument("-r", "--reconnect", type=str2bool, default=True, help="Scan QR code to attach phone to PC")
+    parser.add_argument("-auto", action='store_true', help="Enable auto control")
+    parser.add_argument("-m", "--mode", choices=choices, help="AR or VR [WARNING not implemented yet!]", default="vr")
+    parser.add_argument("-r", "--reconnect", action='store_true', help="Scan QR code to attach phone to PC")
     parser.add_argument("-u", "--use_unity", type=str2bool, default=False,
                         help="Use unity as rendering and control service")
     args = parser.parse_args()

@@ -44,21 +44,34 @@ class Module(Thread):
         Returns:
 
         """
-        if self.update_interval <= 0.025:
-            while self.should_continue_threaded:
-                start = time.time()
-                self.run_in_series()
-                if self.should_save:
-                    self.save()
-                end = time.time()
-                if end - start < self.update_interval * 1000:
-                    time.sleep((end-start)*0.001)
+        # s = time.time()
+        while self.should_continue_threaded:
+            start = time.time()
+            self.run_in_series()
+            if self.should_save:
+                self.save()
+            end = time.time()
+            if end - start < self.update_interval:
+                time.sleep(self.update_interval - (end-start))
 
-        else:
-            while self.should_continue_threaded and self.stopped.wait(self.update_interval):
-                self.run_in_series()
-                if self.should_save:
-                    self.save()
+            # print(f"fps: {1 / (time.time() - s)}")
+            # s = time.time()
+
+        # if self.update_interval <= 0.025:
+        #     while self.should_continue_threaded:
+        #         start = time.time()
+        #         self.run_in_series()
+        #         if self.should_save:
+        #             self.save()
+        #         end = time.time()
+        #         if end - start < self.update_interval * 1000:
+        #             time.sleep((end-start)*0.001)
+        #
+        # else:
+        #     while self.should_continue_threaded and self.stopped.wait(self.update_interval):
+        #         self.run_in_series()
+        #         if self.should_save:
+        #             self.save()
 
     def shutdown(self):
         self.should_continue_threaded = False
