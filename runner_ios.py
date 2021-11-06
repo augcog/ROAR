@@ -6,7 +6,7 @@ from ROAR_Unity.unity_runner import iOSUnityRunner
 # from ROAR.agent_module.ios_agent import iOSAgent
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
 # from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
-# from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.traffic_light_detector_agent import TrafficLightDectectorAgent
 from ROAR.agent_module.aruco_following_agent import ArucoFollowingAgent
 from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
