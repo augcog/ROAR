@@ -4,15 +4,18 @@ from simple_websocket_server import WebSocketServer, WebSocket
 import logging
 from ROAR.utilities_module.vehicle_models import VehicleControl
 import threading
+
 frame = None
 throttle = 0
 steering = 0
 
-
 class SimpleUnityWebsocketServer(WebSocket):
     def handle(self):
-        global frame
-        print(self.data)
+        global frame, throttle, steering
+        t, s = self.data.split(",")
+        throttle = float(t)
+        steering = float(s)
+
         if frame is not None:
             frame = cv2.flip(cv2.rotate(frame, cv2.ROTATE_180), 1)
             ret, encoded_frame = cv2.imencode('.jpg', img=frame)
@@ -35,16 +38,9 @@ class UnityServer:
 
         self.logger.debug("Initiated")
 
-    def get_throttle(self):
-        global throttle
-        return throttle
-
-    def get_steering(self):
-        global steering
-        return steering
-
     def get_control(self):
-        return VehicleControl(throttle=self.get_throttle(), steering=self.get_steering())
+        c = VehicleControl(throttle=throttle, steering=steering)
+        return c
 
     def update_frame(self, new_frame):
         global frame

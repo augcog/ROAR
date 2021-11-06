@@ -27,24 +27,21 @@ class iOSUnityRunner:
         self.logger = logging.getLogger("iOS Runner")
         self.unity_server = UnityServer(host="127.0.0.1", port=8009)
         self.world_cam_streamer = RGBCamStreamer(pc_port=8001,
-                                                 name="world rgb streamer",
-                                                 resize=(self.pygame_display_height,
-                                                         self.pygame_display_width),
-                                                 update_interval=0.025,
-                                                 threaded=True
-                                                 )
+                                                 name="world_rgb_streamer",
+                                                 update_interval=0.01,
+                                                 threaded=True)
         self.depth_cam_streamer = DepthCamStreamer(name=self.ios_config.depth_cam_route_name,
                                                    threaded=True,
-                                                   update_interval=0.025,
+                                                   update_interval=0.01,
                                                    pc_port=8002
                                                    )
         self.veh_state_streamer = VehicleStateStreamer(pc_port=8003,
                                                        threaded=True,
-                                                       name="vehicle state streamer",
-                                                       update_interval=0.025)
-        self.control_streamer = ControlStreamer(ios_addr=self.ios_config.ios_ip_addr,
-                                                ios_port=self.ios_config.ios_port,
-                                                name=self.ios_config.control_route_name)
+                                                       name="vehicle_state_streamer",
+                                                       update_interval=0.01)
+        self.control_streamer = ControlStreamer(pc_port=8004,
+                                                threaded=False,
+                                                name="control_streamer")
 
         self.front_cam_display_size: Tuple[int, int] = (100, 480)
         self.front_cam_offsets = (self.pygame_display_width // 2 - self.front_cam_display_size[1] // 2, 0)
@@ -95,10 +92,10 @@ class iOSUnityRunner:
             self.agent.add_threaded_module(self.world_cam_streamer)
         else:
             self.world_cam_streamer.connect()
-            # self.depth_cam_streamer.connect()
+            self.depth_cam_streamer.connect()
             self.veh_state_streamer.connect()
             self.agent.add_threaded_module(self.world_cam_streamer)
-            # self.agent.add_threaded_module(self.depth_cam_streamer)
+            self.agent.add_threaded_module(self.depth_cam_streamer)
             self.agent.add_threaded_module(self.veh_state_streamer)
         try:
             self.unity_server.startAsync()
@@ -113,13 +110,12 @@ class iOSUnityRunner:
                                                     sensors_data=sensor_data)
 
                 control = self.unity_server.get_control()
-
                 if auto_pilot:
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
-
-                control.throttle = np.clip(0, -self.ios_config.max_throttle,
+                control.throttle = np.clip(control.throttle, -self.ios_config.max_throttle,
                                            self.ios_config.max_throttle)
-                control.steering = np.clip(0 + self.ios_config.steering_offset,
+
+                control.steering = np.clip(control.steering + self.ios_config.steering_offset,
                                            -self.ios_config.max_steering,
                                            self.ios_config.max_steering)
                 if self.should_smoothen_control:
@@ -154,15 +150,6 @@ class iOSUnityRunner:
 
     def convert_data(self):
         try:
-            rear_rgb = None
-            # if self.ios_config.ar_mode:
-            # pass
-            #     self.world_cam_streamer.receive()
-            # else:
-            #     self.world_cam_streamer.receive()
-            #     self.depth_cam_streamer.receive()
-            #     self.transform_streamer.receive()
-
             if self.ios_config.ar_mode and self.world_cam_streamer.curr_image is not None:
                 front_rgb = cv2.rotate(self.world_cam_streamer.curr_image, cv2.ROTATE_90_CLOCKWISE)
             else:
@@ -173,7 +160,6 @@ class iOSUnityRunner:
                     {
                         "front_rgb": front_rgb,
                         "front_depth": self.depth_cam_streamer.curr_image,
-                        "rear_rgb": rear_rgb
                     }
                 )
             vehicle = self.ios_bridge.convert_vehicle_from_source_to_agent(
