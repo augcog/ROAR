@@ -18,9 +18,9 @@ class iOSBridge(Bridge):
 
     def convert_rotation_from_source_to_agent(self, source: Rotation) -> Rotation:
         r = Rotation(
-            roll=-np.rad2deg(source.pitch),
-            pitch=np.rad2deg(source.yaw)+90,
-            yaw=-np.rad2deg(source.roll)
+            roll=np.rad2deg(source.pitch),
+            pitch=np.rad2deg(source.roll),
+            yaw=np.rad2deg(source.yaw)
         )
         return r
 

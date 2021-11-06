@@ -70,7 +70,7 @@ class Vehicle(BaseModel):
         return math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
     def to_array(self):
-        return np.concatenate([self.velocity.to_array(), self.transform.to_array(), self.control.to_array()])
+        return np.concatenate([self.transform.to_array(), self.velocity.to_array(), self.acceleration.to_array(), self.control.to_array()])
 
     def __repr__(self):
         return f"Location: {self.transform.location.__str__()} | Rotation: {self.transform.rotation.__str__()} | " \
