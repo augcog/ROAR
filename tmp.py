@@ -1,12 +1,27 @@
+from pathlib import Path
+from ROAR_iOS.ios_runner import iOSRunner
+from ROAR.configurations.configuration import Configuration as AgentConfig
+from ROAR_iOS.config_model import iOSConfig
+from ROAR_Unity.unity_runner import iOSUnityRunner
+# from ROAR.agent_module.ios_agent import iOSAgent
+# from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
+# from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
+from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.traffic_light_detector_agent import TrafficLightDectectorAgent
+from ROAR.agent_module.aruco_following_agent import ArucoFollowingAgent
+from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
+from ROAR.utilities_module.vehicle_models import Vehicle
 import logging
-import time
-
+import argparse
+from misc.utils import str2bool
 from ROAR.utilities_module.utilities import get_ip
 import qrcode
 import cv2
 import numpy as np
 import socket
-import struct
+import json
+import requests
+
 
 def showIPUntilAck():
     img = np.array(qrcode.make(f"{get_ip()}").convert('RGB'))
@@ -43,81 +58,4 @@ def showIPUntilAck():
         cv2.destroyWindow("Scan this code to connect to phone")
     return success, addr
 
-
-def recv(s: socket.socket):
-    buffer_num = -1
-    log = dict()
-    while True:
-        seg, addr = s.recvfrom(9620)
-        prefix_num = int(seg[0:3].decode('ascii'))
-        total_num = int(seg[3:6].decode('ascii'))
-        curr_buffer = int(seg[6:9].decode('ascii'))
-
-        # print(f"BEFORE curr_buff = {curr_buffer} | prefix_num = {prefix_num} "
-        #       f"| total_num = {total_num} | len(log) = {len(log)}")
-        if buffer_num == -1:
-            # initializing
-            buffer_num = curr_buffer
-            if prefix_num != 0:
-                # if the first one is not the starting byte, dump it.
-                print("the first one is not the starting byte")
-                buffer_num = -1
-                log = dict()
-            else:
-                # if the first one is the starting byte, start recording
-                log[prefix_num] = seg[9:]
-        else:
-            if prefix_num in log:
-                # if i received a frame from another sequence
-                print("i received a frame from another sequence")
-                buffer_num = -1
-                log = dict()
-            else:
-                log[prefix_num] = seg[9:]
-        # print(f"AFTER curr_buff = {curr_buffer} | prefix_num = {prefix_num} | total_num = {total_num} "
-        #       f"| len(log) = {len(log)} | log.keys = {list(sorted(log.keys()))}")
-
-        if len(log) - 1 == total_num:
-            data = b''
-            for k in sorted(log.keys()):
-                data += log[k]
-            # print()
-            return data
-
-
-def client_test():
-    msgFromClient = "Hello UDP Server"
-    bytesToSend = str.encode(msgFromClient)
-    serverAddressPort = ("10.0.0.26", 8001)
-    bufferSize = 1024
-    # Create a UDP socket at client side
-    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    while True:
-        # Send to server using created UDP socket
-        start = time.time()
-        UDPClientSocket.sendto(b"hello", serverAddressPort)
-
-        # print("message sent")
-        data = recv(UDPClientSocket)
-
-        img_data = data[16:]
-        intrinsics = data[:16]
-        fx, fy, cx, cy = struct.unpack('f', intrinsics[0:4])[0], \
-                         struct.unpack('f', intrinsics[4:8])[0], \
-                         struct.unpack('f', intrinsics[8:12])[0], \
-                         struct.unpack('f', intrinsics[12:16])[0]
-        intrinsics = np.array([
-            [fx, 0, cx],
-            [0, fy, cy],
-            [0, 0, 1]
-        ])
-        # print(intrinsics)
-        img = np.frombuffer(img_data, dtype=np.uint8)
-        img = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)
-        cv2.imshow("img", img)
-        cv2.waitKey(1)
-        print(f"fps = {1 / (time.time() - start)}")
-
-
-if __name__ == '__main__':
-    client_test()
+showIPUntilAck()

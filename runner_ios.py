@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 import socket
 import json
+import requests
 
 
 class mode_list(list):
@@ -64,6 +65,13 @@ def showIPUntilAck():
     return success, addr
 
 
+def is_glove_online(host, port):
+    r = requests.get(url=f"http://{host}:{port}", timeout=1)
+    if r.status_code == 200:
+        return True
+    return False
+
+
 if __name__ == '__main__':
     choices = mode_list(['ar', 'vr'])
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -77,6 +85,8 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--reconnect", action='store_true', help="Scan QR code to attach phone to PC")
     parser.add_argument("-u", "--use_unity", type=str2bool, default=False,
                         help="Use unity as rendering and control service")
+    parser.add_argument("-g", "--use_glove", action='store_true',
+                        help="use glove based controller by supplying its ip address!")
     args = parser.parse_args()
 
     try:
@@ -85,6 +95,16 @@ if __name__ == '__main__':
         agent_config = AgentConfig.parse_file(agent_config_file_path)
         ios_config: iOSConfig = iOSConfig.parse_file(ios_config_file_path)
         ios_config.ar_mode = True if args.mode == "ar" else False
+        if args.use_glove:
+            try:
+                is_glove_online(args.use_glove, port=81)
+                ios_config.glove_ip_addr = args.use_glove
+                ios_config.should_use_glove = True
+            except requests.exceptions.ConnectTimeout as e:
+                print(f"ERROR. Cannot find Glove at that ip address {args.use_glove}. Shutting down...")
+                exit(0)
+        else:
+            ios_config.should_use_glove = False
 
         success = False
         if args.reconnect:
