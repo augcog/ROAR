@@ -85,8 +85,7 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--reconnect", action='store_true', help="Scan QR code to attach phone to PC")
     parser.add_argument("-u", "--use_unity", type=str2bool, default=False,
                         help="Use unity as rendering and control service")
-    parser.add_argument("-g", "--use_glove", action='store_true',
-                        help="use glove based controller by supplying its ip address!")
+    parser.add_argument("-g", "--use_glove", help="use glove based controller by supplying its ip address!")
     args = parser.parse_args()
 
     try:
