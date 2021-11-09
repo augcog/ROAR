@@ -26,8 +26,8 @@ class Location(BaseModel):
     def distance(self, other_location):
         """Euclidean distance between current location and other location"""
         return distance.euclidean(
-            (self.x, self.z),
-            (other_location.x, other_location.z),
+            (self.x, self.y, self.z),
+            (other_location.x, other_location.y, other_location.z),
         )
 
     def __add__(self, other):
@@ -150,9 +150,6 @@ class Vector3D(BaseModel):
 
     def to_array(self):
         return np.array([self.x, self.y, self.z])
-
-    def __str__(self):
-        return f"{round(self.x, 3)}, {round(self.y, 3)}, {round(self.z, 3)}"
 
 
 class RGBData(BaseModel):

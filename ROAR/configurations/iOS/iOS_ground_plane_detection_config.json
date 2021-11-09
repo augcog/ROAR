@@ -1,5 +1,0 @@
-{
-  "distance_threshold": 0.1,
-  "ransac_n": 3,
-  "num_iterations": 1000
-}

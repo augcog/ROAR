@@ -31,7 +31,9 @@ class CarlaBridge(Bridge):
         invert the Z axis to make it into right hand coordinate system
         Args:
             source: carla.location
+
         Returns:
+
         """
         return Location(x=source.x, y=source.z, z=source.y)
         # return Location(x=source.x, y=source.y, z=source.z)
@@ -40,7 +42,7 @@ class CarlaBridge(Bridge):
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
         roll, pitch, yaw = source.roll, source.pitch, source.yaw
         if yaw <= 90:
-            yaw = yaw + 90
+            yaw = yaw+90
         else:
             yaw = yaw - 270
         return Rotation(roll=roll, pitch=pitch, yaw=-yaw)

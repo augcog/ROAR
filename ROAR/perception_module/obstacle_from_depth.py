@@ -24,6 +24,7 @@ class ObstacleFromDepth(Detector):
         if self.agent.front_depth_camera.data is not None:
             depth_img = self.agent.front_depth_camera.data.copy()
             coords = np.where(depth_img < self.max_detectable_distance)
+
             indices_to_select = np.random.choice(np.shape(coords)[1],
                                                  size=min([self.max_points_to_convert, np.shape(coords)[1]]),
                                                  replace=False)

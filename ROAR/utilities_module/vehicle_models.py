@@ -39,9 +39,6 @@ class VehicleControl(BaseModel):
         data = data.decode('utf-8').split(',')
         return VehicleControl(throttle=float(data[0]), steering=float(data[1]))
 
-    def __str__(self):
-        return f"throttle={round(self.throttle, 3)}, steering = {round(self.steering, 3)}"
-
 
 class Vehicle(BaseModel):
     """
@@ -60,6 +57,7 @@ class Vehicle(BaseModel):
 
     @staticmethod
     def get_speed(vehicle):
+        # TODO consider the jetson case
         """
         Compute speed of a vehicle in Km/h.
 

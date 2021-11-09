@@ -103,11 +103,11 @@ class LatPIDController(Controller):
 
     def run_in_series(self, next_waypoint: Transform, **kwargs) -> float:
         # calculate a vector that represent where you are going
-        v_begin = self.agent.vehicle.transform.location
+        v_begin = self.agent.vehicle.control.location
         v_end = v_begin + Location(
-            x=math.cos(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            x=math.cos(math.radians(self.agent.vehicle.control.rotation.pitch)),
             y=0,
-            z=math.sin(math.radians(self.agent.vehicle.transform.rotation.pitch)),
+            z=math.sin(math.radians(self.agent.vehicle.control.rotation.pitch)),
         )
         v_vec = np.array([v_end.x - v_begin.x, 0, v_end.z - v_begin.z])
         # calculate error projection

@@ -3,7 +3,7 @@ import logging
 from ROAR.utilities_module.module import Module
 from ROAR.utilities_module.vehicle_models import VehicleControl
 from ROAR.utilities_module.data_structures_models import Transform
-from typing import Optional
+
 
 class Controller(Module):
     def __init__(self, agent, **kwargs):
@@ -12,7 +12,7 @@ class Controller(Module):
         self.logger = logging.getLogger("Controller")
 
     @abstractmethod
-    def run_in_series(self, next_waypoint: Optional[Transform], **kwargs) \
+    def run_in_series(self, next_waypoint: Transform, **kwargs) \
             -> VehicleControl:
         """
         Abstract function for run step
