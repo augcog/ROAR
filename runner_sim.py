@@ -4,11 +4,11 @@ from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from ROAR.agent_module.pure_pursuit_agent import PurePursuitAgent
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.agent_module.bc_agent import BCAgent
-from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+# from ROAR.agent_module.bc_agent import BCAgent
+# from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
+from ROAR.agent_module.michael_pid_agent import PIDAgent
 import argparse
 from misc.utils import str2bool
-
 
 
 def main(args):
@@ -20,8 +20,8 @@ def main(args):
                                npc_agent_class=PurePursuitAgent)
     try:
         my_vehicle = carla_runner.set_carla_world()
-        agent = BCAgent(vehicle=my_vehicle,
-                        agent_settings=agent_config)
+        agent = PIDAgent(vehicle=my_vehicle,
+                         agent_settings=agent_config)
         carla_runner.start_game_loop(agent=agent,
                                      use_manual_control=not args.auto)
     except Exception as e:
