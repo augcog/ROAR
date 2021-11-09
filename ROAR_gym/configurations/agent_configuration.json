@@ -1,0 +1,66 @@
+{
+  "front_depth_cam": {
+    "fov": 70,
+    "transform": {
+      "location": {
+        "x": 1.6,
+        "y": 1.7,
+        "z": 0.0
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "front_rgb_cam": {
+    "fov": 70,
+    "transform": {
+      "location": {
+        "x": 1.6,
+        "y": 1.7,
+        "z": 0.0
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "rear_rgb_cam": {
+    "fov": 145,
+    "transform": {
+      "location": {
+        "x": -1.5,
+        "y": 1.4,
+        "z": 0.0
+      },
+      "rotation": {
+        "pitch": 180.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "image_size_x": 800,
+    "image_size_y": 600
+  },
+  "occu_map_config_path": "../ROAR_Sim/configurations/occu_map_config.json",
+  "obstacle_from_depth_config_path": "../ROAR_Sim/configurations/obstacle_from_depth_config.json",
+
+  "waypoint_file_path": "../ROAR_Sim/data/easy_map_waypoints.txt",
+  "pid_config_file_path": "../ROAR_Sim/configurations/pid_config.json",
+  "simple_waypoint_local_planner_config_file_path": "../ROAR_Sim/configurations/simple_waypoint_local_planner_config.json",
+  "output_data_folder_path": "./output",
+  "enable_autopilot": true,
+  "spawn_point_id": 1,
+  "show_sensors_data": true,
+  "save_sensor_data": false,
+  "max_speed": 130
+}
+

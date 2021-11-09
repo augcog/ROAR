@@ -1,0 +1,22 @@
+{
+  "spline_points": 10000,
+  "prev_cte": 0,
+  "cte_coeff": 100,
+  "epsi_coeff": 100,
+  "speed_coeff": 0.4,
+  "acc_coeff": 1,
+  "steer_coeff": 0.1,
+  "consec_acc_coeff": 50,
+  "consec_steer_coeff": 50,
+
+  "front_wheel_L": 2.5,
+
+  "steps_poly": 30,
+  "poly_degree": 3,
+
+  "max_throttle": 1,
+  "max_steering": 1,
+  "steps_ahead": 10,
+  "target_speed": 10000,
+  "dt": 0.1
+}

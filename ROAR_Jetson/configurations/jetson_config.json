@@ -1,0 +1,74 @@
+{
+  "jetson_config": {
+    "jetson_sudo_password_file_path": "configurations/jetson_sudo_setup.json",
+    "pygame_display_width": 640,
+    "pygame_display_height": 480,
+    "pygameless": true
+},
+  "agent_config": {
+    "front_depth_cam": {
+      "fov": 70,
+      "transform": {
+        "location": {
+          "x": 1.6,
+          "y": 0,
+          "z": 1.7
+        },
+        "rotation": {
+          "pitch": 0.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      "image_size_x": 640,
+      "image_size_y": 480
+    },
+    "front_rgb_cam": {
+      "fov": 70,
+      "transform": {
+        "location": {
+          "x": 1.6,
+          "y": 0.0,
+          "z": 1.7
+        },
+        "rotation": {
+          "pitch": 0.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      "image_size_x": 640,
+      "image_size_y": 480
+    },
+    "rear_rgb_cam": {
+      "fov": 145,
+      "transform": {
+        "location": {
+          "x": -1.5,
+          "y": 0.0,
+          "z": 1.4
+        },
+        "rotation": {
+          "pitch": 0.0,
+          "yaw": 180.0,
+          "roll": 0.0
+        }
+      },
+      "image_size_x": 800,
+      "image_size_y": 600
+    },
+    "absolute_maximum_map_size": 1000,
+    "waypoint_file_path": "./data/easy_map_waypoints.txt",
+
+    "pid_config_path":  "./configurations/pid_config.json",
+    "mpc_config_path": "./configurations/mpc_config.json",
+
+    "simple_waypoint_following_local_planner_path": "./configurations/simple_waypoint_following_local_planner.json",
+
+    "output_data_folder_path": "./data/output/",
+    "enable_autopilot": true,
+    "spawn_point_id": 1,
+    "show_sensors_data": false,
+    "save_sensor_data": false
+  }
+}

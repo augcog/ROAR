@@ -1,0 +1,17 @@
+{
+    "jetson_sudo_password_file_path": "./ROAR_Jetson/configurations/jetson_sudo_setup.json",
+    "pygame_display_width": 640,
+    "pygame_display_height": 480,
+    "pygameless": true,
+    "vive_tracker_host": "192.168.1.19",
+    "vive_tracker_port": 8000,
+    "vive_tracker_name": "tracker_1",
+    "motor_max": 1600,
+    "motor_min": 1400,
+    "win_serial_port": "COM6",
+    "use_vive_tracker": false,
+    "use_d435i": true,
+    "use_t265": true,
+    "use_arduino": true
+
+}

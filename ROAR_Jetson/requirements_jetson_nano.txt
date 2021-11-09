@@ -1,0 +1,5 @@
+certifi==2019.11.28
+numpy==1.18.2
+Pillow==7.0.0
+pygame==1.9.6
+pyserial

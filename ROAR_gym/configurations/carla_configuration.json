@@ -1,0 +1,35 @@
+{
+  "host": "127.0.0.1",
+  "port": 2000,
+  "timeout": 5.0,
+  "width": 1280,
+  "height": 720,
+  "carla_weather": {
+    "cloudiness": 10.0,
+    "precipitation": 0.0,
+    "precipitation_deposits": 0.0,
+    "wind_intensity": 0.0,
+    "sun_azimuth_angle": 90.0,
+    "sun_altitude_angle": 90.0,
+    "fog_density": 0.0,
+    "fog_distance": 0.0,
+    "wetness": 0.0
+  },
+  "carla_vehicle_blueprint_filter": "vehicle.tesla.model3",
+  "role_name": "hero",
+  "car_color": {
+    "r": 255,
+    "g": 0,
+    "b": 0,
+    "a": 255
+  },
+  "gamma": 2.2,
+  "save_semantic_segmentation": false,
+  "print_keyboard_hint": false,
+  "synchronous_mode": false,
+  "no_rendering_mode": false,
+  "fixed_delta_seconds": 0.05,
+  "should_spawn_npcs": false,
+  "npc_config_file_path": "../ROAR_Sim/configurations/npc_config.json",
+  "agent_config_path": "./configurations/agent_configuration.json"
+}

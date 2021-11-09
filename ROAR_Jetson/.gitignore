@@ -1,0 +1,4 @@
+__pycache__
+configurations/jetson_sudo_setup.json
+vive/data
+data

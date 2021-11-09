@@ -1,0 +1,3 @@
+[submodule "ROAR/ROAR_Jetson"]
+	path = ROAR/ROAR_Jetson
+	url = https://github.com/augcog/ROAR_Jetson.git

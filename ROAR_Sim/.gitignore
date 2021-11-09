@@ -1,0 +1,15 @@
+data/output
+data/weights/opencv_weights_and_config
+data/*.zip
+*/__pycache__/
+*__pycache__
+.idea
+.vscode
+site
+.ipynb_checkpoints
+data/easy_map_waypoints.json
+data/easy_default_waypoints.txt
+*__pycache__*
+/configurations/jetson_sudo_setup.json
+*.h5
+.DS_Store
