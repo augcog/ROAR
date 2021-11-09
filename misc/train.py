@@ -46,9 +46,9 @@ def load_depth_images(dir, regex="/*.npy") -> List:
 
 
 def load_data():
-    rgb_images = load_images(Path("../data/output/front_rgb/"), regex="/frame_*")
-    vehicle_states = load_vehicle_states(dir=Path("../data/output/vehicle_state"))
-    # depth_images = load_depth_images(dir=Path("../data/output/front_depth"))
+    rgb_images = load_images(Path("../data/output_oct_10/front_rgb/"), regex="/frame_*")
+    vehicle_states = load_vehicle_states(dir=Path("../data/output_oct_10/vehicle_state"))
+    # depth_images = load_depth_images(dir=Path("../data/output_oct_10/front_depth"))
     X = rgb_images
     y = np.array(vehicle_states)[:, -1]
 

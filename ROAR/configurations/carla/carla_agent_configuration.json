@@ -65,7 +65,7 @@
       [0,0,-1]
     ]
   },
-  "waypoint_file_path": "./ROAR_Sim/data/10_03_2021_10.txt",
+  "waypoint_file_path": "./ROAR_Sim/data/racetrack_2.txt",
   "pid_config_file_path": "./ROAR/configurations/carla/carla_pid_config.json",
   "simple_waypoint_local_planner_config_file_path": "./ROAR/configurations/carla/carla_simple_waypoint_local_planner_config.json",
   "output_data_folder_path": "./data/output",
