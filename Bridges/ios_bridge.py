@@ -12,8 +12,8 @@ class iOSBridge(Bridge):
     def convert_location_from_source_to_agent(self, source) -> Location:
         return Location(
             x=source.x,
-            y=source.y,
-            z=source.z
+            y=-source.z,
+            z=source.y
         )
 
     def convert_rotation_from_source_to_agent(self, source: Rotation) -> Rotation:
@@ -25,7 +25,7 @@ class iOSBridge(Bridge):
         return r
 
     def convert_transform_from_source_to_agent(self, source: Transform) -> Transform:
-        return Transform(location=source.location, rotation=self.convert_rotation_from_source_to_agent(source.rotation))
+        return Transform(location=self.convert_location_from_source_to_agent(source.location), rotation=self.convert_rotation_from_source_to_agent(source.rotation))
 
     def convert_control_from_source_to_agent(self, source: VehicleControl) -> VehicleControl:
         return source
@@ -61,7 +61,11 @@ class iOSBridge(Bridge):
         if transform is not None:
             vehicle.transform = self.convert_transform_from_source_to_agent(transform)
         if velocity is not None:
-            vehicle.velocity = velocity
+            vehicle.velocity = Vector3D(
+                x=velocity.x,
+                y=-velocity.z,
+                z=velocity.y,
+            )
         if control is not None:
             vehicle.control = self.convert_control_from_source_to_agent(control)
         if acceleration is not None:
