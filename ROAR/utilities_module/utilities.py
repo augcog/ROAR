@@ -1,5 +1,7 @@
 import numpy as np
 import socket
+
+
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -15,7 +17,7 @@ def get_ip():
 
 def png_to_depth(im: np.array) -> np.array:
     """
-    Takes in an image read from cv2.imread(), whose output is simply a numpy
+    Takes in an image read from cv2.imread(), whose output_oct_10 is simply a numpy
     array,
     turn it into a depth image according to carla's method of
     (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1).

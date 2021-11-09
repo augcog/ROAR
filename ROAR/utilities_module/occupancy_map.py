@@ -184,9 +184,9 @@ class OccupancyGridMap(Module):
                   vehicle_value: Optional[int] = None):
         """
         if transform is None:
-            Visualize the entire map, output size constraint to (500,500)
+            Visualize the entire map, output_oct_10 size constraint to (500,500)
         else:
-            Visualize an ego centric view, output size constraint to (500,500)
+            Visualize an ego centric view, output_oct_10 size constraint to (500,500)
         Args:
             transform: vehicle transform
             view_size: size of the view

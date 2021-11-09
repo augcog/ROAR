@@ -1,62 +1,65 @@
-import logging
-from websocket import create_connection
+import time
 from typing import List, Optional, Tuple, List
 import cv2
 import numpy as np
+import sys, os
 from pathlib import Path
-from ROAR.utilities_module.module import Module
+import time
 
-import datetime
+sys.path.append(Path(os.getcwd()).parent.as_posix())
+from ROAR_iOS.udp_receiver import UDPStreamer
+import struct
+from collections import deque
+
+MAX_DGRAM = 9600
 
 
-class RGBCamStreamer(Module):
-    def save(self, **kwargs):
-        if self.curr_image is not None:
-            cv2.imwrite((self.dir_path / f"{self.name}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.jpg").as_posix(),
-                        self.curr_image)
-
-    def __init__(self, host, port, show=False, resize: Optional[Tuple] = None,
-                 name: str = "world_cam", threaded: bool = True,
-                 should_record: bool = False, dir_path: Path = Path("./data/images"),
-                 update_interval: float = 0.5):
-        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
-
-        self.logger = logging.getLogger(f"{self.name} server on [{host}:{port}]")
-        self.host = host
-        self.port = port
-        self.ws = None
-
-        self.resize = resize
-        self.show = show
-
+class RGBCamStreamer(UDPStreamer):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.curr_image: Optional[np.ndarray] = None
-        self.should_record = should_record
-        self.dir_path = dir_path / f"{self.name}"
-        if self.dir_path.exists() is False:
-            self.dir_path.mkdir(parents=True, exist_ok=True)
-        self.logger.info(f"{name} initialized")
-
-    def receive(self):
-        try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
-            img = self.ws.recv()
-            # intrinsics = self.ws.recv()
-            try:
-                img = np.frombuffer(img, dtype=np.uint8)
-                self.curr_image = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)[:, :, :3]
-                # intrinsics = np.frombuffer(img, dtype=np.float64)
-            except Exception as e:
-                pass
-                # self.logger.error(f"Failed to decode image: {e}")
-        except Exception as e:
-            pass
-            # self.logger.error(f"Failed to get image: {e}")
-            self.curr_image = None
+        self.intrinsics: Optional[np.ndarray] = None
 
     def run_in_series(self, **kwargs):
-        self.receive()
+        try:
+            data = self.recv()
+            if data is None:
+                return
+            img_data = data[16:]
+            intrinsics = data[:16]
+            fx, fy, cx, cy = struct.unpack('f', intrinsics[0:4])[0], \
+                             struct.unpack('f', intrinsics[4:8])[0], \
+                             struct.unpack('f', intrinsics[8:12])[0], \
+                             struct.unpack('f', intrinsics[12:16])[0]
+            self.intrinsics = np.array([
+                [fx, 0, cx],
+                [0, fy, cy],
+                [0, 0, 1]
+            ])
+
+            img = np.frombuffer(img_data, dtype=np.uint8)
+            img = cv2.imdecode(img, cv2.IMREAD_UNCHANGED)
+            if img is not None:
+                self.curr_image = img
+
+        except OSError:
+            self.should_continue_threaded = False
+
+        except Exception as e:
+            self.logger.error(e)
 
 
 if __name__ == '__main__':
-    ir_image_server = RGBCamStreamer(host="10.142.143.48", port=8005, name="world_cam", show=True)
-    ir_image_server.run_in_series()
+    ir_image_server = RGBCamStreamer(ios_address="10.0.0.26",
+                                     pc_port=8001,
+                                     name="world_rgb_streamer",
+                                     update_interval=0.025,
+                                     threaded=True)
+    # ir_image_server.connect()
+    while True:
+        ir_image_server.run_in_series()
+        if ir_image_server.curr_image is not None:
+            img = ir_image_server.curr_image
+            cv2.imshow("img", cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE))
+            cv2.waitKey(1)
+    # ir_image_server.run_in_series()

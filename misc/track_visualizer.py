@@ -82,7 +82,7 @@ def visualize_track_data(track_data: List[List[float]], file_name:Optional[Path]
     fig.show()
 
 
-def visualize_tracks(data_dir: Path = Path("./data"), width: int = 1000, height: int = 1000,
+def visualize_tracks(data_dir: Path = Path("../ROAR_Gym/data"), width: int = 1000, height: int = 1000,
                      regex: str = "transforms_*"):
     # load tracks
     tracks: Dict[str, List[List[float]]] = dict()  # track_name -> track waypoints
@@ -117,7 +117,7 @@ def visualize_tracks(data_dir: Path = Path("./data"), width: int = 1000, height:
     fig.show()
 
 
-def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000, height: int = 1000,
+def visualize_tracks_together(data_dir: Path = Path("../ROAR_Gym/data"), width: int = 1000, height: int = 1000,
                               regex: str = "transforms_*"):
     # load tracks
     tracks: Dict[str, List[List[float]]] = dict()  # track_name -> track waypoints
@@ -138,8 +138,11 @@ def visualize_tracks_together(data_dir: Path = Path("./data"), width: int = 1000
 
 
 if __name__ == "__main__":
-    file_name = Path("../data/output/transform/08_08_2021_23_3.txt")
-    # track_data: List[List[float]] = read_txt(file_name)
-    # visualize_track_data(track_data=track_data, file_name=file_name)
+    file_name = Path("/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/transforms_6_19_orig_1.txt")
+    track_data: List[List[float]] = read_txt(file_name)
+    # track_data = swapCols(track_data)
+    # save(track_data)
+
+    visualize_track_data(track_data=track_data, file_name=file_name)
     # visualize_tracks(regex="trajectory_log*")
     # visualize_tracks_together(data_dir=Path("../data/output/transform"), regex="08*.txt")

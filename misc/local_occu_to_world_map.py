@@ -40,7 +40,7 @@ def save_meta(data: np.ndarray, meta_data_file_path: Path):
 
 
 if __name__ == "__main__":
-    meta_data_folder_path = Path("../data/output/occupancy_map/")
+    meta_data_folder_path = Path("../data/output_oct_10/occupancy_map/")
     meta_data_file_path = meta_data_folder_path / "meta_data.npy"
     # save_meta(data=np.array([-1500, -1500, 1500, 1500, 40]), meta_data_file_path=Path("../ROAR_Sim/data/berkeley_minor_occu_map_meta_data.npy"))
 

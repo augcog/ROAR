@@ -8,6 +8,7 @@ import numpy as np
 class VehicleControl(BaseModel):
     throttle: float = Field(default=0)
     steering: float = Field(default=0)
+    brake: bool = Field(default=False)
 
     @staticmethod
     def clamp(n, minn, maxn):
@@ -46,6 +47,7 @@ class Vehicle(BaseModel):
 
     velocity: Optional[Vector3D] = Field(default=Vector3D(x=0, y=0, z=0))
     transform: Optional[Transform] = Field(default=Transform())
+    acceleration: Optional[Vector3D] = Field(default=Vector3D(x=0, y=0, z=0))
     control: VehicleControl = Field(default=VehicleControl())  # ?
     wheel_base: float = Field(
         default=2.875,
@@ -63,7 +65,11 @@ class Vehicle(BaseModel):
             :return: speed as a float in Km/h
         """
         vel = vehicle.velocity
-        return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
+        return 3.6*math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
     def to_array(self):
-        return np.concatenate([self.velocity.to_array(), self.transform.to_array(), self.control.to_array()])
+        return np.concatenate([self.transform.to_array(), self.velocity.to_array(), self.acceleration.to_array(), self.control.to_array()])
+
+    def __repr__(self):
+        return f"Location: {self.transform.location.__str__()} | Rotation: {self.transform.rotation.__str__()} | " \
+               f"Velocity: {self.velocity.__str__()} | Acceleration: {self.acceleration.__str__()}"

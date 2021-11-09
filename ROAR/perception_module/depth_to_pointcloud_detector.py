@@ -34,40 +34,42 @@ class DepthToPointCloudDetector(Detector):
 
         :return: 3 x N array of point cloud
         """
-        if self.agent.front_depth_camera.data is not None:
-            # depth_img = self.agent.front_depth_camera.data.copy()
-            # pixel_length = self.agent.front_depth_camera.image_size_x * self.agent.front_depth_camera.image_size_y
-            # u_coord = repmat(np.r_[self.agent.front_depth_camera.image_size_x - 1:-1:-1],
-            #                  self.agent.front_depth_camera.image_size_y, 1).reshape(pixel_length)
-            # v_coord = repmat(np.c_[self.agent.front_depth_camera.image_size_y - 1:-1:-1],
-            #                  1, self.agent.front_depth_camera.image_size_x).reshape(pixel_length)
-            #
-            # normalized_depth = np.reshape(depth_img, pixel_length)
-            # p2d = np.array([u_coord, v_coord, np.ones_like(u_coord)])
-            # p3d = np.dot(np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix), p2d)
-            # return p3d
-            # p3d *= normalized_depth * 1000
-            # return p3d
-            depth_img = self.agent.front_depth_camera.data.copy()
-            coords = np.where(depth_img < 10)  # it will just return all coordinate pairs
-            raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=coords[0], j=coords[1]),
-                                 (3, np.shape(coords)[1])).T  # N x 3
+        if "depth_image" in kwargs:
+            return self.old_way(kwargs["depth_image"])
+        return self.old_way(depth_img=self.agent.front_depth_camera.data.copy())
+        # return self.pcd_via_open3d()
 
-            cords_y_minus_z_x = np.linalg.inv(self.agent.front_depth_camera.intrinsics_matrix) @ raw_p2d.T
-            cords_xyz_1 = np.vstack([
-                cords_y_minus_z_x[0, :],
-                -cords_y_minus_z_x[1, :],
-                -cords_y_minus_z_x[2, :],
-                np.ones((1, np.shape(cords_y_minus_z_x)[1]))
-            ])
-            points = self.agent.vehicle.transform.get_matrix() @ cords_xyz_1
-            points = points.T[:, :3]
-            return points
-        return None
+    def pcd_via_open3d(self):
+        depth_data = self.agent.front_depth_camera.data.copy().astype(np.float32) * self.settings.depth_scale_raw
+        rgb_data: np.ndarray = cv2.resize(self.agent.front_rgb_camera.data.copy(),
+                                          dsize=(depth_data.shape[1], depth_data.shape[0]))
 
-    @staticmethod
-    def find_fps(t1, t2):
-        return 1 / (t2 - t1)
+        rgb_data = cv2.cvtColor(rgb_data, cv2.COLOR_RGB2BGR)
+        rgb = o3d.geometry.Image(rgb_data)
+        depth = o3d.geometry.Image(depth_data)
+        rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color=rgb,
+                                                                  depth=depth,
+                                                                  convert_rgb_to_intensity=False,
+                                                                  depth_scale=1,
+                                                                  depth_trunc=100)
+        intric = self.agent.front_depth_camera.intrinsics_matrix
+        intrinsic = o3d.camera.PinholeCameraIntrinsic(width=rgb_data.shape[0],
+                                                      height=rgb_data.shape[1],
+                                                      fx=intric[0][0],
+                                                      fy=intric[1][1],
+                                                      cx=intric[0][2],
+                                                      cy=intric[1][2])
+        extrinsics = self.agent.vehicle.transform.get_matrix()
+        rot = self.agent.vehicle.transform.rotation
+        extrinsics[0:3, 0:3] = o3d.geometry.get_rotation_matrix_from_xyz(rotation=
+                                                                         np.deg2rad([rot.pitch, rot.yaw, rot.roll]))
+        pcd: o3d.geometry.PointCloud = o3d.geometry.PointCloud. \
+            create_from_rgbd_image(image=rgbd,
+                                   intrinsic=intrinsic,
+                                   extrinsic=extrinsics)
+        if self.settings.should_down_sample:
+            pcd = pcd.voxel_down_sample(self.settings.voxel_down_sample_size)
+        return pcd
 
     @staticmethod
     def _pix2xyz(depth_img, i, j):

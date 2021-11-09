@@ -37,5 +37,4 @@ class PIDAgent(Agent):
                                        sensors_data=sensors_data)
         self.transform_history.append(self.vehicle.transform)
         control = self.local_planner.run_in_series()
-        print(self.vehicle.transform)
         return control

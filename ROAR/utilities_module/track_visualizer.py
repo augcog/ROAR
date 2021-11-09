@@ -34,5 +34,5 @@ def visualize_track_data(track_data: List[List[float]]):
 
 
 if __name__ == "__main__":
-    track_data: List[List[float]] = read_txt(Path("./output/output_fast.txt"))
+    track_data: List[List[float]] = read_txt(Path("./output_oct_10/output_fast.txt"))
     visualize_track_data(track_data=track_data)

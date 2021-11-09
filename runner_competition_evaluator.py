@@ -8,7 +8,7 @@ from ROAR.agent_module.pure_pursuit_agent \
 from ROAR_Sim.carla_client.carla_runner import CarlaRunner
 from typing import Tuple
 from prettytable import PrettyTable
-from ROAR.agent_module.pid_agent import PIDAgent
+from ROAR.agent_module.michael_pid_agent import PIDAgent
 
 
 def compute_score(carla_runner: CarlaRunner) -> Tuple[float, int, int]:
@@ -56,7 +56,7 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = agent_class(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
         return compute_score(carla_runner)
     except Exception as e:
         print(f"something bad happened during initialization: {e}")
@@ -77,14 +77,14 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 2
+    num_trials = 5
     total_score = 0
     num_laps = 2
     table = PrettyTable()
     table.field_names = ["time_elapsed (sec)", "num_collisions", "laps completed"]
     for i in range(num_trials):
         scores = run(agent_class=agent_class,
-                     agent_config_file_path=Path("./ROAR_Sim/configurations/agent_configuration.json"),
+                     agent_config_file_path=Path("./ROAR/configurations/carla/carla_agent_configuration.json"),
                      carla_config_file_path=Path("./ROAR_Sim/configurations/configuration.json"),
                      num_laps=num_laps)
         table.add_row(scores)

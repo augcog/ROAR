@@ -1,0 +1,7 @@
+{
+  "depth_scale_raw": 1,
+  "depth_trunc": 2,
+  "voxel_down_sample_size": 1,
+  "should_down_sample": false,
+  "depth_image_sample_step_size": 5
+}

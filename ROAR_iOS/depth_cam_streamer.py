@@ -1,57 +1,60 @@
-import logging
-from websocket import create_connection
 from typing import List, Optional, Tuple, List
-import cv2
 import numpy as np
+import cv2
+import sys, os
 from pathlib import Path
-from ROAR.utilities_module.module import Module
 
-import datetime
+sys.path.append(Path(os.getcwd()).parent.as_posix())
+from ROAR_iOS.udp_receiver import UDPStreamer
+import struct
+import time
+
+MAX_DGRAM = 9600
 
 
-class DepthCamStreamer(Module):
-    def save(self, **kwargs):
-        if self.curr_image is not None:
-            cv2.imwrite((
-                                self.dir_path / f"{self.name}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')}.jpg").as_posix(),
-                        self.curr_image)
-
-    def __init__(self, host, port, show=False, resize: Optional[Tuple] = None,
-                 name: str = "depth_cam", threaded: bool = True,
-                 should_record: bool = False, dir_path: Path = Path("./data/images"),
-                 update_interval: float = 0.5):
-        super().__init__(threaded=threaded, name=name, update_interval=update_interval)
-        self.logger = logging.getLogger(f"{self.name} server on [{host}:{port}]")
-        self.host = host
-        self.port = port
-        self.ws = None
-
-        self.resize = resize
-        self.show = show
-
+class DepthCamStreamer(UDPStreamer):
+    def __init__(self, resize: Optional[Tuple] = None, **kwargs):
+        super().__init__(**kwargs)
         self.curr_image: Optional[np.ndarray] = None
-        self.should_record = should_record
-        self.dir_path = dir_path / f"{self.name}"
-        if self.dir_path.exists() is False:
-            self.dir_path.mkdir(parents=True, exist_ok=True)
-        self.logger.info(f"{name} initialized")
-
-    def receive(self):
-        try:
-            self.ws = create_connection(f"ws://{self.host}:{self.port}/{self.name}", timeout=0.1)
-            result = self.ws.recv()
-            try:
-                """
-                width=256 height=192 bytesPerRow=1024 pixelFormat=fdep
-                """
-                img: np.ndarray = np.frombuffer(result, dtype=np.float32)
-                self.curr_image = np.rot90(img.reshape((192, 256)), k=-1)
-            except Exception as e:
-                pass
-                # self.logger.error(f"Failed to decode image: {e}")
-        except Exception as e:
-            # self.logger.error(f"Failed to get image: {e}")
-            pass
+        self.resize = resize
+        self.intrinsics: Optional[np.ndarray] = None
 
     def run_in_series(self, **kwargs):
-        self.receive()
+        try:
+            data = self.recv()
+            if data is None:
+                return
+            img_data = data[16:]
+            intrinsics = data[0:16]
+            fx, fy, cx, cy = struct.unpack('f', intrinsics[0:4])[0], \
+                             struct.unpack('f', intrinsics[4:8])[0], \
+                             struct.unpack('f', intrinsics[8:12])[0], \
+                             struct.unpack('f', intrinsics[12:16])[0]
+            self.intrinsics = np.array([
+                [fx, 0, cx],
+                [0, fy, cy],
+                [0, 0, 1]
+            ])
+            img = np.frombuffer(img_data, dtype=np.float32)
+            if img is not None:
+                self.curr_image = np.rot90(img.reshape((144, 256)), k=-1)
+
+        except OSError:
+            self.should_continue_threaded = False
+        except Exception as e:
+            self.logger.error(e)
+
+
+if __name__ == '__main__':
+    ir_image_server = DepthCamStreamer(ios_address="10.0.0.26",
+                                       port=8002,
+                                       name="world_depth_streamer",
+                                       update_interval=0.05,
+                                       threaded=True)
+    # ir_image_server.connect()
+    while True:
+        ir_image_server.run_in_series()
+        if ir_image_server.curr_image is not None:
+            img = ir_image_server.curr_image
+            cv2.imshow("img", img)
+            cv2.waitKey(1)

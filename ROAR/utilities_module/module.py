@@ -42,8 +42,8 @@ class Module(ABC):
             if self.should_save:
                 self.save()
             end = time.time()
-            if end - start < self.update_interval * 1000:
-                time.sleep((end-start)*0.001)
+            if end - start < self.update_interval:
+                time.sleep(self.update_interval - (end-start))
 
     def shutdown(self):
         self.should_continue_threaded = False

@@ -42,6 +42,6 @@ def save_track_as_txt(track: np.ndarray, output_file_path: Path):
 
 
 if __name__ == "__main__":
-    track = generate_track(root_dir=Path("../output/transform"), regex="/*")
+    track = generate_track(root_dir=Path("../output_oct_10/transform"), regex="/*")
     # visualize_track(track=track)
     save_track_as_txt(track=track, output_file_path=Path("./rfs_waypoints_4.txt"))

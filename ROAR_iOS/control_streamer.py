@@ -1,65 +1,35 @@
-import logging
-from ROAR.utilities_module.module import Module
-from ROAR.utilities_module.vehicle_models import VehicleControl
-from typing import Optional, List
+from typing import List, Optional, Tuple, List
+import cv2
+import numpy as np
+import sys, os
 from pathlib import Path
-from websocket import create_connection
-import requests
+import time
+
+sys.path.append(Path(os.getcwd()).parent.as_posix())
+from ROAR_iOS.udp_receiver import UDPStreamer
+from ROAR.utilities_module.vehicle_models import VehicleControl
+import struct
+MAX_DGRAM = 9600
 
 
-class ControlStreamer(Module):
-    def save(self, **kwargs):
-        self.file.write(self.control.record())
+class ControlStreamer(UDPStreamer):
+    def __init__(self, **kwargs):
+        super(ControlStreamer, self).__init__(**kwargs)
+        self.control_tx = VehicleControl()
 
-    def __init__(self, host: str, port: int, name: str = "transform",
-                 threaded: bool = True,
-                 should_record: bool = True, file_path: Path = Path("./data/transforms.txt")):
-        super().__init__(threaded=threaded, name=name)
-        self.logger = logging.getLogger(f"{self.name} server [{host}:{port}]")
-        self.host = host
-        self.port = port
-        self.control: VehicleControl = VehicleControl()
-        self.ws_tx = None
-        self.ws_rx = None
-        self.should_record = should_record
-        self.file_path: Path = file_path
-        self.file = open(self.file_path.as_posix(), "a")
-        self.control_history: List[str] = []
-        self.logger.info(f"{name} initialized")
-
-    def send(self, vehicle_control: VehicleControl):
-        try:
-            param = {
-                "throttle": vehicle_control.throttle,
-                "steering": vehicle_control.steering
-            }
-
-            respond = requests.post(f"http://{self.host}:{self.port}/{self.name}_rx", json=param, timeout=1)
-        except requests.exceptions.Timeout:
-            self.logger.error("Send Timed out")
-        except requests.exceptions.ConnectionError:
-            self.logger.error("Unable to connect")
-        # self.logger.info(f"{param}, {respond.status_code}")
-
-    def receive(self):
-        try:
-            self.ws_rx = create_connection(f"ws://{self.host}:{self.port}/{self.name}_tx")
-            result: bytes = self.ws_rx.recv()
-            try:
-                self.control = VehicleControl.fromBytes(result)
-                if self.should_record:
-                    self.control_history.append(self.control)
-            except Exception as e:
-                pass
-                # self.logger.error(f"Failed to parse data {e}. {result}")
-
-        except Exception as e:
-            pass
-            # self.logger.error(f"Failed to get data: {e}")
+    def send(self, control:VehicleControl):
+        self.control_tx = control
+        string_format = f"{control.throttle},{control.steering}"
+        self._send_data(string_format)
 
     def run_in_series(self, **kwargs):
-        self.receive()
+        pass
 
-    def shutdown(self):
-        super(ControlStreamer, self).shutdown()
-        self.file.close()
+
+if __name__ == '__main__':
+    cs = ControlStreamer(pc_port=8004,
+                         threaded=False,
+                         name="control_streamer")
+    cs.connect()
+    while True:
+        cs.send(VehicleControl(throttle=1, steering=1))
