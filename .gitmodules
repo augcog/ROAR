@@ -7,3 +7,6 @@
 [submodule "ROAR_Gym"]
 	path = ROAR_Gym
 	url = https://github.com/augcog/ROAR_Gym.git
+[submodule "ROAR_iOS"]
+	path = ROAR_iOS
+	url = https://github.com/wuxiaohua1011/ROAR-iOS

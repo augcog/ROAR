@@ -1,9 +1,0 @@
-{
-  "max_speed": 5,
-  "waypoint_file_path": "/Users/michaelwu/Desktop/projects/ROAR/ROAR_iOS/data/rfs_08_24_2021_12.txt",
-  "pid_config_file_path": "ROAR_iOS/configurations/pid_config.json",
-  "simple_waypoint_local_planner_config_file_path": "ROAR_iOS/configurations/simple_waypoint_local_planner_config.json",
-  "obstacle_from_depth_config_path": "ROAR_iOS/configurations/obstacle_from_depth_config.json",
-  "occu_map_config_path": "ROAR_iOS/configurations/occu_map_config.json",
-  "target_speed": 5
-}
