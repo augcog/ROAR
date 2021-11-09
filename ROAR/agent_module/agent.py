@@ -86,7 +86,7 @@ class Agent(ABC):
 
     def write_meta_data(self):
         vehicle_state_file = (self.vehicle_state_output_folder_path / "meta_data.txt").open(mode='w')
-        vehicle_state_file.write("vx,vy,vz,x,y,z,roll,pitch,yaw,throttle,steering")
+        vehicle_state_file.write("x,y,z,roll,pitch,yaw,vx,vy,vz,ax,ay,az,throttle,steering")
         vehicle_state_file.close()
 
     def add_threaded_module(self, module: Module):
