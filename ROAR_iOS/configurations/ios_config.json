@@ -1,0 +1,19 @@
+{
+    "ios_ip_addr": "192.168.1.15",
+    "ios_port": 8005,
+    "world_cam_route_name": "world_cam",
+    "face_cam_route_name": "face_cam",
+    "veh_state_route_name": "veh_state",
+    "control_route_name": "control",
+    "depth_cam_route_name": "world_cam_depth",
+    "ar_mode": false,
+    "max_throttle": 0.2,
+    "max_steering": 1.0,
+    "steering_offset": 0.1,
+    "invert_steering": false,
+    "pygame_display_width": 1080,
+    "pygame_display_height": 810,
+    "should_display_system_status": true,
+    "should_use_glove": true,
+    "glove_ip_addr": "192.168.1.30"
+}
