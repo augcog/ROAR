@@ -13,6 +13,7 @@ import argparse
 from misc.utils import str2bool
 
 
+
 def main(args):
     """Starts game loop"""
     agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/carla/carla_agent_configuration.json"))

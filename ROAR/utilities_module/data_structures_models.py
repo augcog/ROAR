@@ -35,7 +35,7 @@ class Location(BaseModel):
         return Location(x=self.x + other.x, y=self.y + other.y, z=self.z + other.z)
 
     def __str__(self):
-        return f"x: {self.x:.3}, y: {self.y:.3}, z: {self.z:.3}"
+        return f"x: {round(self.x, 3)}, y: {round(self.y, 3)}, z: {round(self.z,3)}"
 
     def __truediv__(self, scalar):
         return Location(x=self.x / scalar, y=self.y / scalar, z=self.z / scalar)
@@ -57,7 +57,7 @@ class Rotation(BaseModel):
     roll: float = Field(..., title="Roll", description="Degree around the X-axis")
 
     def __str__(self):
-        return f"Roll: {round(self.roll, 2)}, Pitch: {round(self.pitch, 2)}, Yaw: {round(self.yaw, 2)}"
+        return f"R: {round(self.roll, 3)}, P: {round(self.pitch, 3)}, Y: {round(self.yaw, 3)}"
 
     def to_array(self) -> np.array:
         return np.array([self.pitch, self.yaw, self.roll])

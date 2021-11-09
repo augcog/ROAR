@@ -13,7 +13,7 @@ class SimplePIDController(Controller):
         self.long_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
 
         self.target_speed = 1  # m / s
-        self.min_throttle, self.max_throttle = -0.6, 0.4
+        self.min_throttle, self.max_throttle = 0, 0.4
 
         self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
@@ -25,8 +25,8 @@ class SimplePIDController(Controller):
             "long_ki": 0.005,
         }
         self.flat_long_pid = {
-            "long_kp": 0.16,
-            "long_kd": 0.16,
+            "long_kp": 0.13,
+            "long_kd": 0.08,
             "long_ki": 0.0075,
         }
         self.downhill_long_pid = {
@@ -42,8 +42,8 @@ class SimplePIDController(Controller):
 
     def lateral_pid_control(self) -> float:
         error = self.agent.kwargs.get("lat_error", 0)
-        self.lat_error_queue.append(error)
         error_dt = 0 if len(self.lat_error_queue) == 0 else error - self.lat_error_queue[-1]
+        self.lat_error_queue.append(error)
         error_it = sum(self.lat_error_queue)
 
         e_p = self.lat_kp * error
@@ -63,18 +63,18 @@ class SimplePIDController(Controller):
             # up hill
             kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
                 "long_ki"]
-        elif self.agent.vehicle.transform.rotation.pitch < -10:
+        elif self.agent.vehicle.transform.rotation.pitch < -30:
             kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
                          self.downhill_long_pid["long_ki"]
         else:
             kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
-        self.long_error_queue.append(error)
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
+        self.long_error_queue.append(error)
         error_it = sum(self.long_error_queue)
         e_p = kp * error
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
-        if self.agent.vehicle.transform.rotation.pitch < -10:
+        if self.agent.vehicle.transform.rotation.pitch < -30:
             long_control = np.clip(long_control, -1, -.05)
         return long_control
