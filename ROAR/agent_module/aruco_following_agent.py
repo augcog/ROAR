@@ -23,10 +23,12 @@ class ArucoFollowingAgent(Agent):
         result: Optional[np.ndarray] = self.aruco_detector.run_in_series()
 
         if result is not None:
+            # if i detected the aruco marker
             r: Rotation = self.aruco_detector.rotationMatrixToEulerAngles(result[0:3, 0:3])
             t: Location = Location(x=result[0][3], y=result[1][3], z=result[2][3])
             p: Transform = Transform(location=t, rotation=r)
             control = self.controller.run_in_series(next_waypoint=p)
             print(control)
             return control
+        # execute previous control
         return self.vehicle.control

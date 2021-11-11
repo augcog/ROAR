@@ -5,8 +5,6 @@ from ROAR.configurations.configuration import Configuration as AgentConfig
 import cv2
 import numpy as np
 from ROAR.control_module.simple_pid_controller import SimplePIDController
-from ROAR.perception_module.simple_line_detector import LineDetector
-from ROAR.planning_module.local_planner.rgb_pixel_planner import RGBPixelPlanner
 from collections import deque
 from typing import List, Tuple, Optional
 

@@ -36,10 +36,9 @@ class SimplePIDController(Controller):
     def lateral_pid_control(self, next_waypoint: Transform, control: VehicleControl):
         x_error = (next_waypoint.location.x - self.center_x) / next_waypoint.location.z
         yaw_error = np.deg2rad(next_waypoint.rotation.yaw - 0)
+        # there are error in yaw detection, i am resolving the error by using an average.
         self.yaw_error_buffer.append(yaw_error)
         error = x_error * self.x_error_weight + np.average(self.yaw_error_buffer) * self.yaw_error_weight
-        print(round(x_error, 3), round(yaw_error, 3), round(error, 3))
-
         error_dt = 0 if len(self.lat_error_queue) == 0 else error - self.lat_error_queue[-1]
         self.lat_error_queue.append(error)
         error_it = sum(self.lat_error_queue)

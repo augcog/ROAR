@@ -20,19 +20,17 @@ class ArucoDetector(Detector):
             try:
                 img = self.agent.front_rgb_camera.data.copy()
                 result: dict = self.findArucoMarkers(img)  # {marker id -> bbox}
+                # i only care about the aruco marker with id specified
                 if result and self.aruco_id in result:
                     bbox = result[self.aruco_id]
+                    # find R, T from aruco marker
                     rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(bbox, self.marker_length,
                                                                                    self.agent.front_rgb_camera.intrinsics_matrix,
                                                                                    self.agent.front_rgb_camera.distortion_coefficient)
-                    cv2.aruco.drawAxis(img,
-                                       self.agent.front_rgb_camera.intrinsics_matrix,
-                                       self.agent.front_rgb_camera.distortion_coefficient,
-                                       rvec,
-                                       tvec,
-                                       self.marker_length)
+                    # convert rodrigues to 3x3 Rotation matrix
                     R = np.array(cv2.Rodrigues(rvec)[0])
                     T = tvec
+                    # construct transformation matrix from R, and T
                     P = self.constructTransformation(R, T)
                     return P
             except Exception as e:
