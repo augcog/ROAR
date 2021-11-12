@@ -22,6 +22,7 @@ class ArucoFollowingAgent(Agent):
         # None if nothing is detected, else, transformation matrix P
         result: Optional[np.ndarray] = self.aruco_detector.run_in_series()
         if result is not None:
+            cv2.imshow("img", cv2.resize(self.front_rgb_camera.data, (600,800)))
             # if i detected the aruco marker
             r: Rotation = self.aruco_detector.rotationMatrixToEulerAngles(result[0:3, 0:3])
             t: Location = Location(x=result[0][3], y=result[1][3], z=result[2][3])
