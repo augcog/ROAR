@@ -13,7 +13,7 @@ class SimplePIDController(Controller):
         self.yaw_error_buffer = deque(maxlen=20)
 
         self.lat_error_queue = deque(maxlen=20)  # this is how much error you want to accumulate
-        self.long_error_queue = deque(maxlen=20)  # this is how much error you want to accumulate
+        self.long_error_queue = deque(maxlen=50)  # this is how much error you want to accumulate
         self.center_x = center_x
         self.lat_kp = 1  # this is how much you want to steer
         self.lat_kd = 0  # this is how much you want to resist change
@@ -22,15 +22,16 @@ class SimplePIDController(Controller):
         self.yaw_error_weight = 0.9
 
         self.distance_to_keep = distance_to_keep
-        self.max_throttle = 0.2
+        self.max_throttle = 0.17
         self.lon_kp = 0.16  # this is how much you want to steer
         self.lon_kd = 0.1  # this is how much you want to resist change
-        self.lon_ki = 0.005  # this is the correction on past error
+        self.lon_ki = 0.02  # this is the correction on past error
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         control = VehicleControl()
         self.lateral_pid_control(next_waypoint=next_waypoint, control=control)
         self.long_pid_control(next_waypoint=next_waypoint, control=control)
+        print(control)
         return control
 
     def lateral_pid_control(self, next_waypoint: Transform, control: VehicleControl):
@@ -52,6 +53,7 @@ class SimplePIDController(Controller):
     def long_pid_control(self, next_waypoint: Transform, control: VehicleControl):
         dist_to_car = next_waypoint.location.z
         if dist_to_car < self.distance_to_keep:
+            self.logger.info("TOO CLOSE BRAKING!")
             control.brake = True
             control.throttle = 0
         else:

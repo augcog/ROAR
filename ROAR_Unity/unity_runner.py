@@ -122,6 +122,9 @@ class iOSUnityRunner:
                     self.smoothen_control(control)
                 if self.ios_config.invert_steering:
                     control.steering = -1 * control.steering
+
+                if control.brake:
+                    control.throttle = -0.1
                 self.control_streamer.send(control)
                 if self.agent.front_rgb_camera.data is not None:
                     self.unity_server.update_frame(self.agent.front_rgb_camera.data.copy())
@@ -177,6 +180,7 @@ class iOSUnityRunner:
 
     def on_finish(self):
         self.logger.info("Finishing...")
-        self.control_streamer.send(VehicleControl())
+        for i in range(20):
+            self.control_streamer.send(VehicleControl())
         self.agent.shutdown_module_threads()
         self.unity_server.shutdown()
