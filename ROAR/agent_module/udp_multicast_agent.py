@@ -18,5 +18,5 @@ class UDPMultiCastAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        self.udp_multicast.send_msg(f"{'car_2'}, {self.vehicle.to_array()}")
+        self.udp_multicast.send_msg(f"{'car_2'},{','.join(map(str, self.vehicle.to_array()))}")
         return VehicleControl(throttle=0, steering=0)
