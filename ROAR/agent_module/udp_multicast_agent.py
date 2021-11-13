@@ -13,7 +13,7 @@ class UDPMultiCastAgent(Agent):
         self.udp_multicast = UDPMulticastCommunicator(mcast_group="224.1.1.1",
                                                       mcast_port=5004,
                                                       threaded=True,
-                                                      update_interval=0.025)
+                                                      update_interval=0.1)
         self.add_threaded_module(self.udp_multicast)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:

@@ -22,10 +22,10 @@ class SimplePIDController(Controller):
         self.yaw_error_weight = 0.9
 
         self.distance_to_keep = distance_to_keep
-        self.max_throttle = 0.17
-        self.lon_kp = 0.16  # this is how much you want to steer
+        self.max_throttle = 0.18
+        self.lon_kp = 0.17  # this is how much you want to steer
         self.lon_kd = 0.1  # this is how much you want to resist change
-        self.lon_ki = 0.02  # this is the correction on past error
+        self.lon_ki = 0.025  # this is the correction on past error
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         control = VehicleControl()
