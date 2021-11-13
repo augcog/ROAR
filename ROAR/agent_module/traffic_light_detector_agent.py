@@ -22,21 +22,24 @@ class TrafficLightDectectorAgent(Agent):
         if self.front_rgb_camera.data is not None:
             frame = self.front_rgb_camera.data.copy()
             mask_r = self.detectRed(frame)
+            cv2.imshow("mask_r", mask_r)
+            cv2.waitKey(1)
             num_spots_red = len(np.where(mask_r > 0.5)[0])
-            has_red_circles = num_spots_red > 10000
+            has_red_circles = num_spots_red > 9000
+            print(num_spots_red)
 
             if has_red_circles:
-                return VehicleControl(throttle=-0.1, steering=0)
+                return VehicleControl(brake=True)
 
-            return VehicleControl(throttle=0.15, steering=0)
+            return VehicleControl(throttle=0.16, steering=0)
 
         else:
-            return VehicleControl(throttle=0.15, steering=0)
+            return VehicleControl(throttle=0.16, steering=0)
 
     def detectRed(self, img) -> np.ndarray:
-        mask_r = cv2.inRange(img, (0, 0, 170), (130, 130, 255))
-        kernel = np.ones((10, 10), np.uint8)
-        mask_r = cv2.erode(mask_r, kernel, iterations=2)
+        mask_r = cv2.inRange(img, (0, 0, 140), (60, 60, 255))
+        # kernel = np.ones((10, 10), np.uint8)
+        # mask_r = cv2.erode(mask_r, kernel, iterations=2)
         return mask_r
 
     def detectHSV(self, img: np.ndarray) -> Tuple[Optional[list], Optional[list]]:
