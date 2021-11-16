@@ -4,7 +4,8 @@ from ROAR.utilities_module.vehicle_models import Vehicle
 from ROAR.utilities_module.vehicle_models import VehicleControl
 from collections import deque
 import numpy as np
-
+from ROAR_iOS.config_model import iOSConfig
+from pathlib import Path
 
 class SimplePIDController(Controller):
     def __init__(self, agent, **kwargs):
@@ -13,7 +14,9 @@ class SimplePIDController(Controller):
         self.long_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
 
         self.target_speed = 1  # m / s
-        self.min_throttle, self.max_throttle = 0, 0.4
+        ios_config_file_path = Path("ROAR_iOS/configurations/ios_config.json")
+        self.ios_config: iOSConfig = iOSConfig.parse_file(ios_config_file_path)
+
 
         self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
@@ -74,7 +77,7 @@ class SimplePIDController(Controller):
         e_p = kp * error
         e_d = kd * error_dt
         e_i = ki * error_it
-        long_control = np.clip(-1 * (e_p + e_d + e_i), self.min_throttle, self.max_throttle)
+        long_control = np.clip(-1 * (e_p + e_d + e_i), 0, self.ios_config.max_throttle)
         if self.agent.vehicle.transform.rotation.pitch < -30:
             long_control = np.clip(long_control, -1, -.05)
         return long_control
