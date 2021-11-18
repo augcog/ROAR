@@ -32,15 +32,15 @@ class SimplePIDController(Controller):
             "long_ki": 0.05,
         }
         self.downhill_long_pid = {
-            "long_kp": 0.25,
-            "long_kd": 0.2,
-            "long_ki": 0.1
+            "long_kp": 0.15,
+            "long_kd": 0.05,
+            "long_ki": 0
         }
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         steering = self.lateral_pid_control()
         throttle = self.long_pid_control()
-        return VehicleControl(throttle=throttle, steering=steering, brake=throttle < 0)
+        return VehicleControl(throttle=throttle, steering=steering)
 
     def lateral_pid_control(self) -> float:
         error = self.agent.kwargs.get("lat_error", 0)
@@ -64,7 +64,7 @@ class SimplePIDController(Controller):
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
 
         error = self.target_speed - curr_speed
-        error = error * -1 if incline > 10 else error
+        error = error * -1 if incline < -10 else error
         if incline > 10:
             # up hill
             kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
@@ -82,4 +82,5 @@ class SimplePIDController(Controller):
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(e_p + e_d + e_i, -self.ios_config.max_throttle, self.ios_config.max_throttle)
+        print(long_control, error)
         return long_control
