@@ -82,5 +82,5 @@ class SimplePIDController(Controller):
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(e_p + e_d + e_i, -self.ios_config.max_throttle, self.ios_config.max_throttle)
-        print(long_control, error)
+        print(long_control, error, e_p, e_d, e_i)
         return long_control
