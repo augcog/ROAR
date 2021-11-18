@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from ROAR_iOS.ios_runner import iOSRunner
 from ROAR.configurations.configuration import Configuration as AgentConfig
@@ -113,7 +114,7 @@ if __name__ == '__main__':
             if success:
                 ios_config.ios_ip_addr = addr
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
-
+                time.sleep(2)
         if success or args.reconnect is False:
             agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             if args.use_unity:
