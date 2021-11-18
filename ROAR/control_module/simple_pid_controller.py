@@ -63,24 +63,45 @@ class SimplePIDController(Controller):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
 
-        error = self.target_speed - curr_speed
-        error = error * -1 if incline < -10 else error
-        if incline > 10:
-            # up hill
-            kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
-                "long_ki"]
-        elif incline < -10:
-            # downhill
-            kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
-                         self.downhill_long_pid["long_ki"]
-        else:
-            kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
-        error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
-        self.long_error_queue.append(error)
-        error_it = sum(self.long_error_queue)
-        e_p = kp * error
-        e_d = kd * error_dt
-        e_i = ki * error_it
-        long_control = np.clip(e_p + e_d + e_i, -self.ios_config.max_throttle, self.ios_config.max_throttle)
-        print(long_control, error, e_p, e_d, e_i)
+        e = 0 - self.agent.vehicle.get_speed(self.agent.vehicle)
+        is_forward = self.agent.vehicle.velocity.x + self.agent.vehicle.velocity.z < 0
+        neutral = -90
+        incline = self.agent.vehicle.transform.rotation.pitch - neutral
+        e = e if is_forward else e * -1
+        e = e * - 1 if incline > 10 else e
+        self.long_error_queue.append(e)
+        de = 0 if len(self.long_error_queue) < 2 else self.long_error_queue[-2] - self.long_error_queue[-1]
+        ie = 0 if len(self.long_error_queue) < 2 else np.sum(self.long_error_queue)
+        incline = np.clip(incline, -20, 20)
+
+        e_p = kp * e
+        e_d = kd * de
+        e_i = ki * ie
+        e_incline = 0.015 * incline
+        long_control = np.clip(e_p+e_d+e_i+e_incline, -self.ios_config.max_throttle, self.ios_config.max_throttle)
+        print(f"e_p={e_p},e_d={e_d},e_i={e_i},e_incline={e_incline}, long_control={long_control}")
         return long_control
+
+
+        # error = self.target_speed - curr_speed
+        # error = error * -1 if incline < -10 else error
+        # if incline > 10:
+        #     # up hill
+        #     kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
+        #         "long_ki"]
+        # elif incline < -10:
+        #     # downhill
+        #     kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
+        #                  self.downhill_long_pid["long_ki"]
+        # else:
+        #     kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
+
+        # error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
+        # self.long_error_queue.append(error)
+        # error_it = sum(self.long_error_queue)
+        # e_p = kp * error
+        # e_d = kd * error_dt
+        # e_i = ki * error_it
+        # long_control = np.clip(e_p + e_d + e_i, -self.ios_config.max_throttle, self.ios_config.max_throttle)
+        # print(long_control, error, e_p, e_d, e_i)
+        # return long_control
