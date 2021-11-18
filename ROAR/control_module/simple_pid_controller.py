@@ -13,7 +13,7 @@ class SimplePIDController(Controller):
         self.lat_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
         self.long_error_queue = deque(maxlen=10)  # this is how much error you want to accumulate
 
-        self.target_speed = 1  # m / s
+        self.target_speed = 3  # m / s
         ios_config_file_path = Path("ROAR_iOS/configurations/ios_config.json")
         self.ios_config: iOSConfig = iOSConfig.parse_file(ios_config_file_path)
 
