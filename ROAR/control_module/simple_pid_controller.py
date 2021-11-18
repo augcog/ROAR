@@ -58,12 +58,13 @@ class SimplePIDController(Controller):
         kp = 1
         kd = 0
         ki = 0
-        curr_speed = Vehicle.get_speed(self.agent.vehicle)
-        error = curr_speed - self.target_speed
         neutral = -90
 
+        curr_speed = Vehicle.get_speed(self.agent.vehicle)
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
 
+        error = self.target_speed - curr_speed
+        error = error * -1 if incline > 10 else error
         if incline > 10:
             # up hill
             kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
@@ -80,5 +81,5 @@ class SimplePIDController(Controller):
         e_p = kp * error
         e_d = kd * error_dt
         e_i = ki * error_it
-        long_control = np.clip(-1 * (e_p + e_d + e_i), 0, self.ios_config.max_throttle)
+        long_control = np.clip(e_p + e_d + e_i, -self.ios_config.max_throttle, self.ios_config.max_throttle)
         return long_control
