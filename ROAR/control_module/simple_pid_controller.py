@@ -58,12 +58,8 @@ class SimplePIDController(Controller):
         kp = 1
         kd = 0
         ki = 0
-        neutral = -90
 
-        curr_speed = Vehicle.get_speed(self.agent.vehicle)
-        incline = self.agent.vehicle.transform.rotation.pitch - neutral
-
-        e = 0 - self.agent.vehicle.get_speed(self.agent.vehicle)
+        e = self.target_speed - self.agent.vehicle.get_speed(self.agent.vehicle)
         is_forward = self.agent.vehicle.velocity.x + self.agent.vehicle.velocity.z < 0
         neutral = -90
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
