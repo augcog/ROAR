@@ -28,9 +28,9 @@ class SimplePIDController(Controller):
             "long_ki": 0.005,
         }
         self.flat_long_pid = {
-            "long_kp": 0.13,
-            "long_kd": 0.08,
-            "long_ki": 0.0075,
+            "long_kp": 0.15,
+            "long_kd": 0.1,
+            "long_ki": 0.05,
         }
         self.downhill_long_pid = {
             "long_kp": 0.2,
@@ -61,16 +61,19 @@ class SimplePIDController(Controller):
         ki = 0
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         error = curr_speed - self.target_speed
+        neutral = -90
 
-        # if self.agent.vehicle.transform.rotation.pitch :
-        #     # up hill
-        #     kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
-        #         "long_ki"]
-        # elif self.agent.vehicle.transform.rotation.pitch < -30:
-        #     kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
-        #                  self.downhill_long_pid["long_ki"]
-        # else:
-        kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
+        incline = self.agent.vehicle.transform.rotation.pitch - neutral
+
+        if incline > 10:
+            # up hill
+            kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
+                "long_ki"]
+        elif incline < 10:
+            kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
+                         self.downhill_long_pid["long_ki"]
+        else:
+            kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
         self.long_error_queue.append(error)
         error_it = sum(self.long_error_queue)
