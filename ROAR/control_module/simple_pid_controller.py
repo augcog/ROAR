@@ -62,15 +62,15 @@ class SimplePIDController(Controller):
         curr_speed = Vehicle.get_speed(self.agent.vehicle)
         error = curr_speed - self.target_speed
 
-        if self.agent.vehicle.transform.rotation.pitch > 8:
-            # up hill
-            kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
-                "long_ki"]
-        elif self.agent.vehicle.transform.rotation.pitch < -30:
-            kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
-                         self.downhill_long_pid["long_ki"]
-        else:
-            kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
+        # if self.agent.vehicle.transform.rotation.pitch :
+        #     # up hill
+        #     kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
+        #         "long_ki"]
+        # elif self.agent.vehicle.transform.rotation.pitch < -30:
+        #     kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
+        #                  self.downhill_long_pid["long_ki"]
+        # else:
+        kp, kd, ki = self.flat_long_pid["long_kp"], self.flat_long_pid["long_kd"], self.flat_long_pid["long_ki"]
         error_dt = 0 if len(self.long_error_queue) == 0 else error - self.long_error_queue[-1]
         self.long_error_queue.append(error)
         error_it = sum(self.long_error_queue)
@@ -78,6 +78,4 @@ class SimplePIDController(Controller):
         e_d = kd * error_dt
         e_i = ki * error_it
         long_control = np.clip(-1 * (e_p + e_d + e_i), 0, self.ios_config.max_throttle)
-        if self.agent.vehicle.transform.rotation.pitch < -30:
-            long_control = np.clip(long_control, -1, -.05)
         return long_control
