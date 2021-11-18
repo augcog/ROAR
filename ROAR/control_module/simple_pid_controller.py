@@ -68,7 +68,8 @@ class SimplePIDController(Controller):
             # up hill
             kp, kd, ki = self.uphill_long_pid["long_kp"], self.uphill_long_pid["long_kd"], self.uphill_long_pid[
                 "long_ki"]
-        elif incline < 10:
+        elif incline < -10:
+            # downhill
             kp, kd, ki = self.downhill_long_pid["long_kp"], self.downhill_long_pid["long_kd"], \
                          self.downhill_long_pid["long_ki"]
         else:
