@@ -60,11 +60,9 @@ class SimplePIDController(Controller):
         ki = 0
 
         e = self.target_speed - self.agent.vehicle.get_speed(self.agent.vehicle)
-        is_forward = self.agent.vehicle.velocity.x + self.agent.vehicle.velocity.z < 0
         neutral = -90
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
-        e = e if is_forward else e * -1
-        e = e * - 1 if incline > 10 else e
+        e = e * - 1 if incline < 10 else e
         self.long_error_queue.append(e)
         de = 0 if len(self.long_error_queue) < 2 else self.long_error_queue[-2] - self.long_error_queue[-1]
         ie = 0 if len(self.long_error_queue) < 2 else np.sum(self.long_error_queue)
