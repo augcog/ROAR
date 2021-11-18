@@ -17,25 +17,24 @@ class SimplePIDController(Controller):
         ios_config_file_path = Path("ROAR_iOS/configurations/ios_config.json")
         self.ios_config: iOSConfig = iOSConfig.parse_file(ios_config_file_path)
 
-
         self.lat_kp = 0.006  # this is how much you want to steer
         self.lat_kd = 0.075  # this is how much you want to resist change
         self.lat_ki = 0.00025  # this is the correction on past error
 
         self.uphill_long_pid = {
-            "long_kp": 0.20,
-            "long_kd": 0.10,
-            "long_ki": 0.005,
+            "long_kp": 0.25,
+            "long_kd": 0.2,
+            "long_ki": 0.1,
         }
         self.flat_long_pid = {
-            "long_kp": 0.15,
-            "long_kd": 0.1,
+            "long_kp": 0.13,
+            "long_kd": 0.15,
             "long_ki": 0.05,
         }
         self.downhill_long_pid = {
-            "long_kp": 0.2,
-            "long_kd": 0.1,
-            "long_ki": 0
+            "long_kp": 0.25,
+            "long_kd": 0.2,
+            "long_ki": 0.1
         }
 
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:

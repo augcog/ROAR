@@ -75,7 +75,9 @@ class LineFollowingAgent(Agent):
 
             if error_at_10 is None and error_at_50 is None:
                 # did not see the line
-                if self.vehicle.transform.rotation.pitch > -8:
+                neutral = -90
+                incline = self.vehicle.transform.rotation.pitch - neutral
+                if incline > 0:
                     # is flat or up slope, execute adjusted previous command
                     return self.execute_prev_command()
                 else:
