@@ -40,7 +40,7 @@ class SimplePIDController(Controller):
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         steering = self.lateral_pid_control()
         throttle = self.long_pid_control()
-        return VehicleControl(throttle=throttle, steering=steering)
+        return VehicleControl(throttle=throttle, steering=steering, brake=throttle < 0)
 
     def lateral_pid_control(self) -> float:
         error = self.agent.kwargs.get("lat_error", 0)
