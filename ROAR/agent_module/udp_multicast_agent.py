@@ -17,21 +17,16 @@ class UDPMultiCastAgent(Agent):
                                                       update_interval=0.1)
         self.add_threaded_module(self.udp_multicast)
         self.controller = UDP_PID_CONTROLLER(agent=self, distance_to_keep=1, center_x=-0.3)
+        self.name = "Xingyu"
+        self.car_to_follow = "Leader"
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        self_name = "Xingyu"
         self_data = self.vehicle.to_array()
         # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
-        self.udp_multicast.send_msg(f"{self_name},{','.join(map(str, self_data))}")
-        if len(self.udp_multicast.recv_data) > 7 and self.udp_multicast.recv_data[0] != self_name:
+        self.udp_multicast.send_msg(f"{self.name},{','.join(map(str, self_data))}")
+        if len(self.udp_multicast.recv_data) > 7 and self.udp_multicast.recv_data[0] == self.car_to_follow:
             control = self.controller.run_in_series(target_point=self.udp_multicast.recv_data[1:], self_point=self_data)
             return control
-
-        # if 1==1:
-        #     fake_data = [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0]
-        #     control = self.controller.run_in_series(target_point=fake_data, self_point=self_data)
-        #     print(control)
-        #     return control
         self.logger.info("No other cars found")
         return VehicleControl(throttle=0, steering=0)
