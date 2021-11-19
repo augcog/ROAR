@@ -28,7 +28,7 @@ class UDP_PID_CONTROLLER(Controller):
     def run_in_series(self, target_point=None, self_point=None, **kwargs) -> VehicleControl:
         control = VehicleControl()
         self_point[0] = self_point[0] - self.center_x
-        target_point[0] =target_point[0] - self.center_x
+        target_point[0] = target_point[0] - self.center_x
         self.lateral_pid_control(target_point, self_point, control=control)
         self.long_pid_control(target_point, self_point, control=control)
         print(control)
