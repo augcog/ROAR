@@ -11,15 +11,15 @@ from ROAR.control_module.udp_pid_controller import UDP_PID_CONTROLLER
 class UDPMultiCastAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
+        self.name = "car_2"
         self.udp_multicast = UDPMulticastCommunicator(agent=self,
                                                       mcast_group="224.1.1.1",
                                                       mcast_port=5004,
                                                       threaded=True,
                                                       update_interval=0.1,
-                                                      name="car_1")
+                                                      name=self.name)
         self.add_threaded_module(self.udp_multicast)
         self.controller = UDP_PID_CONTROLLER(agent=self, distance_to_keep=1, center_x=-0.3)
-        self.name = "car_2"
         self.car_to_follow = "car_1"
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -28,9 +28,10 @@ class UDPMultiCastAgent(Agent):
 
         # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
         if self.udp_multicast.msg_log.get(self.car_to_follow, None) is not None:
-            control = self.controller.run_in_series(target_point=self.udp_multicast.msg_log[self.car_to_follow])
-            print(control)
-            return control
-
-        self.logger.info("No other cars found")
-        return VehicleControl(throttle=0, steering=0)
+            print(self.udp_multicast.msg_log[self.car_to_follow])
+            print("HERE")
+            # control = self.controller.run_in_series(target_point=self.udp_multicast.msg_log[self.car_to_follow])
+            return VehicleControl()
+        else:
+            self.logger.info("No other cars found")
+            return VehicleControl(throttle=0, steering=0)
