@@ -2,14 +2,16 @@ import socket
 import struct
 from ROAR.utilities_module.module import Module
 import logging
+from typing import Optional, List, Dict
 
 
 class UDPMulticastCommunicator(Module):
     def save(self, **kwargs):
         pass
 
-    def __init__(self, mcast_group: str = "224.1.1.1", mcast_port: int = 5004, **kwargs):
+    def __init__(self, agent, mcast_group: str = "224.1.1.1", mcast_port: int = 5004, **kwargs):
         super().__init__(**kwargs)
+        self.agent = agent
         self.logger = logging.getLogger("UDPMulticastCommunicator")
         self.MCAST_GRP = mcast_group
         self.MCAST_PORT = mcast_port
@@ -22,17 +24,18 @@ class UDPMulticastCommunicator(Module):
         self.send_sock.setsockopt(socket.IPPROTO_IP,
                                   socket.IP_MULTICAST_TTL,
                                   self.ttl)
+        self.msg_log: Dict[str, List[float]] = dict()
         self.counter = 0
 
     def run_in_series(self, **kwargs):
         try:
             self.counter += 1
-            if self.counter % 100 == 0 :
+            if self.counter % 100 == 0:
                 self.reconnect()
                 self.counter = 0
             data: bytes = self.recv_sock.recv(1024)
-            data = data.decode('utf-8').split(",")
-            print(data)
+            msg = data.decode('utf-8').split(",")
+            self.msg_log[msg[0]] = [float(i) for i in msg[1:]]
         except socket.timeout as e:
             pass
         except Exception as e:
@@ -53,6 +56,9 @@ class UDPMulticastCommunicator(Module):
         mreq = struct.pack("4sl", socket.inet_aton(self.MCAST_GRP), socket.INADDR_ANY)
         self.recv_sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         self.recv_sock.bind(('', self.MCAST_PORT))
-        print("recv socket binded")
+
     def send_msg(self, msg: str):
         self.send_sock.sendto(msg.encode('utf-8'), (self.MCAST_GRP, self.MCAST_PORT))
+
+    def send_current_state(self):
+        self.send_msg(f"{self.name},{','.join(map(str, self.agent.vehicle.to_array()))}")
