@@ -36,7 +36,7 @@ class UDPMulticastCommunicator(Module):
             data: bytes = self.recv_sock.recv(1024)
             msg = data.decode('utf-8').split(",")
             self.msg_log[msg[0]] = [float(i) for i in msg[1:]]
-
+            # print(self.msg_log.get("car_1"))
         except socket.timeout as e:
             pass
         except Exception as e:
