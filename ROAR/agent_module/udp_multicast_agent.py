@@ -25,7 +25,6 @@ class UDPMultiCastAgent(Agent):
         # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
         self.udp_multicast.send_msg(f"{self_name},{','.join(map(str, self_data))}")
         if len(self.udp_multicast.recv_data) > 7 and self.udp_multicast.recv_data[0] != self_name:
-            return VehicleControl(throttle=0, steering=0)
             control = self.controller.run_in_series(target_point=self.udp_multicast.recv_data[1:], self_point=self_data)
             return control
 
