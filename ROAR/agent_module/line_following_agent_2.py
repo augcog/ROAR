@@ -30,14 +30,14 @@ class LineFollowingAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        if self.front_depth_camera.data is not None:
-            depth_data = self.front_depth_camera.data
-            roi = depth_data[3*depth_data.shape[0]//4:, :]
-            cv2.imshow("roi", roi)
-            cv2.imshow("depth", depth_data)
-            dist = np.average(roi)
-            if dist < 0.25:
-                return VehicleControl(throttle=0, steering=0)
+        # if self.front_depth_camera.data is not None:
+        #     depth_data = self.front_depth_camera.data
+        #     roi = depth_data[3*depth_data.shape[0]//4:, :]
+        #     # cv2.imshow("roi", roi)
+        #     # cv2.imshow("depth", depth_data)
+        #     dist = np.average(roi)
+        #     if dist < 0.25:
+        #         return VehicleControl(throttle=0, steering=0)
         if self.front_rgb_camera.data is not None:
             # make rgb and depth into the same shape
             data: np.ndarray = cv2.resize(self.front_rgb_camera.data.copy(),
@@ -110,9 +110,9 @@ class LineFollowingAgent(Agent):
         mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))
         mask = mask_red | mask_yellow
 
-        cv2.imshow("mask", mask)
-        cv2.imshow("mask_red", mask_red)
-        cv2.imshow("mask_yellow", mask_yellow)
+        # cv2.imshow("mask", mask)
+        # cv2.imshow("mask_red", mask_red)
+        # cv2.imshow("mask_yellow", mask_yellow)
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
