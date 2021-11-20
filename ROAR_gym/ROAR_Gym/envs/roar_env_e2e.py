@@ -88,7 +88,8 @@ class ROAREnvE2E(ROAREnv):
                                                 arbitrary_point_value=0.5
                                                 )
         # data = cv2.resize(occu_map, (CONFIG["x_res"], CONFIG["y_res"]), interpolation=cv2.INTER_AREA)
-        cv2.imshow("data", data) # uncomment to show occu map
+        cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(data), dsize=(500, 500)))
+        #cv2.imshow("data", data) # uncomment to show occu map
         cv2.waitKey(1)
         return data  # height x width x 1 array
 
