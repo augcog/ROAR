@@ -66,7 +66,7 @@
     ]
   },
   "waypoint_file_path": "./ROAR_Sim/data/easy_map_waypoints.txt",
-  "pid_config_file_path": "./ROAR/configurations/carla/carla_pid_config.json",
+  "pid_config_file_path": "./ROAR/configurations/iOS/iOS_pid_config.json",
   "simple_waypoint_local_planner_config_file_path": "./ROAR/configurations/carla/carla_simple_waypoint_local_planner_config.json",
   "depth_to_pcd_config_path": "./ROAR/configurations/iOS/iOS_depth_to_pcd_config.json",
   "occu_map_config_path": "./ROAR/configurations/iOS/iOS_occu_map_config.json",
