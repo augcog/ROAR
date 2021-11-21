@@ -1,6 +1,6 @@
 import json
 
-# mode='2e'
+#mode='2e'
 mode='2b'
 
 with open('ROAR_Sim/configurations/carla_version.txt','w') as f:

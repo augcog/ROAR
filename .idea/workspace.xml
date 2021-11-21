@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="85c6f6de-0941-428c-97d7-c8d6b26a9712" name="Changes" comment="add_back">
+      <change afterPath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/e2eModel_roar_env.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ROAR_gym/e2eModel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ROAR_gym/ppo_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ROAR.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ROAR.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR/agent_module/rl_e2e_ppo_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR/agent_module/rl_e2e_ppo_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR_gym/runner_roar_e2e_env.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/runner_roar_e2e_env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/change_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/change_engine.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,10 +29,59 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/change_engine.py" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Federico Palacios\PycharmProjects\ROAR\ROAR\agent_module" />
+      <recent name="C:\Users\Federico Palacios\PycharmProjects\ROAR\ROAR_gym\ROAR_Gym\envs" />
+      <recent name="C:\Users\Federico Palacios\PycharmProjects\ROAR\ROAR_gym" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.e2eModel">
+    <configuration name="change_engine" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="ROAR" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Federico Palacios\Documents\School\UCB\ROAR\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/change_engine.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="e2eModel" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="ROAR" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Federico Palacios\Documents\School\UCB\ROAR\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ROAR_gym" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ROAR_gym/e2eModel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="runner_sim" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ROAR" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -46,6 +103,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.e2eModel" />
+      <item itemvalue="Python.change_engine" />
+      <item itemvalue="Python.runner_sim" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.runner_sim" />
@@ -81,6 +143,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add_back" />

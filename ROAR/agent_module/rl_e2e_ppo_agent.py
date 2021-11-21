@@ -35,7 +35,7 @@ class RLe2ePPOAgent(Agent):
         # the part about visualization
         self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
 
-        occ_file_path = Path("../ROAR_Sim/data/easy_map_cleaned_global_occu_map.npy")
+        occ_file_path = Path("../ROAR_Sim/data/berkeley_minor_global_occu_map.npy")
         self.occupancy_map.load_from_file(occ_file_path)
 
         self.plan_lst = list(self.mission_planner.produce_single_lap_mission_plan())
@@ -54,7 +54,7 @@ class RLe2ePPOAgent(Agent):
         self._get_next_bbox()
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
-        super(RLDepthE2EAgent, self).run_step(sensors_data, vehicle)
+        super(RLe2ePPOAgent, self).run_step(sensors_data, vehicle)
         self.local_planner.run_in_series()
         _, self.curr_dist_to_strip = self.bbox_step()
         if self.kwargs.get("control") is None:
