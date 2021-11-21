@@ -6,6 +6,11 @@ register(
 )
 
 register(
+    id='roar-e2e-ppo-v0',
+    entry_point='ROAR_Gym.envs:ROARppoEnvE2E',
+)
+
+register(
     id='roar-pid-v0',
     entry_point='ROAR_Gym.envs:ROARPIDEnv',
 )

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="85c6f6de-0941-428c-97d7-c8d6b26a9712" name="Changes" comment="add_back">
-      <change afterPath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/e2eModel_roar_env.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ROAR_gym/e2eModel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ROAR_gym/ppo_util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ROAR.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ROAR.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="85c6f6de-0941-428c-97d7-c8d6b26a9712" name="Changes" comment="working PPO files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ROAR/agent_module/rl_e2e_ppo_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR/agent_module/rl_e2e_ppo_agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ROAR_gym/runner_roar_e2e_env.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/runner_roar_e2e_env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/change_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/change_engine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/e2eModel_roar_env.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/ROAR_Gym/envs/e2eModel_roar_env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROAR_gym/e2eModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ROAR_gym/e2eModel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +79,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="runner_roar_e2e_env" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ROAR" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ROAR_gym" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ROAR_gym/runner_roar_e2e_env.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="runner_sim" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ROAR" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -107,10 +125,12 @@
       <item itemvalue="Python.e2eModel" />
       <item itemvalue="Python.change_engine" />
       <item itemvalue="Python.runner_sim" />
+      <item itemvalue="Python.runner_roar_e2e_env" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.runner_sim" />
+        <item itemvalue="Python.runner_roar_e2e_env" />
       </list>
     </recent_temporary>
   </component>
@@ -130,7 +150,14 @@
       <option name="project" value="LOCAL" />
       <updated>1637368098610</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="working PPO files">
+      <created>1637461971573</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1637461971573</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -147,6 +174,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add_back" />
-    <option name="LAST_COMMIT_MESSAGE" value="add_back" />
+    <MESSAGE value="working PPO files" />
+    <option name="LAST_COMMIT_MESSAGE" value="working PPO files" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="self.kwargs['control']" />
+        <watch expression="self.vehicle.control" />
+        <watch expression="carla_control.reverse" />
+        <watch expression="carla_control.throttle" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

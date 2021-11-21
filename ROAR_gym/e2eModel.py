@@ -15,6 +15,7 @@ from ROAR_Sim.configurations.configuration import Configuration as CarlaConfig
 from ROAR.configurations.configuration import Configuration as AgentConfig
 from ROAR.agent_module.agent import Agent
 from ROAR.agent_module.rl_e2e_ppo_agent import RLe2ePPOAgent##
+from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent   ##testing stuff
 
 from stable_baselines3.ppo.ppo import PPO
 from stable_baselines3.ppo.policies import CnnPolicy
@@ -58,7 +59,7 @@ def main():
     )
     print(training_kwargs)
 
-    env = gym.make('roar-e2e-v0', params=params)
+    env = gym.make('roar-e2e-ppo-v0', params=params)
     env.reset()
 
     latest_model_path = find_latest_model(model_dir_path)

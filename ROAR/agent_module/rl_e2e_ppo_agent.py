@@ -1,8 +1,8 @@
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.control_module.pid_controller import PIDController
+from ROAR.control_module.pid_controller import PIDController#TO REMOVE
 from ROAR.planning_module.local_planner.loop_simple_waypoint_following_local_planner import \
-    LoopSimpleWaypointFollowingLocalPlanner
-from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
+    LoopSimpleWaypointFollowingLocalPlanner#TO REMOVE
+from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner#TO REMOVE
 from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
 from pathlib import Path
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
@@ -19,18 +19,18 @@ from typing import Optional
 class RLe2ePPOAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
+        # self.route_file_path = Path(self.agent_settings.waypoint_file_path)#TO REMOVE
+        # self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))#TO REMOVE
         self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
-        # initiated right after mission plan
-        self.behavior_planner = BehaviorPlanner(agent=self)
-        self.local_planner = LoopSimpleWaypointFollowingLocalPlanner(
-            agent=self,
-            controller=self.pid_controller,
-            mission_planner=self.mission_planner,
-            behavior_planner=self.behavior_planner,
-            closeness_threshold=1.5
-        )
+        # # initiated right after mission plan#TO REMOVE
+        # self.behavior_planner = BehaviorPlanner(agent=self)#TO REMOVE
+        # self.local_planner = LoopSimpleWaypointFollowingLocalPlanner(#TO REMOVE
+        #     agent=self,
+        #     controller=self.pid_controller,
+        #     mission_planner=self.mission_planner,
+        #     behavior_planner=self.behavior_planner,
+        #     closeness_threshold=1.5
+        # )#TO REMOVE
 
         # the part about visualization
         self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
@@ -55,7 +55,12 @@ class RLe2ePPOAgent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(RLe2ePPOAgent, self).run_step(sensors_data, vehicle)
-        self.local_planner.run_in_series()
+        print(self.vehicle.transform)
+        #self.local_planner.run_in_series()#TO REMOVE
+
+        #do something?
+        #not sure if i need to define vehicle control here
+
         _, self.curr_dist_to_strip = self.bbox_step()
         if self.kwargs.get("control") is None:
             return VehicleControl()
