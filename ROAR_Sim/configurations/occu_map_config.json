@@ -1,7 +1,7 @@
 {
-  "absolute_maximum_map_size": 550,
-  "world_coord_resolution": 1,
-  "occu_prob": 0.7,
-  "max_points_to_convert": 1000,
-  "update_interval": 0.01
+    "absolute_maximum_map_size": 1000,
+    "world_coord_resolution": 1,
+    "occu_prob": 0.7,
+    "max_points_to_convert": 1000,
+    "update_interval": 0.01
 }
