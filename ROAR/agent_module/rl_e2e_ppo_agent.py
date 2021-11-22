@@ -53,6 +53,7 @@ class RLe2ePPOAgent(Agent):
         self.bbox: Optional[LineBBox] = None
         self._get_next_bbox()
 
+    #Consider changing SensorsData for ViveTrackerData
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super(RLe2ePPOAgent, self).run_step(sensors_data, vehicle)
         print(self.vehicle.transform)

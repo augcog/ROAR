@@ -74,7 +74,8 @@ def main():
     event_callback = EveryNTimesteps(n_steps=100, callback=checkpoint_callback)
     callbacks = CallbackList([checkpoint_callback, event_callback, logging_callback])
     model = model.learn(total_timesteps=int(1e10), callback=callbacks, reset_num_timesteps=False)
-    # model.save(model_dir_path / f"roar_e2e_model_{datetime.now()}")
+    model.save(model_dir_path / f"roar_e2e_model_{datetime.now()}")
+    print("Successful Save!")
 
 
 if __name__ == '__main__':
