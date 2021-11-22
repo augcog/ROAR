@@ -97,4 +97,4 @@ class ROARppoEnvE2E(ROAREnv):
 
     def reset(self) -> Any:
         super(ROARppoEnvE2E, self).reset()
-        return self.agent.front_depth_camera.data
+        return self._get_obs()

@@ -70,7 +70,7 @@ def main():
         model = PPO.load(latest_model_path, env=env, policy_kwargs=policy_kwargs, **training_kwargs)
     print("Model Loaded Successfully")
     logging_callback = LoggingCallback(model=model)
-    checkpoint_callback = CheckpointCallback(save_freq=1000, verbose=2, save_path=(model_dir_path/"logs").as_posix())
+    checkpoint_callback = CheckpointCallback(save_freq=500, verbose=2, save_path=(model_dir_path/"logs").as_posix())
     event_callback = EveryNTimesteps(n_steps=100, callback=checkpoint_callback)
     callbacks = CallbackList([checkpoint_callback, event_callback, logging_callback])
     model = model.learn(total_timesteps=int(1e10), callback=callbacks, reset_num_timesteps=False)
