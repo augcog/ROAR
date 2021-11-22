@@ -36,9 +36,9 @@ class UDP_PID_CONTROLLER(Controller):
     def lateral_pid_control(self, next_waypoint: Transform, control: VehicleControl):
         # calculate a vector that represent where you are going
         v_begin = self.agent.vehicle.transform.location.to_array()
-        direction_vector = np.array([-np.sin(np.deg2rad(self.agent.vehicle.transform.rotation.yaw)),
+        direction_vector = np.array([-np.sin(np.deg2rad(-self.agent.vehicle.transform.rotation.yaw)), # i think the direction of yaw is different in simulation vs in iOS
                                      0,
-                                     -np.cos(np.deg2rad(self.agent.vehicle.transform.rotation.yaw))])
+                                     -np.cos(np.deg2rad(-self.agent.vehicle.transform.rotation.yaw))])
         v_end = v_begin + direction_vector
 
         v_vec = np.array([(v_end[0] - v_begin[0]), 0, (v_end[2] - v_begin[2])])
@@ -55,7 +55,8 @@ class UDP_PID_CONTROLLER(Controller):
         w_vec_normed = w_vec / np.linalg.norm(w_vec)
         error = np.arccos(v_vec_normed @ w_vec_normed.T)
         _cross = np.cross(v_vec_normed, w_vec_normed)
-
+        # print(error, _cross, v_vec_normed, w_vec_normed)
+        # print(f"error: {error} | yaw = {self.agent.vehicle.transform.rotation.yaw} | v_vec = {v_vec_normed.tolist()} | w_vec_normed = {w_vec_normed.tolist()} | _cross[1] = {_cross[1]}")
         if _cross[1] > 0:
             error *= -1
         self.lat_error_queue.append(error)
@@ -73,7 +74,7 @@ class UDP_PID_CONTROLLER(Controller):
             np.clip((k_p * error) + (k_d * _de) + (k_i * _ie), -1, 1)
         )
         control.steering = lat_control
-        print(control, v_vec_normed, w_vec_normed, next_waypoint.location, v_begin)
+        # print(control, v_vec_normed, w_vec_normed, next_waypoint.location, v_begin, error)
 
     def long_pid_control(self, target_point, control: VehicleControl):
         self_point = self.agent.vehicle.transform.to_array()

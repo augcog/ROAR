@@ -148,7 +148,7 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
                 time.sleep(2)
         if success or args.reconnect is False:
-            agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = UDPMultiCastAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             if args.use_unity:
                 runner = iOSUnityRunner(agent=agent, ios_config=ios_config)
             else:
