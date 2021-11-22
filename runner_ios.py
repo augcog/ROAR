@@ -6,6 +6,7 @@ from ROAR_iOS.config_model import iOSConfig
 from ROAR_Unity.unity_runner import iOSUnityRunner
 # from ROAR.agent_module.ios_agent import iOSAgent
 # from ROAR.agent_module.free_space_auto_agent import FreeSpaceAutoAgent
+from ROAR.agent_module.occupancy_map_agent import OccupancyMapAgent
 from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
 from ROAR.agent_module.special_agents.recording_agent import RecordingAgent
 from ROAR.agent_module.traffic_light_detector_agent import TrafficLightDectectorAgent
@@ -148,7 +149,7 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
                 time.sleep(2)
         if success or args.reconnect is False:
-            agent = UDPMultiCastAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = OccupancyMapAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             if args.use_unity:
                 runner = iOSUnityRunner(agent=agent, ios_config=ios_config)
             else:

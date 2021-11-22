@@ -1,79 +1,72 @@
 from ROAR.agent_module.agent import Agent
+from ROAR.agent_module.line_following_agent_2 import LineFollowingAgent
 from ROAR.utilities_module.data_structures_models import SensorsData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 from ROAR.configurations.configuration import Configuration as AgentConfig
-from ROAR.perception_module.ground_plane_detector import GroundPlaneDetector
-from ROAR.perception_module.depth_to_pointcloud_detector import DepthToPointCloudDetector
-import numpy as np
-from ROAR.control_module.pid_controller import PIDController
-from ROAR.planning_module.local_planner.simple_waypoint_following_local_planner import \
-    SimpleWaypointFollowingLocalPlanner
-from ROAR.planning_module.behavior_planner.behavior_planner import BehaviorPlanner
-from ROAR.planning_module.mission_planner.waypoint_following_mission_planner import WaypointFollowingMissionPlanner
-from ROAR.perception_module.obstacle_detector import ObstacleDetector
-from pathlib import Path
-from ROAR.utilities_module.occupancy_map import OccupancyGridMap
-import matplotlib.pyplot as plt
-import open3d as o3d
 import cv2
-from ROAR.perception_module.legacy.point_cloud_detector import PointCloudDetector
-from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
-import time
+import numpy as np
+import open3d as o3d
+from ROAR.utilities_module.occupancy_map import OccupancyGridMap
+from ROAR.perception_module.depth_to_pointcloud_detector import DepthToPointCloudDetector
+from ROAR.perception_module.ground_plane_detector import GroundPlaneDetector
+from ROAR.perception_module.lane_detector import LaneDetector
+from scipy.spatial.transform import Rotation as R
 
 
 class OccupancyMapAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.route_file_path = Path(self.agent_settings.waypoint_file_path)
-        self.pid_controller = PIDController(agent=self, steering_boundary=(-1, 1), throttle_boundary=(0, 1))
-        self.mission_planner = WaypointFollowingMissionPlanner(agent=self)
-        # initiated right after mission plan
-        self.behavior_planner = BehaviorPlanner(agent=self)
-        self.local_planner = SimpleWaypointFollowingLocalPlanner(
-            agent=self,
-            controller=self.pid_controller,
-            mission_planner=self.mission_planner,
-            behavior_planner=self.behavior_planner,
-            closeness_threshold=1.5
-        )
-
-        self.occupancy_map = OccupancyGridMap(agent=self, threaded=True)
-        self.obstacle_from_depth_detector = ObstacleFromDepth(agent=self, threaded=True)
-        self.add_threaded_module(self.obstacle_from_depth_detector)
-        self.add_threaded_module(self.occupancy_map)
+        # initialize occupancy grid map content
+        self.occu_map = OccupancyGridMap(agent=self)
+        self.depth_to_pcd = DepthToPointCloudDetector(agent=self)
+        self.ground_plane_detector = GroundPlaneDetector(agent=self)
+        # initialize open3d related content
         self.vis = o3d.visualization.Visualizer()
         self.vis.create_window(width=500, height=500)
         self.pcd = o3d.geometry.PointCloud()
+        self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame()
         self.points_added = False
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
-        super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        control = self.local_planner.run_in_series()
-        option = "obstacle_coords"  # ground_coords, obstacle_coords
-        if self.kwargs.get(option, None) is not None:
-            points = self.kwargs[option]
-            self.occupancy_map.update_async(points)
-            # self.occupancy_map.visualize()
-            self.occupancy_map.visualize(transform=self.vehicle.transform,
-                                         view_size=(400, 400))
+        super(OccupancyMapAgent, self).run_step(sensors_data, vehicle)
+        if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
+            depth_img = self.front_depth_camera.data.copy()
+            pcd = self.depth_to_pcd.run_in_series(depth_image=depth_img)
+            self.non_blocking_pcd_visualization(pcd=pcd, should_center=True,
+                                                should_show_axis=True, axis_size=1)
+        return self.vehicle.control
 
-            if self.points_added is False:
-                self.pcd = o3d.geometry.PointCloud()
-                point_means = np.mean(points, axis=0)
-                self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-                self.vis.add_geometry(self.pcd)
-                self.vis.poll_events()
-                self.vis.update_renderer()
-                self.points_added = True
-            else:
-                point_means = np.mean(points, axis=0)
-                self.pcd.points = o3d.utility.Vector3dVector(points - point_means)
-                self.vis.update_geometry(self.pcd)
-                self.vis.poll_events()
-                self.vis.update_renderer()
+    def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud,
+                                       should_center=False,
+                                       should_show_axis=False,
+                                       axis_size: float = 0.1):
+        points = np.asarray(pcd.points)
+        colors = np.asarray(pcd.colors)
+        if should_center:
+            points = points - np.mean(points, axis=0)
 
-        if self.local_planner.is_done():
-            self.mission_planner.restart()
-            self.local_planner.restart()
+        if self.points_added is False:
+            self.pcd = o3d.geometry.PointCloud()
+            self.pcd.points = o3d.utility.Vector3dVector(points)
+            self.pcd.colors = o3d.utility.Vector3dVector(colors)
 
-        return control
+            if should_show_axis:
+                self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=axis_size,
+                                                                                          origin=np.mean(points,
+                                                                                                         axis=0))
+                self.vis.add_geometry(self.coordinate_frame)
+            self.vis.add_geometry(self.pcd)
+            self.points_added = True
+        else:
+            # print(np.shape(np.vstack((np.asarray(self.pcd.points), points))))
+            self.pcd.points = o3d.utility.Vector3dVector(points)
+            self.pcd.colors = o3d.utility.Vector3dVector(colors)
+            if should_show_axis:
+                self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=axis_size,
+                                                                                          origin=np.mean(points,
+                                                                                                         axis=0))
+                self.vis.update_geometry(self.coordinate_frame)
+            self.vis.update_geometry(self.pcd)
+
+        self.vis.poll_events()
+        self.vis.update_renderer()

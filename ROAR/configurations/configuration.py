@@ -79,6 +79,8 @@ class Configuration(BaseModel):
             60: {1,23,}
         }
     )
+    depth_to_pcd_config_path: str = Field(default="./ROAR/configurations/carla/carla_depth_to_pcd_config.json")
+
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")
     occu_map_config_path: str = Field(default="./ROAR_Sim/configurations/occu_map_config.json")
     obstacle_from_depth_config_path: str = Field(default="./ROAR_Sim/configurations/obstacle_from_depth_config.json")
