@@ -41,7 +41,7 @@ def showIPUntilAckUDP():
     s.settimeout(0.1)
 
     try:
-        s.bind((get_ip(), 8008))
+        s.bind((get_ip(), 8890))
         while success is False:
             try:
                 cv2.imshow("Scan this code to connect to phone", img)
