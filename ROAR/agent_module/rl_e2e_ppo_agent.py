@@ -8,7 +8,7 @@ from pathlib import Path
 from ROAR.utilities_module.occupancy_map import OccupancyGridMap
 from ROAR.perception_module.obstacle_from_depth import ObstacleFromDepth
 from ROAR.agent_module.agent import Agent
-from ROAR.utilities_module.data_structures_models import SensorsData
+from ROAR.utilities_module.data_structures_models import ViveTrackerData
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 import numpy as np
 from ROAR.utilities_module.data_structures_models import Transform, Location
@@ -41,7 +41,7 @@ class RLe2ePPOAgent(Agent):
         self.plan_lst = list(self.mission_planner.produce_single_lap_mission_plan())
 
         self.kwargs = kwargs
-        self.interval = self.kwargs.get('interval', 50)
+        self.interval = self.kwargs.get('interval', 1)
         self.look_back = self.kwargs.get('look_back', 5)
         self.look_back_max = self.kwargs.get('look_back_max', 10)
         self.thres = self.kwargs.get('thres', 1e-3)
@@ -53,14 +53,10 @@ class RLe2ePPOAgent(Agent):
         self.bbox: Optional[LineBBox] = None
         self._get_next_bbox()
 
-    #Consider changing SensorsData for ViveTrackerData
-    def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
+    def run_step(self, sensors_data: ViveTrackerData, vehicle: Vehicle) -> VehicleControl:
         super(RLe2ePPOAgent, self).run_step(sensors_data, vehicle)
         print(self.vehicle.transform)
         #self.local_planner.run_in_series()#TO REMOVE
-
-        #do something?
-        #not sure if i need to define vehicle control here
 
         _, self.curr_dist_to_strip = self.bbox_step()
         if self.kwargs.get("control") is None:

@@ -16,16 +16,27 @@ from gym.spaces import Discrete, Box
 import cv2
 
 # Define the discrete action space
+# DISCRETE_ACTIONS = {
+#     0: [0.0, 0.0],  # Coast
+#     1: [0.0, -0.5],  # Turn Left
+#     2: [0.0, 0.5],  # Turn Right
+#     3: [1.0, 0.0],  # Forward
+#     4: [-0.5, 0.0],  # Brake
+#     5: [1.0, -0.5],  # Bear Left & accelerate
+#     6: [1.0, 0.5],  # Bear Right & accelerate
+#     7: [-0.5, -0.5],  # Bear Left & decelerate
+#     8: [-0.5, 0.5],  # Bear Right & decelerate
+# }
 DISCRETE_ACTIONS = {
-    0: [0.0, 0.0],  # Coast
-    1: [0.0, -0.5],  # Turn Left
-    2: [0.0, 0.5],  # Turn Right
-    3: [1.0, 0.0],  # Forward
-    4: [-0.5, 0.0],  # Brake
-    5: [1.0, -0.5],  # Bear Left & accelerate
-    6: [1.0, 0.5],  # Bear Right & accelerate
-    7: [-0.5, -0.5],  # Bear Left & decelerate
-    8: [-0.5, 0.5],  # Bear Right & decelerate
+    0: [0.5, 0.0],  # Coast
+    1: [0.5, -0.5],  # Turn Left
+    2: [0.5, 0.5],  # Turn Right
+    3: [0.5, 0.0],  # Forward
+    4: [0.5, 0.0],  # Brake
+    5: [0.5, -0.5],  # Bear Left & accelerate
+    6: [0.5, 0.5],  # Bear Right & accelerate
+    7: [0.5, -0.5],  # Bear Left & decelerate
+    8: [0.5, 0.5],  # Bear Right & decelerate
 }
 FRAME_STACK = 4
 CONFIG = {
@@ -72,10 +83,11 @@ class ROARppoEnvE2E(ROAREnv):
         curr_dist_to_strip = self.agent.curr_dist_to_strip
 
         # reward computation
-        reward += 0.5 * (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
-        reward += abs(self.agent.vehicle.control.steering)
+        reward += 0.8 * (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
+        #reward += abs(self.agent.vehicle.control.steering)
+        # NOTE: potentially want to reset or skip this line to avoid neg reward at frame when line is crossed
         reward += np.clip(self.prev_dist_to_strip - curr_dist_to_strip, -10, 10)
-        reward -= self.carla_runner.get_num_collision()
+        reward -= self.carla_runner.get_num_collision() * 1e10
 
         # log prev info for next reward computation
         self.prev_speed = Vehicle.get_speed(self.agent.vehicle)
