@@ -13,7 +13,7 @@ with open('ROAR_Sim/configurations/carla_version.txt','w') as f:
 with open('ROAR_Sim/configurations/occu_map_config.json') as f:
     occu_map_config=json.load(f)
     if mode == '2b':
-        occu_map_config['absolute_maximum_map_size']=1000
+        occu_map_config['absolute_maximum_map_size']=1500
     elif mode == '2e':
         occu_map_config['absolute_maximum_map_size']=550
 
@@ -23,7 +23,7 @@ with open('ROAR_Sim/configurations/occu_map_config.json','w') as f:
 with open('ROAR_gym/configurations/agent_configuration.json') as f:
     agent_config = json.load(f)
     if mode == '2b':
-        agent_config["waypoint_file_path"] = "../ROAR_Sim/data/berkeley_minor_waypoints.txt"
+        agent_config["waypoint_file_path"] = "../ROAR_Sim/data/berkeley_minor_new_waypoints.txt"
     elif mode == '2e':
         agent_config["waypoint_file_path"] = '../ROAR_Sim/data/easy_map_waypoints.txt'
 

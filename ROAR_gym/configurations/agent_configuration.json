@@ -52,7 +52,7 @@
     },
     "occu_map_config_path": "../ROAR_Sim/configurations/occu_map_config.json",
     "obstacle_from_depth_config_path": "../ROAR_Sim/configurations/obstacle_from_depth_config.json",
-    "waypoint_file_path": "../ROAR_Sim/data/berkeley_minor_waypoints.txt",
+    "waypoint_file_path": "../ROAR_Sim/data/berkeley_minor_new_waypoints.txt",
     "pid_config_file_path": "../ROAR_Sim/configurations/pid_config.json",
     "simple_waypoint_local_planner_config_file_path": "../ROAR_Sim/configurations/simple_waypoint_local_planner_config.json",
     "output_data_folder_path": "./output",
