@@ -37,7 +37,9 @@ class RLDepthE2EAgent(Agent):
 
         # set "absolute_maximum_map_size": 550 for easy map in "occu_map_config.json""
         # set "absolute_maximum_map_size": 1000 for Berkeley minor map in "occu_map_config.json""
-        occ_file_path = Path("../ROAR_Sim/data/berkeley_minor_global_occu_map.npy")
+        # occ_file_path = Path("../ROAR_Sim/data/berkeley_minor_global_occu_map.npy")
+        occ_file_path = Path("../ROAR_Sim/data/easy_map_cleaned_global_occu_map.npy")
+
 
         self.occupancy_map.load_from_file(occ_file_path)
 

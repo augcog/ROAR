@@ -1,0 +1,188 @@
+{	
+	"Comment": "This JSON has 4 main components: Comment, AR parameters, Segments, and AR Tags. The AR parameters provide information on the size, dimention, and setup of the AR tags. Segments contains an array of segments of the track, whcih are ordered by index in an array. Segment 0 is located at Segment[0]. Each segment has 7 parts whose units are in meters and degrees. The Angle and Radius correspond with value of a turn, if the segment is a turn. The Length is the length of the segment in meters. The Width of the track corresponds to the width from the center line of the segment to one edge of the track. The Start and End coordinates are stored as arrays and have 6 values: [x,y,z,roll,pitch,yaw]. Units for the values are in meters and degrees. The final value for a segment is an array called AR Id and contains the integer ID of all the AR tags in that segment. The last component is AR Tags which stores an array with the values of individual AR tags. A singular AR tag has the fields: Id, Location, and Segment. The Id is an integer corresponding to the Id of the AR tag. The Location is an array with 6 values corresponding to the [x,y,z,roll,pitch,yaw] of the tag relative to the map. Segment is an integer value for the index in Segments that the AR tag is found on.",
+	"AR parameters" : {
+		"Comment": "The width represents the width of the AR tags in centimeters. The margin is the square white space surrounding the AR tag in centimeters. Dimension is marker size in bits (y). Size in the number of markers in that dictionary (z). The corresponding aruco dictionary can be found by running the command: aruco.Dictionary_get(aruco.DICT_<<y>>X<<y>>_<<z>>)",
+		"Width": 12, 
+		"Margin": 0.5, 
+		"Dimension": 6, 
+		"Size": 250
+	},
+	"Segments": [{
+			"Angle": 0,
+			"Radius": 0,
+			"Length": 10.535,
+			"Width": 0.43,
+			"Start": [1.005,0.43,0,0,0,0],
+			"End": [10.535,0.43,0,0,0,0],
+			"AR Id": [0,1,2,3,4,5,6] 
+		},{
+			"Angle": 90,
+			"Radius": 0.53,
+			"Length": 0.8325,
+			"Width": 0.43,
+			"Start": [10.535,0.43,0,0,0,0],
+			"End": [11.125,0.97,0,0,0,90],
+			"AR Id": [7,8] 
+		},{
+			"Angle": 0,
+			"Radius": 0,
+			"Length": 4.77,
+			"Width": 0.43,
+			"Start": [11.125,0.97,0,0,0,90],
+			"End": [11.125,5.74,0,0,0,90],
+			"AR Id": [9,10,11,12] 
+		},{
+			"Angle": 90,
+			"Radius": 0.53,
+			"Length": 0.8325,
+			"Width": 0.43,
+			"Start": [11.125,5.74,0,0,0,90],
+			"End": [11.072,6.33,0,0,0,180],
+			"AR Id": [13,14] 
+		},{
+			"Angle": 0,
+			"Radius": 0,
+			"Length": 10.58,
+			"Width": 0.43,
+			"Start": [11.072,6.33,0,0,0,180],
+			"End": [1.02,6.33,0,0,0,180],
+			"AR Id": [15,16,17,18,19,20] 
+		},{
+			"Angle": 90,
+			"Radius": 0.53,
+			"Length": 0.8325,
+			"Width": 0.43,
+			"Start": [1.02,6.33,0,0,0,180],
+			"End": [0.43,5.79,0,0,0,270],
+			"AR Id": [21,22] 
+		},{
+			"Angle": 0,
+			"Radius": 0,
+			"Length": 4.77,
+			"Width": 0.43,
+			"Start": [0.43,5.79,0,0,0,270],
+			"End": [0.43,1.02,0,0,0,270],
+			"AR Id": [23,24,25] 
+		},{
+			"Angle": 90,
+			"Radius": 0.53,
+			"Length": 0.8325,
+			"Width": 0.43,
+			"Start": [0.43,1.02,0,0,0,270],
+			"End": [1.005,0.43,0,0,0,0],
+			"AR Id": [26,27]
+		}],
+	"AR tags": [{
+		"Id": 0,
+		"Location": [3.32654, 0.33232, 4.03827, -94.65246, 138.91414, 175.7396],
+		"Segment": 0
+	},{
+		"Id": 1,
+		"Location": [1.00863, 0.35218, 3.72517, -92.92235, 134.53561, 176.32242],
+		"Segment": 0
+	},{
+		"Id": 2,
+		"Location": [5.505,0,0.145,0,0,0], 
+		"Segment": 0
+	},{
+		"Id": 3,
+		"Location": [7.005,0.86,0.145,0,0,0],
+		"Segment": 0
+	},{
+		"Id": 4,
+		"Location": [8.505,0,0.145,0,0,0], 
+		"Segment": 0
+	},{
+		"Id": 5,
+		"Location": [10.005,0.86,0.145,0,0,0], 
+		"Segment": 0
+	},{
+		"Id": 6,
+		"Location": [11.505,0,0.145,0,0,0], 
+		"Segment": 0
+	},{
+		"Id": 7,
+		"Location": [10.535,0.97,0.145,0,0,45],
+		"Segment": 1
+	},{
+		"Id": 8,
+		"Location": [11.555,0.43,0.145,0,0,0],
+		"Segment": 1
+	},{
+		"Id": 9,
+		"Location": [10.695,2.47,0.145,0,0,90],
+		"Segment": 2
+	},{
+		"Id": 10,
+		"Location": [11.555,3.97,0.145,0,0,90],
+		"Segment": 2
+	},{
+		"Id": 11,
+		"Location": [10.695,5.47,0.145,0,0,90],
+		"Segment": 2
+	},{
+		"Id": 12,
+		"Location": [11.555,6.73,0.145,0,0,90],
+		"Segment": 2
+	},{
+		"Id": 13,
+		"Location": [10.535,5.74,0.145,0,0,135],
+		"Segment": 3
+	},{
+		"Id": 14,
+		"Location": [11.072,6.76,0.145,0,0,180],
+		"Segment": 3
+	},{
+		"Id": 15,
+		"Location": [9.572,5.9,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 16,
+		"Location": [8.072,6.76,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 17,
+		"Location": [6.572,5.9,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 18,
+		"Location": [5.072,6.76,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 19,
+		"Location": [3.572,5.9,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 20,
+		"Location": [2.072,6.76,0.145,0,0,180],
+		"Segment": 4
+	},{
+		"Id": 21,
+		"Location": [0.43,6.33,0.145,0,0,180],
+		"Segment": 5
+	},{
+		"Id": 22,
+		"Location": [0.86,5.79,0.145,0,0,225],
+		"Segment": 5
+	},{
+		"Id": 23,
+		"Location": [0,4.26,0.145,0,0,270],
+		"Segment": 6
+	},{
+		"Id": 24,
+		"Location": [0.86,2.76,0.145,0,0,270],
+		"Segment": 6
+	},{
+		"Id": 25,
+		"Location": [0,1.26,0.145,0,0,270],
+		"Segment": 6
+	},{
+		"Id": 26,
+		"Location": [0.43,0.145,0,0,0,270],
+		"Segment": 7
+	},{
+		"Id": 27,
+		"Location": [1.005,1.02,0.145,0,0,315],
+		"Segment": 7
+	}]
+}
