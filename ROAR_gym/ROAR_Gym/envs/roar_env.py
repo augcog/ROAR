@@ -55,7 +55,7 @@ class ROAREnv(gym.Env, ABC):
         Returns:
             Tuple of Observation, reward, is done, other information
         """
-        self.clock.tick_busy_loop(60)
+        self.clock.tick_busy_loop(15)
         should_continue, carla_control = self.carla_runner.controller.parse_events(client=self.carla_runner.client,
                                                                                    world=self.carla_runner.world,
                                                                                    clock=self.clock)
