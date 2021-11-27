@@ -43,8 +43,8 @@ FRAME_STACK = 4
 CONFIG = {
     #max values are 280x280
     #original values are 80x80
-    "x_res": 280,
-    "y_res": 280
+    "x_res": 80,
+    "y_res": 80
 }
 
 
@@ -108,9 +108,14 @@ class ROARppoEnvE2E(ROAREnv):
         # data = cv2.resize(occu_map, (CONFIG["x_res"], CONFIG["y_res"]), interpolation=cv2.INTER_AREA)
         #cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(data), dsize=(500, 500)))
 
-        cv2.imshow("data", data) # uncomment to show occu map
+        data_view=np.sum(data,axis=2)
+        cv2.imshow("data", data_view) # uncomment to show occu map
         cv2.waitKey(1)
-        return data  # height x width x 1 array
+        # yaw_angle=self.agent.vehicle.transform.rotation.yaw
+        velocity=self.agent.vehicle.get_speed(self.agent.vehicle)
+        data[0,0,2]=velocity
+
+        return data_view  # height x width x 3 array
 
     def reset(self) -> Any:
         super(ROARppoEnvE2E, self).reset()
