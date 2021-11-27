@@ -50,15 +50,16 @@ class RLe2ePPOAgent(Agent):
         self.counter = 0
         self.finished = False
         self.curr_dist_to_strip = 0
+        self.did_cross = False
         self.bbox: Optional[LineBBox] = None
         self._get_next_bbox()
 
     def run_step(self, sensors_data: ViveTrackerData, vehicle: Vehicle) -> VehicleControl:
         super(RLe2ePPOAgent, self).run_step(sensors_data, vehicle)
-        print(self.vehicle.transform)
+        #print(self.vehicle.transform)
         #self.local_planner.run_in_series()#TO REMOVE
 
-        _, self.curr_dist_to_strip = self.bbox_step()
+        self.did_cross, self.curr_dist_to_strip = self.bbox_step()
         if self.kwargs.get("control") is None:
             return VehicleControl()
         else:
