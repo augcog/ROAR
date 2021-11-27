@@ -76,11 +76,14 @@ class RLe2ePPOAgent(Agent):
         """
         self.counter += 1
         if not self.finished:
-            crossed, dist = self.bbox.has_crossed(self.vehicle.transform)
+            while(True):
+                crossed, dist = self.bbox.has_crossed(self.vehicle.transform)
 
-            if crossed:
-                self.int_counter += 1
-                self._get_next_bbox()
+                if crossed:
+                    self.int_counter += 1
+                    self._get_next_bbox()
+                else:
+                    break
 
             return crossed, dist
         return False, 0.0
