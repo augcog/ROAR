@@ -234,10 +234,17 @@ class OccupancyGridMap(Module):
             if vehicle_value is not None:
                 map_to_view[y, x] = vehicle_value
 
+            waypoint_view=np.zeros_like(map_to_view)
+            vehicle_view=np.zeros_like(map_to_view)
+            vehicle_view[y, x] = 0.8
             if arbitrary_point_value is not None and arbitrary_locations is not None:
-                for location in arbitrary_locations:
-                    coord = self.location_to_occu_cord(location=location)[0]
-                    map_to_view[coord[1], coord[0]] = arbitrary_point_value
+                coord=[self.location_to_occu_cord(location=location)[0] for location in arbitrary_locations]
+                coord=np.array(coord).swapaxes(0,1)
+                coord[[0,1]]=coord[[1,0]]
+                waypoint_view[tuple(coord)] = arbitrary_point_value
+
+            # map_to_view=np.sum(np.stack((map_to_view,waypoint_view),2),axis=2)
+            # map_to_view[map_to_view>1]=0.2
 
             first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
             map_to_view = map_to_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
@@ -249,6 +256,32 @@ class OccupancyGridMap(Module):
             x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
             map_to_view = map_to_view[y_extra: map_to_view.shape[1] - y_extra,
                           x_extra: map_to_view.shape[0] - x_extra]
+
+
+            first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
+            waypoint_view = waypoint_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
+                          x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
+            image = Image.fromarray(waypoint_view)
+            image = image.rotate(-transform.rotation.yaw)
+            waypoint_view = np.asarray(image)
+            # # map_to_view = np.rint(map_to_view)
+            x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
+            waypoint_view = waypoint_view[y_extra: waypoint_view.shape[1] - y_extra,
+                          x_extra: waypoint_view.shape[0] - x_extra]
+
+            first_cut_size = (view_size[0] + boundary_size[0], view_size[1] + boundary_size[1])
+            vehicle_view = vehicle_view[y - first_cut_size[1] // 2: y + first_cut_size[1] // 2,
+                            x - first_cut_size[0] // 2: x + first_cut_size[0] // 2]
+            image = Image.fromarray(vehicle_view)
+            image = image.rotate(-transform.rotation.yaw)
+            vehicle_view = np.asarray(image)
+            # # map_to_view = np.rint(map_to_view)
+            x_extra, y_extra = boundary_size[0] // 2, boundary_size[1] // 2
+            vehicle_view = vehicle_view[y_extra: vehicle_view.shape[1] - y_extra,
+                            x_extra: vehicle_view.shape[0] - x_extra]
+
+
+            map_to_view=np.stack((map_to_view,waypoint_view,vehicle_view),2)
             return map_to_view
 
     def cropped_occu_to_world(self,
