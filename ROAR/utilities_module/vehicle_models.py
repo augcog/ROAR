@@ -8,6 +8,7 @@ import numpy as np
 class VehicleControl(BaseModel):
     throttle: float = Field(default=0)
     steering: float = Field(default=0)
+    braking: float = Field(default=0)
 
     @staticmethod
     def clamp(n, minn, maxn):
@@ -18,7 +19,7 @@ class VehicleControl(BaseModel):
         Cap it between -1  and 1
         :return:
         """
-        return self.clamp(self.throttle, -1, 1)
+        return self.clamp(self.throttle, 0, 1)
 
     def get_steering(self) -> float:
         """
@@ -26,6 +27,13 @@ class VehicleControl(BaseModel):
         :return:
         """
         return self.clamp(self.steering, -1, 1)
+
+    def get_braking(self) -> float:
+        """
+        Cap it between 0  and 1
+        :return:
+        """
+        return self.clamp(self.throttle, 0, 1)
 
     def to_array(self) -> np.ndarray:
         return np.array([self.throttle, self.steering])
@@ -36,7 +44,7 @@ class VehicleControl(BaseModel):
     @staticmethod
     def fromBytes(data: bytes):
         data = data.decode('utf-8').split(',')
-        return VehicleControl(throttle=float(data[0]), steering=float(data[1]))
+        return VehicleControl(throttle=float(data[0]), steering=float(data[1]), braking=float(data[2]))
 
 
 class Vehicle(BaseModel):

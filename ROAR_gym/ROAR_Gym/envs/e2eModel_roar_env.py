@@ -28,16 +28,18 @@ import cv2
 #     8: [-0.5, 0.5],  # Bear Right & decelerate
 # }
 DISCRETE_ACTIONS = {
-    0: [0.5, 0.0],  # Coast
-    1: [0.5, -0.5],  # Turn Left
-    2: [0.5, 0.5],  # Turn Right
-    3: [0.5, 0.0],  # Forward
-    4: [0.5, 0.0],  # Brake
-    5: [0.5, -0.5],  # Bear Left & accelerate
-    6: [0.5, 0.5],  # Bear Right & accelerate
-    7: [0.5, -0.5],  # Bear Left & decelerate
-    8: [0.5, 0.5],  # Bear Right & decelerate
+    0: [0.5, 0.0, 0.0],  # Coast
+    1: [0.5, -0.5, 0.0],  # Turn Left
+    2: [0.5, 0.5, 0.0],  # Turn Right
+    3: [0.5, 0.0, 0.0],  # Forward
+    4: [0.5, 0.0, 0.0],  # Brake
+    5: [0.5, -0.5, 0.0],  # Bear Left & accelerate
+    6: [0.5, 0.5, 0.0],  # Bear Right & accelerate
+    7: [0.5, -0.5, 0.0],  # Bear Left & decelerate
+    8: [0.5, 0.5, 0.0],  # Bear Right & decelerate
 }
+
+
 FRAME_STACK = 4
 CONFIG = {
     #max values are 280x280
@@ -61,7 +63,8 @@ class ROARppoEnvE2E(ROAREnv):
 
         for i in range(FRAME_STACK):
             self.agent.kwargs["control"] = VehicleControl(throttle=DISCRETE_ACTIONS[action][0],
-                                                          steering=DISCRETE_ACTIONS[action][1])
+                                                          steering=DISCRETE_ACTIONS[action][1],
+                                                          braking=DISCRETE_ACTIONS[action][2])
             ob, reward, is_done, info = super(ROARppoEnvE2E, self).step(action)
             obs.append(ob)
             rewards.append(reward)
