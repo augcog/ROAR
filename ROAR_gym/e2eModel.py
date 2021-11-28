@@ -57,7 +57,6 @@ def main():
         verbose=1,
         tensorboard_log=(Path(model_dir_path) / "tensorboard").as_posix()
     )
-    print(training_kwargs)
 
     env = gym.make('roar-e2e-ppo-v0', params=params)
     env.reset()

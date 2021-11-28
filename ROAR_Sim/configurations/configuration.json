@@ -26,7 +26,7 @@
     "gamma": 2.2,
     "print_keyboard_hint": false,
     "no_rendering_mode": false,
-    "synchronous_mode": false,
+    "synchronous_mode": true,
     "fixed_delta_seconds": 0.05,
     "npc_config_file_path": "./ROAR_Sim/configurations/npc_config.json",
     "should_spawn_npcs": false,

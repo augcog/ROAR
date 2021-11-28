@@ -69,7 +69,7 @@ class ROAREnv(gym.Env, ABC):
                                                 sensors_data=self.carla_runner.sensor_data)
             carla_control = self.carla_runner.carla_bridge.convert_control_from_agent_to_source(agent_control)
         self.carla_runner.world.player.apply_control(carla_control)
-        return self._get_obs(), self.get_reward(), self._terminal(), self._get_info()
+        return self._get_obs(), self.get_reward(), self._terminal(), self._get_info(action)
 
     def reset(self) -> Any:
         self.carla_runner.on_finish()
@@ -124,10 +124,12 @@ class LoggingCallback(BaseCallback):
     def _on_step(self) -> bool:
         curr_step = self.locals.get("step")
         info = {
-            "num_collected_steps": self.locals.get("num_collected_steps"),
-            "reward": self.locals.get("reward"),
-            "episode_rewards": self.locals.get("episode_rewards"),
-            "action": self.locals.get("action"),
+            # "num_collected_steps": self.locals.get("num_collected_steps"),
+            # "reward": self.locals.get("reward"),
+            # "episode_rewards": self.locals.get("episode_rewards"),
+            # "action": self.locals.get("action"),
+            # "iteration": self.locals.get("iteration"),
+            # "rewards": self.locals.get("rewards"),
             "infos": self.locals.get("infos")
         }
 

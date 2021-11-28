@@ -57,25 +57,41 @@ class ROARppoEnvE2E(ROAREnv):
         self.action_space = Box(low=np.tile(low,(FRAME_STACK)), high=np.tile(high,(FRAME_STACK)), dtype=np.float32)
         self.observation_space = Box(-1, 1, shape=(FRAME_STACK, CONFIG["x_res"], CONFIG["y_res"]), dtype=np.float32)
         self.prev_speed = 0
-        self.prev_dist_to_strip = 0
-        self.crash_check = True
+        self.prev_int = 0
+        self.crash_check = False
+        self.ep_rewards = 0
+        self.frame_reward = 0
 
     def step(self, action: Any) -> Tuple[Any, float, bool, dict]:
         obs = []
         rewards = []
 
         for i in range(FRAME_STACK):
-            self.agent.kwargs["control"] = VehicleControl(throttle=action[i*3+0],
+            self.agent.kwargs["control"] = VehicleControl(throttle=0.3,#action[i*3+0],
                                                           steering=action[i*3+1],
-                                                          braking=action[i*3+2])
+                                                          braking=0.0)#action[i*3+2])
             ob, reward, is_done, info = super(ROARppoEnvE2E, self).step(action)
             obs.append(ob)
             rewards.append(reward)
             if is_done:
+                self.crash_check = False
+                self.ep_rewards = 0
+                self.checkpt_counter = 0
                 break
         self.render()
-        return np.array(obs), sum(rewards), self._terminal(), {"4 frame reward": sum(rewards),
-                                                               "action": action}
+        self.frame_reward = sum(rewards)
+        self.ep_rewards += sum(rewards)
+        return np.array(obs), self.frame_reward, self._terminal(), self._get_info(action)
+
+    def _get_info(self, action: Any) -> dict:
+        info_dict = OrderedDict()
+        info_dict["episode reward"] = self.ep_rewards
+        info_dict["checkpoints"] = self.agent.int_counter
+        info_dict["reward"] = self.frame_reward
+        info_dict["throttle"] = action[0]
+        info_dict["steering"] = action[1]
+        info_dict["braking"] = action[2]
+        return info_dict
 
     def _terminal(self) -> bool:
         if self.carla_runner.get_num_collision() > self.max_collision_allowed:
@@ -87,22 +103,24 @@ class ROARppoEnvE2E(ROAREnv):
         # prep for reward computation
         reward = 0
         curr_dist_to_strip = self.agent.curr_dist_to_strip
-        crossed = self.agent.did_cross
+
+        if self.crash_check:
+            return 0
 
         # reward computation
-        reward += 1.5 * (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
-        #reward += abs(self.agent.vehicle.control.steering)
+        reward += 0.1 * Vehicle.get_speed(self.agent.vehicle)# (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
+        # reward += abs(self.agent.vehicle.control.steering)
         # NOTE: potentially want to reset or skip this line to avoid neg reward at frame when line is crossed
-        #reward += np.clip(self.prev_dist_to_strip - curr_dist_to_strip, -10, 10)
-        if crossed:
-            reward += 5
-        if self.carla_runner.get_num_collision() > 0 and self.crash_check:
+        # reward += np.clip(self.prev_dist_to_strip - curr_dist_to_strip, -10, 10)
+        if self.agent.int_counter > self.prev_int:
+            reward += 5 * (self.agent.int_counter - self.prev_int)
+        if self.carla_runner.get_num_collision() > 0:
             reward -= self.carla_runner.get_num_collision() * 1000
-            self.crash_check = False
+            self.crash_check = True
 
         # log prev info for next reward computation
         self.prev_speed = Vehicle.get_speed(self.agent.vehicle)
-        self.prev_dist_to_strip = curr_dist_to_strip
+        self.prev_int = self.agent.int_counter
         return reward
 
     def _get_obs(self) -> np.ndarray:

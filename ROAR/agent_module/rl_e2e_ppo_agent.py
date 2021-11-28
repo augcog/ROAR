@@ -41,7 +41,7 @@ class RLe2ePPOAgent(Agent):
         self.plan_lst = list(self.mission_planner.produce_single_lap_mission_plan())
 
         self.kwargs = kwargs
-        self.interval = self.kwargs.get('interval', 1)
+        self.interval = self.kwargs.get('interval', 5)
         self.look_back = self.kwargs.get('look_back', 5)
         self.look_back_max = self.kwargs.get('look_back_max', 10)
         self.thres = self.kwargs.get('thres', 1e-3)
@@ -50,7 +50,6 @@ class RLe2ePPOAgent(Agent):
         self.counter = 0
         self.finished = False
         self.curr_dist_to_strip = 0
-        self.did_cross = False
         self.bbox: Optional[LineBBox] = None
         self._get_next_bbox()
 
@@ -59,7 +58,7 @@ class RLe2ePPOAgent(Agent):
         #print(self.vehicle.transform)
         #self.local_planner.run_in_series()#TO REMOVE
 
-        self.did_cross, self.curr_dist_to_strip = self.bbox_step()
+        self.curr_dist_to_strip = self.bbox_step()
         if self.kwargs.get("control") is None:
             return VehicleControl()
         else:
@@ -86,7 +85,7 @@ class RLe2ePPOAgent(Agent):
                 else:
                     break
 
-            return crossed, dist
+            return dist
         return False, 0.0
 
     def _get_next_bbox(self):
@@ -119,7 +118,7 @@ class LineBBox(object):
     def __init__(self, transform1: Transform, transform2: Transform) -> None:
         self.x1, self.z1 = transform1.location.x, transform1.location.z
         self.x2, self.z2 = transform2.location.x, transform2.location.z
-        print(self.x2, self.z2)
+        #print(self.x2, self.z2)
         self.pos_true = True
         self.thres = 1e-2
         self.eq = self._construct_eq()
