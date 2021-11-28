@@ -52,7 +52,9 @@ class ROARppoEnvE2E(ROAREnv):
     def __init__(self, params):
         super().__init__(params)
         #self.action_space = Discrete(len(DISCRETE_ACTIONS))
-        self.action_space = Box(low=np.array([0.0, -1.0, 0.0]), high=np.array([1.0, 1.0, 1.0]), dtype=np.float32)
+        low=np.array([0.0, -1.0, 0.0])
+        high=np.array([1.0, 1.0, 1.0])
+        self.action_space = Box(low=np.tile(low,(FRAME_STACK)), high=np.tile(high,(FRAME_STACK)), dtype=np.float32)
         self.observation_space = Box(-1, 1, shape=(FRAME_STACK, CONFIG["x_res"], CONFIG["y_res"]), dtype=np.float32)
         self.prev_speed = 0
         self.prev_dist_to_strip = 0
@@ -63,9 +65,9 @@ class ROARppoEnvE2E(ROAREnv):
         rewards = []
 
         for i in range(FRAME_STACK):
-            self.agent.kwargs["control"] = VehicleControl(throttle=0.5,#action[0],
-                                                          steering=action[1],
-                                                          braking=0.0)#action[2])
+            self.agent.kwargs["control"] = VehicleControl(throttle=action[i*3+0],
+                                                          steering=action[i*3+1],
+                                                          braking=action[i*3+2])
             ob, reward, is_done, info = super(ROARppoEnvE2E, self).step(action)
             obs.append(ob)
             rewards.append(reward)
@@ -83,17 +85,17 @@ class ROARppoEnvE2E(ROAREnv):
 
     def get_reward(self) -> float:
         # prep for reward computation
-        reward = 1
+        reward = 0
         curr_dist_to_strip = self.agent.curr_dist_to_strip
         crossed = self.agent.did_cross
 
         # reward computation
-        #reward += 0.8 * (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
+        reward += 1.5 * (Vehicle.get_speed(self.agent.vehicle) - self.prev_speed)
         #reward += abs(self.agent.vehicle.control.steering)
         # NOTE: potentially want to reset or skip this line to avoid neg reward at frame when line is crossed
         #reward += np.clip(self.prev_dist_to_strip - curr_dist_to_strip, -10, 10)
         if crossed:
-            reward += 10
+            reward += 5
         if self.carla_runner.get_num_collision() > 0 and self.crash_check:
             reward -= self.carla_runner.get_num_collision() * 1000
             self.crash_check = False
