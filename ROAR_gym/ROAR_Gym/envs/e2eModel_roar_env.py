@@ -61,22 +61,23 @@ class ROARppoEnvE2E(ROAREnv):
         self.crash_check = False
         self.ep_rewards = 0
         self.frame_reward = 0
+        self.highscore = 0
 
     def step(self, action: Any) -> Tuple[Any, float, bool, dict]:
         obs = []
         rewards = []
 
         for i in range(FRAME_STACK):
-            self.agent.kwargs["control"] = VehicleControl(throttle=0.3,#action[i*3+0],
+            self.agent.kwargs["control"] = VehicleControl(throttle=action[i*3+0],
                                                           steering=action[i*3+1],
-                                                          braking=0.0)#action[i*3+2])
+                                                          braking=action[i*3+2])
             ob, reward, is_done, info = super(ROARppoEnvE2E, self).step(action)
             obs.append(ob)
             rewards.append(reward)
             if is_done:
                 self.crash_check = False
+                self.update_highscore()
                 self.ep_rewards = 0
-                self.checkpt_counter = 0
                 break
         self.render()
         self.frame_reward = sum(rewards)
@@ -85,6 +86,7 @@ class ROARppoEnvE2E(ROAREnv):
 
     def _get_info(self, action: Any) -> dict:
         info_dict = OrderedDict()
+        info_dict["Current HIGHSCORE"] = self.highscore
         info_dict["episode reward"] = self.ep_rewards
         info_dict["checkpoints"] = self.agent.int_counter
         info_dict["reward"] = self.frame_reward
@@ -92,6 +94,11 @@ class ROARppoEnvE2E(ROAREnv):
         info_dict["steering"] = action[1]
         info_dict["braking"] = action[2]
         return info_dict
+
+    def update_highscore(self):
+        if self.ep_rewards > self.highscore:
+            self.highscore = self.ep_rewards
+        return
 
     def _terminal(self) -> bool:
         if self.carla_runner.get_num_collision() > self.max_collision_allowed:

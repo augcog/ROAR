@@ -20,12 +20,26 @@ class CustomMaxPoolCNN(BaseFeaturesExtractor):
         n_input_channels = observation_space.shape[0]
 
         self.cnn = nn.Sequential(
-            nn.Conv2d(n_input_channels, 6, kernel_size=(7, 7), stride=3),
+            nn.Conv2d(n_input_channels, 6, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(6, 12, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(12, 24, kernel_size=(3, 3)),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=(2, 2)),
-            nn.Conv2d(6, 12, kernel_size=(4, 4)),
+            nn.Conv2d(24, 48, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(48, 96, kernel_size=(3, 3)),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=(2, 2)),
+            nn.Conv2d(96, 96, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(96, 96, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=(2, 2)),
+            nn.Conv2d(96, 96, kernel_size=(3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(96, 96, kernel_size=(4, 4)),
             nn.Flatten(),
         )
 
@@ -35,7 +49,9 @@ class CustomMaxPoolCNN(BaseFeaturesExtractor):
                 th.as_tensor(observation_space.sample()[None]).float()
             ).shape[1]
 
-        self.linear = nn.Sequential(nn.Linear(n_flatten, features_dim), nn.ReLU())
+        self.linear = nn.Sequential(nn.Linear(n_flatten, n_flatten*2), nn.ReLU(),
+                                    nn.Linear(n_flatten*2, n_flatten), nn.ReLU(),
+                                    nn.Linear(n_flatten, features_dim),)
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
         return self.linear(self.cnn(observations))
