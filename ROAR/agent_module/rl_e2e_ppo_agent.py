@@ -51,6 +51,7 @@ class RLe2ePPOAgent(Agent):
         self.finished = False
         self.curr_dist_to_strip = 0
         self.bbox: Optional[LineBBox] = None
+        self.bbox_list = []# list of bbox
         self._get_next_bbox()
 
     def run_step(self, sensors_data: ViveTrackerData, vehicle: Vehicle) -> VehicleControl:
@@ -67,7 +68,6 @@ class RLe2ePPOAgent(Agent):
     def bbox_step(self):
         """
         This is the function that the line detection agent used
-
         Main function to use for detecting whether the vehicle reached a new strip in
         the current step. The old strip (represented as a bbox) will be gone forever
         return:
@@ -109,6 +109,35 @@ class RLe2ePPOAgent(Agent):
             else:
                 self.bbox = LineBBox(t1, t2)
                 return
+        # no next bbox
+        print("finished all the iterations!")
+        self.finished = True
+
+    def _get_bbox_list(self, num):
+        # make sure no index out of bound error
+        curr_lb = self.look_back
+        curr_idx = self.int_counter * self.interval
+        while curr_idx + curr_lb < len(self.plan_lst):
+            if curr_lb > self.look_back_max:
+                self.int_counter += 1
+                curr_lb = self.look_back
+                curr_idx = self.int_counter * self.interval
+                continue
+
+            t1 = self.plan_lst[curr_idx]
+            t2 = self.plan_lst[curr_idx + curr_lb]
+
+            dx = t2.location.x - t1.location.x
+            dz = t2.location.z - t1.location.z
+            if abs(dx) < self.thres and abs(dz) < self.thres:
+                curr_lb += 1
+            else:
+                num -= 1
+                self.bbox_list.append(LineBBox(t1, t2))
+                curr_lb = self.look_back #update curr_lb
+                curr_idx = self.int_counter * self.interval
+                if num == 0:
+                    return
         # no next bbox
         print("finished all the iterations!")
         self.finished = True
