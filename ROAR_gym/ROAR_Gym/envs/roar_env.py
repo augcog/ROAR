@@ -29,7 +29,7 @@ class ROAREnv(gym.Env, ABC):
 
         num_frames_per_step: int = params.get("num_frames_per_step", 1)
         # use_manual_control: bool = params.get("use_manual_control", False)
-        self.max_collision_allowed: int = params.get("max_collision", 5)
+        self.max_collision_allowed: int = params.get("max_collision", 1)
         self.logger = logging.getLogger("ROAR Gym")
         self.agent_config = agent_config
         self.EgoAgentClass = ego_agent_class

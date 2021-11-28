@@ -61,7 +61,8 @@ class ROARppoEnvE2E(ROAREnv):
         self.crash_check = False
         self.ep_rewards = 0
         self.frame_reward = 0
-        self.highscore = 0
+        self.highscore = -1000
+        self.highest_chkpt = 0
 
     def step(self, action: Any) -> Tuple[Any, float, bool, dict]:
         obs = []
@@ -75,29 +76,34 @@ class ROARppoEnvE2E(ROAREnv):
             obs.append(ob)
             rewards.append(reward)
             if is_done:
-                self.crash_check = False
-                self.update_highscore()
-                self.ep_rewards = 0
                 break
         self.render()
         self.frame_reward = sum(rewards)
         self.ep_rewards += sum(rewards)
+        if is_done:
+            self.crash_check = False
+            self.update_highscore()
+            self.ep_rewards = 0
         return np.array(obs), self.frame_reward, self._terminal(), self._get_info(action)
 
     def _get_info(self, action: Any) -> dict:
         info_dict = OrderedDict()
         info_dict["Current HIGHSCORE"] = self.highscore
+        info_dict["Furthest Checkpoint"] = self.highest_chkpt
         info_dict["episode reward"] = self.ep_rewards
         info_dict["checkpoints"] = self.agent.int_counter
         info_dict["reward"] = self.frame_reward
-        info_dict["throttle"] = action[0]
-        info_dict["steering"] = action[1]
-        info_dict["braking"] = action[2]
+        # info_dict["throttle"] = action[0]
+        # info_dict["steering"] = action[1]
+        # info_dict["braking"] = action[2]
         return info_dict
 
     def update_highscore(self):
         if self.ep_rewards > self.highscore:
             self.highscore = self.ep_rewards
+        if self.agent.int_counter > self.highest_chkpt:
+            self.highest_chkpt = self.agent.int_counter
+        self.ep_rewards = 0
         return
 
     def _terminal(self) -> bool:
@@ -122,7 +128,7 @@ class ROARppoEnvE2E(ROAREnv):
         if self.agent.cross_reward > self.prev_cross_reward:
             reward += 5 * (self.agent.cross_reward - self.prev_cross_reward)
         if self.carla_runner.get_num_collision() > 0:
-            reward -= self.carla_runner.get_num_collision() * 1000
+            reward -= 1000
             self.crash_check = True
 
         # log prev info for next reward computation
