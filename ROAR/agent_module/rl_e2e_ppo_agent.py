@@ -79,7 +79,6 @@ class RLe2ePPOAgent(Agent):
         if not self.finished:
             while(True):
                 crossed, dist = self.bbox.has_crossed(self.vehicle.transform)
-
                 if crossed:
                     self.int_counter += 1
                     self.cross_reward+=crossed
@@ -217,8 +216,8 @@ class LineBBox(object):
         x, z = transform.location.x, transform.location.z
         dist = self.eq(x, z)
         crossed=dist > 0 if self.pos_true else dist < 0
-        middle=scipy.stats.norm(self.size//2, self.size//4).pdf(self.size)
-        return (scipy.stats.norm(self.size//2, self.size//4).pdf(self.size-self.dis(x, z))/middle if crossed else 0, dist)
+        middle=scipy.stats.norm(self.size//2, self.size//2).pdf(self.size//2)
+        return (scipy.stats.norm(self.size//2, self.size//2).pdf(self.size//2-self.dis(x, z))/middle if crossed else 0, dist)
 
     def get_visualize_locs(self, size=10):
         if self.strip_list is not None:
@@ -244,6 +243,6 @@ class LineBBox(object):
         return self.strip_list
 
     def get_value(self,size=10):
-        middle=scipy.stats.norm(size//2, size//4).pdf(size//2)
-        return [scipy.stats.norm(size//2, size//4).pdf(i)/middle*0.5 for i in  range(size)]
+        middle=scipy.stats.norm(size//2, size//2).pdf(size//2)
+        return [scipy.stats.norm(size//2, size//2).pdf(i)/middle*0.5 for i in  range(size)]
 
