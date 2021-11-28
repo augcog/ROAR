@@ -208,7 +208,7 @@ class OccupancyGridMap(Module):
                 boundary_size: Tuple[int, int] = (100, 100),
                 vehicle_value: Optional[int] = None,
                 arbitrary_locations: Optional[List[Location]] = None,
-                arbitrary_point_value: Optional[float] = None) -> np.ndarray:
+                arbitrary_point_value: Optional[List[float]] = None) -> np.ndarray:
         """
         Return global occu map if transform is None
         Otherwise, return ego centric map

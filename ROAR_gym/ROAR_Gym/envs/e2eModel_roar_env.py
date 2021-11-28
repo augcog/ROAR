@@ -57,7 +57,7 @@ class ROARppoEnvE2E(ROAREnv):
         self.action_space = Box(low=np.tile(low,(FRAME_STACK)), high=np.tile(high,(FRAME_STACK)), dtype=np.float32)
         self.observation_space = Box(-1, 1, shape=(FRAME_STACK, CONFIG["x_res"], CONFIG["y_res"]), dtype=np.float32)
         self.prev_speed = 0
-        self.prev_int = 0
+        self.prev_cross_reward = 0
         self.crash_check = False
         self.ep_rewards = 0
         self.frame_reward = 0
@@ -119,15 +119,15 @@ class ROARppoEnvE2E(ROAREnv):
         # reward += abs(self.agent.vehicle.control.steering)
         # NOTE: potentially want to reset or skip this line to avoid neg reward at frame when line is crossed
         # reward += np.clip(self.prev_dist_to_strip - curr_dist_to_strip, -10, 10)
-        if self.agent.int_counter > self.prev_int:
-            reward += 5 * (self.agent.int_counter - self.prev_int)
+        if self.agent.cross_reward > self.prev_cross_reward:
+            reward += 5 * (self.agent.cross_reward - self.prev_cross_reward)
         if self.carla_runner.get_num_collision() > 0:
             reward -= self.carla_runner.get_num_collision() * 1000
             self.crash_check = True
 
         # log prev info for next reward computation
         self.prev_speed = Vehicle.get_speed(self.agent.vehicle)
-        self.prev_int = self.agent.int_counter
+        self.prev_cross_reward = self.agent.cross_reward
         return reward
 
     def _get_obs(self) -> np.ndarray:
@@ -135,8 +135,7 @@ class ROARppoEnvE2E(ROAREnv):
         data = self.agent.occupancy_map.get_map(transform=self.agent.vehicle.transform,
                                                 view_size=(CONFIG["x_res"], CONFIG["y_res"]),
                                                 arbitrary_locations=self.agent.bbox.get_visualize_locs(size=20),
-                                                arbitrary_point_value=0.5,
-                                                vehicle_value=1
+                                                arbitrary_point_value=self.agent.bbox.get_value(size=20)
                                                 )
         # data = cv2.resize(occu_map, (CONFIG["x_res"], CONFIG["y_res"]), interpolation=cv2.INTER_AREA)
         #cv2.imshow("Occupancy Grid Map", cv2.resize(np.float32(data), dsize=(500, 500)))
