@@ -97,7 +97,7 @@ class LineFollowingAgent(Agent):
             if error_at_50 is not None:
                 error = error_at_50
 
-            print(error_at_10, error_at_50, error)
+            # print(error_at_10, error_at_50, error)
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
@@ -138,7 +138,7 @@ class LineFollowingAgent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 

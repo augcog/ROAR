@@ -66,13 +66,13 @@ class RealWorldImageBasedPIDController(Controller):
         e_incline = 0.015 * incline
         total_error = e_p + e_d + e_i + e_incline
         long_control = np.clip(total_error, 0, 1)
-        # print(f"speed = {self.agent.vehicle.get_speed(self.agent.vehicle)} "
-        #       f"e = {round(total_error,3)}, "
-        #       f"e_p={round(e_p,3)},"
-        #       f"e_d={round(e_d,3)},"
-        #       f"e_i={round(e_i,3)},"
-        #       f"e_incline={round(e_incline, 3)}, "
-        #       f"long_control={long_control}")
+        print(f"speed = {self.agent.vehicle.get_speed(self.agent.vehicle)} "
+              f"e = {round(total_error,3)}, "
+              f"e_p={round(e_p,3)},"
+              f"e_d={round(e_d,3)},"
+              f"e_i={round(e_i,3)},"
+              f"e_incline={round(e_incline, 3)}, "
+              f"long_control={long_control}")
         return long_control
 
     @staticmethod
