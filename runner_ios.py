@@ -33,7 +33,8 @@ class mode_list(list):
 
 
 def showIPUntilAckUDP():
-    img = np.array(qrcode.make(f"{get_ip()}").convert('RGB'))
+    port = 8890
+    img = np.array(qrcode.make(f"{get_ip(),port}").convert('RGB'))
     success = False
     addr = None
 
@@ -41,7 +42,7 @@ def showIPUntilAckUDP():
     s.settimeout(0.1)
 
     try:
-        s.bind((get_ip(), 8890))
+        s.bind((get_ip(), port))
         while success is False:
             try:
                 cv2.imshow("Scan this code to connect to phone", img)
@@ -66,7 +67,8 @@ def showIPUntilAckUDP():
 
 
 def showIPUntilAck():
-    img = np.array(qrcode.make(f"{get_ip()}").convert('RGB'))
+    port = 8890
+    img = np.array(qrcode.make(f"{get_ip()},{port}").convert('RGB'))
     success = False
     addr = None
 
@@ -74,7 +76,7 @@ def showIPUntilAck():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     try:
-        s.bind((get_ip(), 8890))
+        s.bind((get_ip(), port))
         s.settimeout(1)
         while True:
             try:
@@ -149,7 +151,7 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
                 time.sleep(2)
         if success or args.reconnect is False:
-            agent = LineFollowingAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             if args.use_unity:
                 runner = iOSUnityRunner(agent=agent, ios_config=ios_config)
             else:
