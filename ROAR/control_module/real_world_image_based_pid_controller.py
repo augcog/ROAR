@@ -13,11 +13,11 @@ from pathlib import Path
 class RealWorldImageBasedPIDController(Controller):
     def __init__(self, agent, **kwargs):
         super().__init__(agent, **kwargs)
-        long_error_deque_length = 10
+        long_error_deque_length = 50
         lat_error_deque_length = 10
         self.lat_error_queue = deque(maxlen=lat_error_deque_length)  # this is how much error you want to accumulate
         self.long_error_queue = deque(maxlen=long_error_deque_length)  # this is how much error you want to accumulate
-        self.target_speed = 10  # m / s
+        self.target_speed = 4  # m / s
         self.config = json.load(Path(self.agent.agent_settings.pid_config_file_path).open('r'))
         self.long_config = self.config["longitudinal_controller"]
         self.lat_config = self.config["latitudinal_controller"]
@@ -25,6 +25,7 @@ class RealWorldImageBasedPIDController(Controller):
     def run_in_series(self, next_waypoint=None, **kwargs) -> VehicleControl:
         steering = self.lateral_pid_control()
         throttle = self.long_pid_control()
+
         return VehicleControl(throttle=throttle, steering=steering)
 
     def lateral_pid_control(self) -> float:
@@ -35,7 +36,6 @@ class RealWorldImageBasedPIDController(Controller):
         k_p, k_d, k_i = self.find_k_values(self.agent.vehicle, self.lat_config)
         # print(f"Speed = {self.agent.vehicle.get_speed(self.agent.vehicle)}"
         #       f"kp, kd, ki = {k_p, k_d, k_i} ")
-
         e_p = k_p * error
         e_d = k_d * error_dt
         e_i = k_i * error_it
@@ -66,13 +66,13 @@ class RealWorldImageBasedPIDController(Controller):
         e_incline = 0.015 * incline
         total_error = e_p + e_d + e_i + e_incline
         long_control = np.clip(total_error, 0, 1)
-        print(f"speed = {self.agent.vehicle.get_speed(self.agent.vehicle)} "
-              f"e = {round(total_error,3)}, "
-              f"e_p={round(e_p,3)},"
-              f"e_d={round(e_d,3)},"
-              f"e_i={round(e_i,3)},"
-              f"e_incline={round(e_incline, 3)}, "
-              f"long_control={long_control}")
+        # print(f"speed = {self.agent.vehicle.get_speed(self.agent.vehicle)} | target spd = {self.target_speed} | "
+        #       f"e = {round(total_error,3)} | "
+        #       f"e_p={round(e_p,3)} | "
+        #       f"e_d={round(e_d,3)} | "
+        #       f"e_i={round(e_i,3)} | "
+        #       f"e_incline={round(e_incline, 3)} | "
+        #       f"long_control={long_control}")
         return long_control
 
     @staticmethod
