@@ -31,24 +31,18 @@ class CS249Agent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        # if self.obstacle_found():
-        #     return VehicleControl(brake=True)
+        if self.obstacle_found(debug=True):
+            self.logger.info("Braking due to obstacle")
+            return VehicleControl(brake=True)
+
+        if self.is_light_found(debug=False):
+            self.logger.info("Braking due to traffic light")
+            return VehicleControl(brake=True)
+
         if self.front_rgb_camera.data is not None:
             error = self.find_error()
             if error is None:
-                # did not see the line
-                neutral = -90
-                incline = self.vehicle.transform.rotation.pitch - neutral
-                if incline < -10:
-                    # is down slope, execute previous command as-is
-                    # get the PID for downhill
-                    long_control = self.controller.long_pid_control()
-                    self.vehicle.control.throttle = long_control
-                    return self.vehicle.control
-
-                else:
-                    # is flat or up slope, execute adjusted previous command
-                    return self.execute_prev_command()
+                return self.no_line_seen()
             else:
                 self.kwargs["lat_error"] = error
                 self.vehicle.control = self.controller.run_in_series()
@@ -58,14 +52,49 @@ class CS249Agent(Agent):
             # image feed is not available yet
             return VehicleControl()
 
-    def obstacle_found(self) -> bool:
+    def is_light_found(self, debug=False) -> bool:
+        if self.front_rgb_camera.data is not None:
+            img = self.front_rgb_camera.data
+            # BGR
+            low = (200, 200, 0)
+            high = (255, 255, 100)
+            mask = cv2.inRange(img, low, high)
+            if debug:
+                cv2.imshow("traffic light", mask)
+                print(len(np.where(mask > 0)[0]))
+            if len(np.where(mask > 0)[0]) > 500:
+                return True
+            return False
+        else:
+            return False
+
+    def no_line_seen(self):
+        # did not see the line
+        neutral = -90
+        incline = self.vehicle.transform.rotation.pitch - neutral
+        if incline < -10:
+            # is down slope, execute previous command as-is
+            # get the PID for downhill
+            long_control = self.controller.long_pid_control()
+            self.vehicle.control.throttle = long_control
+            return self.vehicle.control
+
+        else:
+            # is flat or up slope, execute adjusted previous command
+            return self.execute_prev_command()
+
+    def obstacle_found(self, debug=False) -> bool:
         if self.front_depth_camera.data is not None:
             depth_data = self.front_depth_camera.data
-            roi = depth_data[3 * depth_data.shape[0] // 4:, :]
-            # cv2.imshow("roi", roi)
-            # cv2.imshow("depth", depth_data)
+            roi = depth_data[70 * depth_data.shape[0] // 100: 90 * depth_data.shape[0] // 100,
+                             30 * depth_data.shape[1] // 100: 60 * depth_data.shape[1] // 100]
+
             dist = np.average(roi)
-            return dist < 0.25
+            if debug:
+                cv2.imshow("roi", roi)
+                # cv2.imshow("depth", depth_data)
+                print("distance to obstacle avg = ", dist)
+            return dist < 0.468
         else:
             return False
 
@@ -94,13 +123,13 @@ class CS249Agent(Agent):
                                          lower_range=self.ycbcr_lower_range,
                                          upper_range=self.ycbcr_upper_range,
                                          error_scaling=[
-                                             (20, 0.1),
+                                             (20, 0.2),
                                              (40, 0.4),
-                                             (60, 0.6),
-                                             (70, 0.7),
+                                             (60, 0.5),
+                                             (70, 0.6),
                                              (80, 0.8),
-                                             (100, 0.9),
-                                             (200, 2)
+                                             (100, 1),
+                                             (200, 1)
                                          ]
                                          )
 
@@ -147,7 +176,7 @@ class CS249Agent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 
