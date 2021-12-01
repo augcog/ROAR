@@ -8,11 +8,23 @@ import numpy as np
 from ROAR.control_module.real_world_image_based_pid_controller import RealWorldImageBasedPIDController as PIDController
 from collections import deque
 from typing import List, Tuple, Optional
+from ROAR.utilities_module.udp_multicast_communicator import UDPMulticastCommunicator
 
 
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
+
+        self.name = "car_2"
+        self.udp_multicast = UDPMulticastCommunicator(agent=self,
+                                                      mcast_group="224.1.1.1",
+                                                      mcast_port=5004,
+                                                      threaded=True,
+                                                      update_interval=0.025,
+                                                      name=self.name)
+        self.add_threaded_module(self.udp_multicast)
+        self.car_to_follow = "car_1"
+
         # declare color tolerance
         # BGR
         # self.rgb_lower_range = (0, 0, 170)  # low range of color
@@ -31,14 +43,38 @@ class CS249Agent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        if self.obstacle_found(debug=True):
-            self.logger.info("Braking due to obstacle")
-            return VehicleControl(brake=True)
+        return self.follower_step()
 
-        if self.is_light_found(debug=False):
-            self.logger.info("Braking due to traffic light")
-            return VehicleControl(brake=True)
 
+
+        # if self.obstacle_found(debug=True):
+        #     self.logger.info("Braking due to obstacle")
+        #     return VehicleControl(brake=True)
+        #
+        # if self.is_light_found(debug=False):
+        #     self.logger.info("Braking due to traffic light")
+        #     return VehicleControl(brake=True)
+        # if self.front_rgb_camera.data is not None:
+        #     error = self.find_error()
+        #     if error is None:
+        #         return self.no_line_seen()
+        #     else:
+        #         self.kwargs["lat_error"] = error
+        #         self.vehicle.control = self.controller.run_in_series()
+        #         self.prev_steerings.append(self.vehicle.control.steering)
+        #         return self.vehicle.control
+        # else:
+        #     # image feed is not available yet
+        #     return VehicleControl()
+
+    def lead_car_step(self):
+        # if self.obstacle_found(debug=True):
+        #     self.logger.info("Braking due to obstacle")
+        #     return VehicleControl(brake=True)
+        #
+        # if self.is_light_found(debug=False):
+        #     self.logger.info("Braking due to traffic light")
+        #     return VehicleControl(brake=True)
         if self.front_rgb_camera.data is not None:
             error = self.find_error()
             if error is None:
@@ -51,6 +87,18 @@ class CS249Agent(Agent):
         else:
             # image feed is not available yet
             return VehicleControl()
+
+    def follower_step(self):
+        if self.time_counter % 10 == 0:
+            self.udp_multicast.send_current_state()
+        # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
+        if self.udp_multicast.msg_log.get(self.car_to_follow, None) is not None:
+            control = self.controller.run_in_series(target_point=self.udp_multicast.msg_log[self.car_to_follow])
+            return control
+            # return VehicleControl()
+        else:
+            # self.logger.info("No other cars found")
+            return VehicleControl(throttle=0, steering=0)
 
     def is_light_found(self, debug=False) -> bool:
         if self.front_rgb_camera.data is not None:
@@ -147,10 +195,10 @@ class CS249Agent(Agent):
     def find_error_at(self, data, y_offset, error_scaling, lower_range, upper_range) -> Optional[float]:
         y = data.shape[0] - y_offset
         lane_x = []
-        # mask_red = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
+        mask_red = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
         mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))
-        # mask = mask_red | mask_yellow
-        mask = mask_yellow
+        # mask = mask_yellow
+        mask = mask_red | mask_yellow
 
         # cv2.imshow("mask_red", mask_red)
         # cv2.imshow("mask_yellow", mask_yellow)
@@ -176,7 +224,7 @@ class CS249Agent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 
