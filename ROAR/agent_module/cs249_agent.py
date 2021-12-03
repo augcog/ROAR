@@ -9,6 +9,7 @@ from ROAR.control_module.real_world_image_based_pid_controller import RealWorldI
 from collections import deque
 from typing import List, Tuple, Optional
 from ROAR.utilities_module.udp_multicast_communicator import UDPMulticastCommunicator
+from ROAR.control_module.udp_pid_controller import UDP_PID_CONTROLLER
 
 
 class CS249Agent(Agent):
@@ -38,34 +39,12 @@ class CS249Agent(Agent):
         # self.ycbcr_upper_range = (250, 240, 130)  # high range of color
         self.ycbcr_lower_range = (0, 180, 60)  # low range of color
         self.ycbcr_upper_range = (250, 240, 140)  # high range of color
-        self.controller = PIDController(agent=self)
+        self.controller = PIDController(agent=self)  # UDP_PID_CONTROLLER(agent=self, distance_to_keep=1)
         self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        return self.follower_step()
-
-
-
-        # if self.obstacle_found(debug=True):
-        #     self.logger.info("Braking due to obstacle")
-        #     return VehicleControl(brake=True)
-        #
-        # if self.is_light_found(debug=False):
-        #     self.logger.info("Braking due to traffic light")
-        #     return VehicleControl(brake=True)
-        # if self.front_rgb_camera.data is not None:
-        #     error = self.find_error()
-        #     if error is None:
-        #         return self.no_line_seen()
-        #     else:
-        #         self.kwargs["lat_error"] = error
-        #         self.vehicle.control = self.controller.run_in_series()
-        #         self.prev_steerings.append(self.vehicle.control.steering)
-        #         return self.vehicle.control
-        # else:
-        #     # image feed is not available yet
-        #     return VehicleControl()
+        return self.lead_car_step()
 
     def lead_car_step(self):
         # if self.obstacle_found(debug=True):
@@ -173,11 +152,11 @@ class CS249Agent(Agent):
                                          error_scaling=[
                                              (20, 0.2),
                                              (40, 0.4),
-                                             (60, 0.5),
-                                             (70, 0.6),
-                                             (80, 0.8),
-                                             (100, 1),
-                                             (200, 1)
+                                             (60, 0.7),
+                                             (70, 0.7),
+                                             (80, 0.7),
+                                             (100, 0.8),
+                                             (200, 0.8)
                                          ]
                                          )
 
@@ -195,8 +174,11 @@ class CS249Agent(Agent):
     def find_error_at(self, data, y_offset, error_scaling, lower_range, upper_range) -> Optional[float]:
         y = data.shape[0] - y_offset
         lane_x = []
-        mask_red = cv2.inRange(src=data, lowerb=lower_range, upperb=upper_range)
-        mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))
+        cv2.imshow("data", data)
+        # mask_red = cv2.inRange(src=data, lowerb=(0, 150, 60), upperb=(250, 240, 140))  # TERRACE RED
+        # mask_yellow = cv2.inRange(src=data, lowerb=(0, 130, 0), upperb=(250, 200, 110)) # TERRACE YELLOW
+        mask_red = cv2.inRange(src=data, lowerb=(0, 180, 60), upperb=(250, 240, 140))  # CORY 337 RED
+        mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))  # CORY 337 YELLOW
         # mask = mask_yellow
         mask = mask_red | mask_yellow
 
@@ -205,7 +187,7 @@ class CS249Agent(Agent):
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
-        # cv2.imshow("mask", mask)
+        cv2.imshow("mask", mask)
 
         for x in range(0, data.shape[1], 5):
             if mask[y][x] > 0:
@@ -224,7 +206,7 @@ class CS249Agent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 

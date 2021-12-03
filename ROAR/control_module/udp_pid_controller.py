@@ -21,10 +21,10 @@ class UDP_PID_CONTROLLER(Controller):
         self._dt = 0.03
 
         self.distance_to_keep = distance_to_keep
-        self.max_throttle = 0.18
+        self.max_throttle = 0.14
         self.lon_kp = 0.17  # this is how much you want to steer
         self.lon_kd = 0.1  # this is how much you want to resist change
-        self.lon_ki = 0.025  # this is the correction on past error
+        self.lon_ki = 0.05  # this is the correction on past error
 
     def run_in_series(self, target_point: List, **kwargs) -> VehicleControl:
         next_waypoint: Transform = Transform.from_array(target_point)
@@ -84,7 +84,7 @@ class UDP_PID_CONTROLLER(Controller):
         z_diff = target_point[2] - self_point[2]
         dist_to_car = math.sqrt(x_diff * x_diff + z_diff * z_diff)
         if dist_to_car < self.distance_to_keep:
-            self.logger.info("TOO CLOSE BRAKING!")
+            self.logger.info(f"TOO CLOSE BRAKING! dist_to_car: {dist_to_car} < self.distance_to_keep:{self.distance_to_keep}")
             control.brake = True
             control.throttle = 0
         else:
