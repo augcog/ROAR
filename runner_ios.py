@@ -122,7 +122,7 @@ if __name__ == '__main__':
     parser.add_argument("-auto", action='store_true', help="Enable auto control")
     parser.add_argument("-m", "--mode", choices=choices, help="AR or VR [WARNING not implemented yet!]", default="vr")
     parser.add_argument("-r", "--reconnect", action='store_true', help="Scan QR code to attach phone to PC")
-    parser.add_argument("-u", "--use_unity", type=str2bool, default=False,
+    parser.add_argument("-u", "--use_unity", action='store_true',
                         help="Use unity as rendering and control service")
     parser.add_argument("-g", "--use_glove", help="use glove based controller by supplying its ip address!")
     args = parser.parse_args()
@@ -152,9 +152,9 @@ if __name__ == '__main__':
                 json.dump(ios_config.dict(), ios_config_file_path.open('w'), indent=4)
                 time.sleep(2)
         if success or args.reconnect is False:
-            agent = CS249Agent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
+            agent = ForwardOnlyAgent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
             if args.use_unity:
-                runner = iOSUnityRunner(agent=agent, ios_config=ios_config)
+                runner = iOSUnityRunner(agent=agent, ios_config=ios_config, is_unity=True)
             else:
                 runner = iOSRunner(agent=agent, ios_config=ios_config)
             runner.start_game_loop(auto_pilot=args.auto)

@@ -9,6 +9,7 @@ frame = None
 throttle = 0
 steering = 0
 
+
 class SimpleUnityWebsocketServer(WebSocket):
     def handle(self):
         global frame, throttle, steering
@@ -36,7 +37,7 @@ class UnityServer:
         self.server = WebSocketServer(self.host, self.port, SimpleUnityWebsocketServer)
         self.thread = threading.Thread(target=self.start, args=())
 
-        self.logger.debug("Initiated")
+        self.logger.debug("Unity Server Initiated")
 
     def get_control(self):
         c = VehicleControl(throttle=throttle, steering=steering)
@@ -47,7 +48,7 @@ class UnityServer:
         frame = new_frame
 
     def start(self):
-        self.logger.debug("Server Started")
+        self.logger.debug("Unity Server Started")
         self.server.serve_forever()
 
     def shutdown(self):

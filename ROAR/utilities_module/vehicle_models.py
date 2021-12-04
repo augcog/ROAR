@@ -70,7 +70,7 @@ class Vehicle(BaseModel):
         vel = vehicle.velocity
         return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
-    def to_array(self):
+    def to_array(self) -> np.ndarray:
         return np.concatenate([self.transform.to_array(), self.velocity.to_array(), self.acceleration.to_array(),
                                self.control.to_array()])
 
