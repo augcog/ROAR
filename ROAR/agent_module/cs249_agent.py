@@ -1,11 +1,12 @@
 from ROAR.agent_module.agent import Agent
-from ROAR.utilities_module.data_structures_models import SensorsData
+from ROAR.utilities_module.data_structures_models import SensorsData, Transform
 from ROAR.utilities_module.vehicle_models import Vehicle, VehicleControl
 from ROAR.configurations.configuration import Configuration as AgentConfig
 import cv2
 import numpy as np
 # from ROAR.control_module.simple_pid_controller import SimplePIDController
-from ROAR.control_module.real_world_image_based_pid_controller import RealWorldImageBasedPIDController as PIDController
+from ROAR.control_module.real_world_image_based_pid_controller import \
+    RealWorldImageBasedPIDController as LaneFollowingPID
 from collections import deque
 from typing import List, Tuple, Optional
 from ROAR.utilities_module.udp_multicast_communicator import UDPMulticastCommunicator
@@ -15,8 +16,10 @@ from ROAR.control_module.udp_pid_controller import UDP_PID_CONTROLLER
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-
+        self.is_lead_car = False
         self.name = "car_2"
+        self.car_to_follow = "car_1"
+
         self.udp_multicast = UDPMulticastCommunicator(agent=self,
                                                       mcast_group="224.1.1.1",
                                                       mcast_port=5004,
@@ -24,27 +27,23 @@ class CS249Agent(Agent):
                                                       update_interval=0.025,
                                                       name=self.name)
         self.add_threaded_module(self.udp_multicast)
-        self.car_to_follow = "car_1"
-
-        # declare color tolerance
-        # BGR
-        # self.rgb_lower_range = (0, 0, 170)  # low range of color
-        # self.rgb_upper_range = (130, 130, 255)  # high range of color
-        self.rgb_lower_range = (0, 160, 160)  # low range of color YELLOW
-        self.rgb_upper_range = (140, 255, 255)  # high range of color
-
-        # (-128, -50; 0, 70) + 128
-        # 150 - 200, 0 - 60; 150, 96
-        # self.ycbcr_lower_range = (0, 220, 60)  # low range of color YELLOW
-        # self.ycbcr_upper_range = (250, 240, 130)  # high range of color
-        self.ycbcr_lower_range = (0, 180, 60)  # low range of color
-        self.ycbcr_upper_range = (250, 240, 140)  # high range of color
-        self.controller = PIDController(agent=self)  # UDP_PID_CONTROLLER(agent=self, distance_to_keep=1)
+        if self.is_lead_car:
+            self.controller = LaneFollowingPID(agent=self)
+        else:
+            self.controller = UDP_PID_CONTROLLER(agent=self, distance_to_keep=1)
         self.prev_steerings: deque = deque(maxlen=10)
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        return self.lead_car_step()
+        if self.front_depth_camera.data is not None:
+            cv2.imshow("depth", self.front_depth_camera.data)
+            cv2.waitKey(1)
+        return VehicleControl(brake=True)
+
+        # if self.is_lead_car:
+        #     return self.lead_car_step()
+        # else:
+        #     return self.follower_step()
 
     def lead_car_step(self):
         # if self.obstacle_found(debug=True):
@@ -60,7 +59,7 @@ class CS249Agent(Agent):
                 return self.no_line_seen()
             else:
                 self.kwargs["lat_error"] = error
-                self.vehicle.control = self.controller.run_in_series()
+                self.vehicle.control = self.controller.run_in_series(next_waypoint=None)
                 self.prev_steerings.append(self.vehicle.control.steering)
                 return self.vehicle.control
         else:
@@ -72,9 +71,9 @@ class CS249Agent(Agent):
             self.udp_multicast.send_current_state()
         # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
         if self.udp_multicast.msg_log.get(self.car_to_follow, None) is not None:
-            control = self.controller.run_in_series(target_point=self.udp_multicast.msg_log[self.car_to_follow])
+            control = self.controller.run_in_series(next_waypoint=Transform.from_array(
+                self.udp_multicast.msg_log[self.car_to_follow]))
             return control
-            # return VehicleControl()
         else:
             # self.logger.info("No other cars found")
             return VehicleControl(throttle=0, steering=0)
@@ -114,7 +113,7 @@ class CS249Agent(Agent):
         if self.front_depth_camera.data is not None:
             depth_data = self.front_depth_camera.data
             roi = depth_data[70 * depth_data.shape[0] // 100: 90 * depth_data.shape[0] // 100,
-                             30 * depth_data.shape[1] // 100: 60 * depth_data.shape[1] // 100]
+                  30 * depth_data.shape[1] // 100: 60 * depth_data.shape[1] // 100]
 
             dist = np.average(roi)
             if debug:
@@ -135,8 +134,6 @@ class CS249Agent(Agent):
         # find the lane
         error_at_10 = self.find_error_at(data=data,
                                          y_offset=10,
-                                         lower_range=self.ycbcr_lower_range,
-                                         upper_range=self.ycbcr_upper_range,
                                          error_scaling=[
                                              (20, 0.1),
                                              (40, 0.75),
@@ -147,8 +144,6 @@ class CS249Agent(Agent):
                                          ])
         error_at_50 = self.find_error_at(data=data,
                                          y_offset=50,
-                                         lower_range=self.ycbcr_lower_range,
-                                         upper_range=self.ycbcr_upper_range,
                                          error_scaling=[
                                              (20, 0.2),
                                              (40, 0.4),
@@ -171,7 +166,7 @@ class CS249Agent(Agent):
             error = error_at_50
         return error
 
-    def find_error_at(self, data, y_offset, error_scaling, lower_range, upper_range) -> Optional[float]:
+    def find_error_at(self, data, y_offset, error_scaling) -> Optional[float]:
         y = data.shape[0] - y_offset
         lane_x = []
         cv2.imshow("data", data)

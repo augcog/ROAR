@@ -26,11 +26,10 @@ class UDP_PID_CONTROLLER(Controller):
         self.lon_kd = 0.1  # this is how much you want to resist change
         self.lon_ki = 0.05  # this is the correction on past error
 
-    def run_in_series(self, target_point: List, **kwargs) -> VehicleControl:
-        next_waypoint: Transform = Transform.from_array(target_point)
+    def run_in_series(self, next_waypoint: Transform, **kwargs) -> VehicleControl:
         control = VehicleControl()
         self.lateral_pid_control(next_waypoint, control=control)
-        self.long_pid_control(target_point, control=control)
+        self.long_pid_control(next_waypoint, control=control)
         return control
 
     def lateral_pid_control(self, next_waypoint: Transform, control: VehicleControl):
@@ -76,9 +75,9 @@ class UDP_PID_CONTROLLER(Controller):
         control.steering = lat_control
         # print(control, v_vec_normed, w_vec_normed, next_waypoint.location, v_begin, error)
 
-    def long_pid_control(self, target_point, control: VehicleControl):
+    def long_pid_control(self, next_waypoint, control: VehicleControl):
         self_point = self.agent.vehicle.transform.to_array()
-
+        target_point = next_waypoint.location.to_array()
         x_diff = target_point[0] - self_point[0]
         y_diff = target_point[1] - self_point[1]
         z_diff = target_point[2] - self_point[2]
