@@ -11,6 +11,8 @@ from collections import deque
 from typing import List, Tuple, Optional
 from ROAR.utilities_module.udp_multicast_communicator import UDPMulticastCommunicator
 from ROAR.control_module.udp_pid_controller import UDP_PID_CONTROLLER
+from ROAR.perception_module.depth_to_pointcloud_detector import DepthToPointCloudDetector
+import open3d as o3d
 
 
 class CS249Agent(Agent):
@@ -33,10 +35,45 @@ class CS249Agent(Agent):
             self.controller = UDP_PID_CONTROLLER(agent=self, distance_to_keep=1)
         self.prev_steerings: deque = deque(maxlen=10)
 
+        # point cloud visualization
+        self.vis = o3d.visualization.Visualizer()
+        self.vis.create_window(width=500, height=500)
+        self.pcd = o3d.geometry.PointCloud()
+        self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame()
+        self.points_added = False
+
+        # pointcloud and ground plane detection
+        self.depth2pointcloud = DepthToPointCloudDetector(agent=self)
+        self.max_dist = 2
+        self.height_threshold = 0.5
+        self.ransac_dist_threshold = 0.01
+        self.ransac_n = 3
+        self.ransac_itr = 100
+
+        # occupancy map
+        self.scaling_factor = 100
+        self.occu_map = np.zeros(shape=(self.max_dist * self.scaling_factor, self.max_dist * self.scaling_factor))
+        self.cx = 100
+        self.cz = 0
+
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        if self.front_depth_camera.data is not None:
-            cv2.imshow("depth", self.front_depth_camera.data)
+        if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
+            pcd: o3d.geometry.PointCloud = self.depth2pointcloud.run_in_series(self.front_depth_camera.data,
+                                                                               self.front_rgb_camera.data)
+            pcd = self.filter_ground(pcd=pcd,
+                                     max_dist=self.max_dist,
+                                     height_threshold=self.height_threshold,
+                                     ransac_dist_threshold=self.ransac_dist_threshold,
+                                     ransac_n=self.ransac_n,
+                                     ransac_itr=self.ransac_itr)
+
+            self.non_blocking_pcd_visualization(pcd=pcd,
+                                                axis_size=1,
+                                                should_show_axis=True)
+            occu_map = self.occu_map_from_pcd(pcd=pcd, max_dist=self.max_dist, scaling_factor=self.scaling_factor,
+                                              cx=self.cx, cz=self.cz)
+            cv2.imshow("occu_map", occu_map)
             cv2.waitKey(1)
         return VehicleControl(brake=True)
 
@@ -44,6 +81,69 @@ class CS249Agent(Agent):
         #     return self.lead_car_step()
         # else:
         #     return self.follower_step()
+
+    def occu_map_from_pcd(self, pcd: o3d.geometry.PointCloud, max_dist, scaling_factor, cx, cz) -> np.ndarray:
+        occu_map = np.zeros(shape=(max_dist * scaling_factor, max_dist * scaling_factor))
+        points = np.asarray(pcd.points)
+        points *= scaling_factor
+        points = points.astype(int)
+        points[:, 0] += cx
+        points[:, 2] += cz
+        occu_map[points[:, 0], points[:, 2]] = 1
+        return occu_map
+
+
+    def filter_ground(self, pcd: o3d.geometry.PointCloud, max_dist=2, height_threshold=0.5,
+                      ransac_dist_threshold=0.01, ransac_n=3, ransac_itr=100) -> o3d.geometry.PointCloud:
+        points = np.asarray(pcd.points)
+        colors = np.asarray(pcd.colors)
+        points_of_interest = np.where((points[:, 1] < self.vehicle.transform.location.y + height_threshold) &
+                                      (points[:, 2] < max_dist))
+        points = points[points_of_interest]
+        colors = colors[points_of_interest]
+        pcd.points = o3d.utility.Vector3dVector(points)
+        pcd.colors = o3d.utility.Vector3dVector(colors)
+        plane_model, inliers = pcd.segment_plane(distance_threshold=ransac_dist_threshold,
+                                                 ransac_n=ransac_n,
+                                                 num_iterations=ransac_itr)
+
+        pcd = pcd.select_by_index(inliers)
+        return pcd
+
+    def non_blocking_pcd_visualization(self, pcd: o3d.geometry.PointCloud,
+                                       should_center=False,
+                                       should_show_axis=False,
+                                       axis_size: float = 1):
+        points = np.asarray(pcd.points)
+        colors = np.asarray(pcd.colors)
+        if should_center:
+            points = points - np.mean(points, axis=0)
+
+        if self.points_added is False:
+            self.pcd = o3d.geometry.PointCloud()
+            self.pcd.points = o3d.utility.Vector3dVector(points)
+            self.pcd.colors = o3d.utility.Vector3dVector(colors)
+
+            if should_show_axis:
+                self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=axis_size,
+                                                                                          origin=np.mean(points,
+                                                                                                         axis=0))
+                self.vis.add_geometry(self.coordinate_frame)
+            self.vis.add_geometry(self.pcd)
+            self.points_added = True
+        else:
+            # print(np.shape(np.vstack((np.asarray(self.pcd.points), points))))
+            self.pcd.points = o3d.utility.Vector3dVector(points)
+            self.pcd.colors = o3d.utility.Vector3dVector(colors)
+            if should_show_axis:
+                self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=axis_size,
+                                                                                          origin=np.mean(points,
+                                                                                                         axis=0))
+                self.vis.update_geometry(self.coordinate_frame)
+            self.vis.update_geometry(self.pcd)
+
+        self.vis.poll_events()
+        self.vis.update_renderer()
 
     def lead_car_step(self):
         # if self.obstacle_found(debug=True):

@@ -17,20 +17,22 @@ class DepthToPointCloudDetector(Detector):
 
     def run_in_threaded(self, **kwargs):
         while True:
-            self.agent.kwargs["point_cloud"] = self.run_in_series()
+            if self.agent.front_depth_camera.data is not None and self.agent.front_rgb_camera.data is not None:
+                self.agent.kwargs["point_cloud"] = self.run_in_series(self.agent.front_depth_camera.data,
+                                                                      self.agent.front_rgb_camera.data)
 
-    def run_in_series(self, **kwargs) -> o3d.geometry.PointCloud:
+    def run_in_series(self, depth_image, rgb_image, **kwargs) -> o3d.geometry.PointCloud:
         """
         :return: 3 x N array of point cloud
         """
         # if "depth_image" in kwargs:
         #     return self.old_way(kwargs["depth_image"])
         # return self.old_way(depth_img=self.agent.front_depth_camera.data.copy())
-        return self.pcd_via_open3d()
+        return self.pcd_via_open3d(depth_image, rgb_image=rgb_image)
 
-    def pcd_via_open3d(self):
-        depth_data = self.agent.front_depth_camera.data.copy().astype(np.float32) * self.settings.depth_scale_raw
-        rgb_data: np.ndarray = cv2.resize(self.agent.front_rgb_camera.data.copy(),
+    def pcd_via_open3d(self, depth_image: np.ndarray, rgb_image: np.ndarray):
+        depth_data = depth_image.copy().astype(np.float32) * self.settings.depth_scale_raw
+        rgb_data: np.ndarray = cv2.resize(rgb_image.copy(),
                                           dsize=(depth_data.shape[1], depth_data.shape[0]))
 
         rgb_data = cv2.cvtColor(rgb_data, cv2.COLOR_RGB2BGR)
@@ -44,15 +46,15 @@ class DepthToPointCloudDetector(Detector):
         intric = self.agent.front_depth_camera.intrinsics_matrix
         intrinsic = o3d.camera.PinholeCameraIntrinsic(width=rgb_data.shape[0],
                                                       height=rgb_data.shape[1],
-                                                      fx=intric[0][0],
-                                                      fy=intric[1][1],
+                                                      fx=intric[0][0],  # added this hack to flip it
+                                                      fy=-intric[1][1],  # added this hack to flip it
                                                       cx=intric[0][2],
                                                       cy=intric[1][2])
-        extrinsics = self.agent.vehicle.transform.get_matrix()
-        rot = self.agent.vehicle.transform.rotation
-        # rot.pitch, rot.yaw, rot.roll
-        extrinsics[0:3, 0:3] = o3d.geometry.get_rotation_matrix_from_yzx(rotation=
-                                                                         np.deg2rad([rot.pitch, rot.yaw, rot.roll]))
+        # extrinsics = self.agent.vehicle.transform.get_matrix()
+        # rot = self.agent.vehicle.transform.rotation
+        # # rot.pitch, rot.yaw, rot.roll
+        # extrinsics[0:3, 0:3] = o3d.geometry.get_rotation_matrix_from_yzx(rotation=
+        #                                                                  np.deg2rad([rot.pitch, rot.yaw, rot.roll]))
         pcd: o3d.geometry.PointCloud = o3d.geometry.PointCloud. \
             create_from_rgbd_image(image=rgbd,
                                    intrinsic=intrinsic)
@@ -71,7 +73,7 @@ class DepthToPointCloudDetector(Detector):
         cords_xyz_1: np.ndarray = np.linalg.inv(intrinsic) @ raw_p2d.T
         cords_xyz_1 = np.vstack((cords_xyz_1, np.ones((1, cords_xyz_1.shape[1]))))
         points = self.agent.vehicle.transform.get_matrix() @ cords_xyz_1
-        points = points.T[:, :3] # (l_r,f_b,up_down), forward and up vector is inverse
+        points = points.T[:, :3]  # (l_r,f_b,up_down), forward and up vector is inverse
         points[:, 1:] = points[:, 1:] * -1
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(points)
@@ -80,7 +82,7 @@ class DepthToPointCloudDetector(Detector):
             pcd = pcd.voxel_down_sample(self.settings.voxel_down_sample_size)
         pcd.paint_uniform_color(color=[0, 0, 0])
         return pcd
-        #return points
+        # return points
 
     def save(self, **kwargs):
         pass
