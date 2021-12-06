@@ -71,8 +71,9 @@ class CS249Agent(Agent):
             self.non_blocking_pcd_visualization(pcd=pcd,
                                                 axis_size=1,
                                                 should_show_axis=True)
-            occu_map = self.occu_map_from_pcd(pcd=pcd, max_dist=self.max_dist, scaling_factor=self.scaling_factor,
+            occu_map = self.occu_map_from_pcd(pcd=pcd, scaling_factor=self.scaling_factor,
                                               cx=self.cx, cz=self.cz)
+
             cv2.imshow("occu_map", occu_map)
             cv2.waitKey(1)
         return VehicleControl(brake=True)
@@ -82,16 +83,19 @@ class CS249Agent(Agent):
         # else:
         #     return self.follower_step()
 
-    def occu_map_from_pcd(self, pcd: o3d.geometry.PointCloud, max_dist, scaling_factor, cx, cz) -> np.ndarray:
-        occu_map = np.zeros(shape=(max_dist * scaling_factor, max_dist * scaling_factor))
+    def occu_map_from_pcd(self, pcd: o3d.geometry.PointCloud, scaling_factor, cx, cz) -> np.ndarray:
         points = np.asarray(pcd.points)
         points *= scaling_factor
         points = points.astype(int)
         points[:, 0] += cx
         points[:, 2] += cz
-        occu_map[points[:, 0], points[:, 2]] = 1
-        return occu_map
-
+        self.occu_map -= 0.1
+        self.occu_map[points[:, 0], points[:, 2]] = 1
+        self.occu_map.clip(0, 1)
+        kernel = np.ones((2, 2), np.uint8)
+        self.occu_map = cv2.morphologyEx(self.occu_map, cv2.MORPH_OPEN, kernel)  # erosion followed by dilation
+        self.occu_map = cv2.erode(self.occu_map, kernel, iterations=1)  # to further filter out some noise
+        return self.occu_map
 
     def filter_ground(self, pcd: o3d.geometry.PointCloud, max_dist=2, height_threshold=0.5,
                       ransac_dist_threshold=0.01, ransac_n=3, ransac_itr=100) -> o3d.geometry.PointCloud:
@@ -146,13 +150,16 @@ class CS249Agent(Agent):
         self.vis.update_renderer()
 
     def lead_car_step(self):
-        # if self.obstacle_found(debug=True):
-        #     self.logger.info("Braking due to obstacle")
-        #     return VehicleControl(brake=True)
-        #
-        # if self.is_light_found(debug=False):
-        #     self.logger.info("Braking due to traffic light")
-        #     return VehicleControl(brake=True)
+        # if self.time_counter % 10 == 0:
+        #     self.udp_multicast.send_current_state()
+        if self.obstacle_found(debug=True):
+            self.logger.info("Braking due to obstacle")
+            return VehicleControl(brake=True)
+
+        if self.is_light_found(debug=False):
+            self.logger.info("Braking due to traffic light")
+            return VehicleControl(brake=True)
+
         if self.front_rgb_camera.data is not None:
             error = self.find_error()
             if error is None:

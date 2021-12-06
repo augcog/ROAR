@@ -68,7 +68,7 @@ def showIPUntilAckUDP():
 
 
 def showIPUntilAck():
-    port = 8890
+    port = 40001
     img = np.array(qrcode.make(f"{get_ip()},{port}").convert('RGB'))
     success = False
     addr = None
