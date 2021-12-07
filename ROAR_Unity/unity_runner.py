@@ -125,6 +125,8 @@ class iOSUnityRunner:
 
         self.braker = Brake(kp=0.01, kd=0, ki=0, k_incline=0.015, max_brake=0.16)
 
+        self.pitch_offset: Optional[float] = None
+
         if self.is_unity:
             self.logger.info("iOS Unity Runner Initialized")
         else:
@@ -162,6 +164,17 @@ class iOSUnityRunner:
             is_manual_toggled = False
             while should_continue:
                 clock.tick_busy_loop(60)
+                if self.pitch_offset is None:
+                    if -80 > self.agent.vehicle.transform.rotation.pitch > -100:
+                        self.pitch_offset = -90 - self.agent.vehicle.transform.rotation.pitch
+                    elif self.agent.vehicle.transform.rotation.pitch == 0:
+                        pass  # this means that first data has not been received yet
+                    else:
+                        self.logger.error(f"Erroneous pitch reading: {self.agent.vehicle.transform.rotation.pitch}. "
+                                          f"Please recalibrate your phone")
+                else:
+                    self.agent.vehicle.transform.rotation.pitch = self.agent.vehicle.transform.rotation.pitch + self.pitch_offset
+
                 if self.is_unity:
                     # if unity, overwrite the control with what you get from unity.
                     control = self.unity_control_streamer.vehicle_control
@@ -171,8 +184,10 @@ class iOSUnityRunner:
                 if is_manual_toggled:
                     self.is_auto = False if self.is_auto else True
                 sensor_data, vehicle = self.convert_data()
+
                 agent_control = self.agent.run_step(vehicle=vehicle,
                                                     sensors_data=sensor_data)
+
                 if self.is_auto:
                     # if autonomous mode, overwrite the previous controls with agent's control
                     control = self.ios_bridge.convert_control_from_agent_to_source(agent_control)
@@ -191,7 +206,7 @@ class iOSUnityRunner:
                                            self.ios_config.max_steering)
                 self.control_streamer.send(control)
 
-                if self.agent.front_rgb_camera.data is not None:
+                if self.agent.front_rgb_camera.data is not None and self.is_unity:
                     self.unity_rgb_streamer.update_image(self.world_cam_streamer.curr_image,
                                                          self.world_cam_streamer.intrinsics)
                     self.unity_veh_state_streamer.update_state(

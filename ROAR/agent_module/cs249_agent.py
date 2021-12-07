@@ -13,6 +13,7 @@ from ROAR.utilities_module.udp_multicast_communicator import UDPMulticastCommuni
 from ROAR.control_module.udp_pid_controller import UDP_PID_CONTROLLER
 from ROAR.perception_module.depth_to_pointcloud_detector import DepthToPointCloudDetector
 import open3d as o3d
+import math
 
 
 class CS249Agent(Agent):
@@ -44,7 +45,7 @@ class CS249Agent(Agent):
 
         # pointcloud and ground plane detection
         self.depth2pointcloud = DepthToPointCloudDetector(agent=self)
-        self.max_dist = 2
+        self.max_dist = 1.5
         self.height_threshold = 0.5
         self.ransac_dist_threshold = 0.01
         self.ransac_n = 3
@@ -52,8 +53,10 @@ class CS249Agent(Agent):
 
         # occupancy map
         self.scaling_factor = 100
-        self.occu_map = np.zeros(shape=(self.max_dist * self.scaling_factor, self.max_dist * self.scaling_factor))
-        self.cx = 100
+        self.occu_map = np.zeros(shape=(math.ceil(self.max_dist * self.scaling_factor),
+                                        math.ceil(self.max_dist * self.scaling_factor)),
+                                 dtype=np.float32)
+        self.cx = len(self.occu_map) // 2
         self.cz = 0
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -73,9 +76,8 @@ class CS249Agent(Agent):
                                                 should_show_axis=True)
             occu_map = self.occu_map_from_pcd(pcd=pcd, scaling_factor=self.scaling_factor,
                                               cx=self.cx, cz=self.cz)
+            left, center, right = self.find_obstacle_l_c_r(occu_map=occu_map, debug=True)
 
-            cv2.imshow("occu_map", occu_map)
-            cv2.waitKey(1)
         return VehicleControl(brake=True)
 
         # if self.is_lead_car:
@@ -83,21 +85,99 @@ class CS249Agent(Agent):
         # else:
         #     return self.follower_step()
 
+    def find_obstacle_l_c_r(self, occu_map,
+                                  left_occ_thresh=0.3,
+                                  center_occ_thresh=0.5,
+                                  right_occ_thresh=0.3,
+                                  debug=False) -> Tuple[Tuple[bool, float], Tuple[bool, float], Tuple[bool, float]]:
+        """
+        Given an occupancy map `occu_map`, find whether in `left`, `center`, `right` which is/are occupied and
+        also its probability for occupied.
+        Args:
+            occu_map: occupancy map
+            left_occ_thresh: threshold occupied --> lower ==> more likely to be occupied
+            center_occ_thresh: threshold occupied --> lower ==> more likely to be occupied
+            right_occ_thresh: threshold occupied --> lower ==> more likely to be occupied
+            debug: if true, draw out where the algorithm is looking at
+
+        Returns:
+            there tuples of bool and float representing occupied or not and its relative probability.
+        """
+        backtorgb = cv2.cvtColor(occu_map, cv2.COLOR_GRAY2RGB)
+
+        height, width, channel = backtorgb.shape
+        left_rec_start = (25 * width // 100, 40 * height // 100)
+        left_rec_end = (80 * width // 100, 45 * height // 100)
+
+        mid_rec_start = (25 * width // 100, 47 * height // 100)
+        mid_rec_end = (80 * width // 100, 52 * height // 100)
+
+        right_rec_start = (25 * width // 100, 55 * height // 100)
+        right_rec_end = (80 * width // 100, 60 * height // 100)
+        right = self.is_occupied(m=occu_map, start=right_rec_start, end=right_rec_end, threshold=left_occ_thresh)
+        center = self.is_occupied(m=occu_map, start=mid_rec_start, end=mid_rec_end, threshold=center_occ_thresh)
+        left = self.is_occupied(m=occu_map, start=left_rec_start, end=left_rec_end, threshold=right_occ_thresh)
+        if debug:
+            backtorgb = cv2.rectangle(backtorgb,
+                                      left_rec_start,
+                                      left_rec_end,
+                                      (0, 0, 255), 1)
+
+            backtorgb = cv2.rectangle(backtorgb,
+                                      mid_rec_start,
+                                      mid_rec_end,
+                                      (0, 255, 0), 1)
+
+            backtorgb = cv2.rectangle(backtorgb,
+                                      right_rec_start,
+                                      right_rec_end,
+                                      (255, 0, 0), 1)
+
+            cv2.imshow("show", backtorgb)
+            cv2.waitKey(1)
+
+        return left, center, right
+
+    @staticmethod
+    def is_occupied(m, start, end, threshold) -> Tuple[bool, float]:
+        """
+        Return the whether the area in `m` specified with `start` and `end` is occupied or not
+        based on a ratio threshold.
+
+        If the number of free spots / total area is less than threshold,
+        then it means that this place is probability occupied.
+        Args:
+            m: 2D numpy array of occupancy map (free map to be exact)
+            start: starting bounding box
+            end: ending bounding box
+            threshold: ratio to determine free or not
+
+        Returns:
+            bool -> true if occupied, false if free.
+
+        """
+        cropped = m[start[1]:end[1], start[0]:end[0]]
+        area = (end[1] - start[1]) * (end[0] - start[0])
+        spots_free = (cropped > 0.8).sum()
+        ratio = spots_free / area
+        return ratio < threshold,  ratio # if spots_free/area < threshold, then this place is occupied
+
     def occu_map_from_pcd(self, pcd: o3d.geometry.PointCloud, scaling_factor, cx, cz) -> np.ndarray:
         points = np.asarray(pcd.points)
         points *= scaling_factor
         points = points.astype(int)
         points[:, 0] += cx
         points[:, 2] += cz
-        self.occu_map -= 0.1
-        self.occu_map[points[:, 0], points[:, 2]] = 1
-        self.occu_map.clip(0, 1)
-        kernel = np.ones((2, 2), np.uint8)
-        self.occu_map = cv2.morphologyEx(self.occu_map, cv2.MORPH_OPEN, kernel)  # erosion followed by dilation
-        self.occu_map = cv2.erode(self.occu_map, kernel, iterations=1)  # to further filter out some noise
+        np.clip(points, 0, len(self.occu_map))  # points that i see that are too far away
+        self.occu_map -= 0.05
+        self.occu_map[points[:, 0], points[:, 2]] += 0.9  # ground
+        self.occu_map = self.occu_map.clip(0, 1)
+        # kernel = np.ones((2, 2), np.uint8)
+        # self.occu_map = cv2.morphologyEx(self.occu_map, cv2.MORPH_OPEN, kernel)  # erosion followed by dilation
+        # self.occu_map = cv2.dilate(self.occu_map, kernel, iterations=2)  # to further filter out some noise
         return self.occu_map
 
-    def filter_ground(self, pcd: o3d.geometry.PointCloud, max_dist=2, height_threshold=0.5,
+    def filter_ground(self, pcd: o3d.geometry.PointCloud, max_dist: float = 2, height_threshold=0.5,
                       ransac_dist_threshold=0.01, ransac_n=3, ransac_itr=100) -> o3d.geometry.PointCloud:
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)

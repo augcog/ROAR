@@ -153,10 +153,7 @@ if __name__ == '__main__':
                 time.sleep(2)
         if success or args.reconnect is False:
             agent = CS249Agent(vehicle=Vehicle(), agent_settings=agent_config, should_init_default_cam=True)
-            if args.use_unity:
-                runner = iOSUnityRunner(agent=agent, ios_config=ios_config, is_unity=True)
-            else:
-                runner = iOSRunner(agent=agent, ios_config=ios_config)
+            runner = iOSUnityRunner(agent=agent, ios_config=ios_config, is_unity=args.use_unity)
             runner.start_game_loop(auto_pilot=args.auto)
     except Exception as e:
         print(f"Something bad happened: {e}")
