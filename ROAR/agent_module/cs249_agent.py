@@ -163,6 +163,21 @@ class CS249Agent(Agent):
         return ratio < threshold,  ratio # if spots_free/area < threshold, then this place is occupied
 
     def occu_map_from_pcd(self, pcd: o3d.geometry.PointCloud, scaling_factor, cx, cz) -> np.ndarray:
+        """
+        Convert point cloud to occupancy map by first doing an affine transformation,
+        then use the log odd update for updating the occupancy map
+
+        Note that this method will update self.occu_map as well as returning the updated occupancy map.
+
+        Args:
+            pcd: point cloud
+            scaling_factor: scaling factor for the affine transformation from pcd to occupancy map
+            cx: x-axis constant for the affine transformation from pcd to occupancy map
+            cz: z-axis constant for the affine transformation from pcd to occupancy map
+
+        Returns:
+            the updated occupancy map
+        """
         points = np.asarray(pcd.points)
         points *= scaling_factor
         points = points.astype(int)
@@ -179,6 +194,26 @@ class CS249Agent(Agent):
 
     def filter_ground(self, pcd: o3d.geometry.PointCloud, max_dist: float = 2, height_threshold=0.5,
                       ransac_dist_threshold=0.01, ransac_n=3, ransac_itr=100) -> o3d.geometry.PointCloud:
+        """
+        Find ground from point cloud by first selecting points that are below the (car's position + a certain threshold)
+        Then it will take only the points that are less than `max_dist` distance away
+        Then do RANSAC on the resulting point cloud.
+
+        Note that this function assumes that the ground will be the largest plane seen after filtering out everything
+        above the vehicle
+
+        Args:
+            pcd: point cloud to be parsed
+            max_dist: maximum distance
+            height_threshold: additional height padding
+            ransac_dist_threshold: RANSAC distance threshold
+            ransac_n: RANSAC starting number of points
+            ransac_itr: RANSAC number of iterations
+
+        Returns:
+            point cloud that only has the ground.
+
+        """
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)
         points_of_interest = np.where((points[:, 1] < self.vehicle.transform.location.y + height_threshold) &
@@ -198,6 +233,19 @@ class CS249Agent(Agent):
                                        should_center=False,
                                        should_show_axis=False,
                                        axis_size: float = 1):
+        """
+        Real time point cloud visualization.
+
+        Args:
+            pcd: point cloud to be visualized
+            should_center: true to always center the point cloud
+            should_show_axis: true to show axis
+            axis_size: adjust axis size
+
+        Returns:
+            None
+
+        """
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)
         if should_center:
@@ -265,17 +313,26 @@ class CS249Agent(Agent):
             # self.logger.info("No other cars found")
             return VehicleControl(throttle=0, steering=0)
 
-    def is_light_found(self, debug=False) -> bool:
+    def is_light_found(self, low=(200, 200, 0), high=(255, 255, 100), n=500, debug=False) -> bool:
+        """
+        Find if there's light depending on if the image has n points that is within `low` and `high` range
+
+        Args:
+            n: minimum number of pixels to register as light found
+            high: high range in the format of BGR
+            low: low range in the format of BGR
+            debug: True to show image
+
+        Returns:
+            True if light is found, False otherwise
+        """
         if self.front_rgb_camera.data is not None:
             img = self.front_rgb_camera.data
-            # BGR
-            low = (200, 200, 0)
-            high = (255, 255, 100)
             mask = cv2.inRange(img, low, high)
             if debug:
                 cv2.imshow("traffic light", mask)
-                print(len(np.where(mask > 0)[0]))
-            if len(np.where(mask > 0)[0]) > 500:
+                print(sum(mask > 0))
+            if sum(mask > 0) > n:
                 return True
             return False
         else:
@@ -296,7 +353,20 @@ class CS249Agent(Agent):
             # is flat or up slope, execute adjusted previous command
             return self.execute_prev_command()
 
-    def obstacle_found(self, debug=False) -> bool:
+    def obstacle_found(self, threshold=0.468, debug=False) -> bool:
+        """
+        find obstacle by interpreting the depth image directly -- if in an area of interest, the area's average depth
+        is smaller than threshold, then it means that there's probably something that is blocking the view and thus
+        register as obstacle
+
+        Args:
+            threshold: minimum threshold to detect obstacle
+            debug: true to show image
+
+        Returns:
+            True if obstacle is detected, false otherwise
+
+        """
         if self.front_depth_camera.data is not None:
             depth_data = self.front_depth_camera.data
             roi = depth_data[70 * depth_data.shape[0] // 100: 90 * depth_data.shape[0] // 100,
@@ -307,7 +377,7 @@ class CS249Agent(Agent):
                 cv2.imshow("roi", roi)
                 # cv2.imshow("depth", depth_data)
                 print("distance to obstacle avg = ", dist)
-            return dist < 0.468
+            return dist < threshold
         else:
             return False
 
@@ -388,7 +458,7 @@ class CS249Agent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 
