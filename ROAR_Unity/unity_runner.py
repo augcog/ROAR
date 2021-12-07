@@ -370,7 +370,8 @@ class iOSUnityRunner:
                                 color=(0, 255, 0), thickness=1, lineType=cv2.LINE_AA)
 
             frame = cv2.putText(img=frame,
-                                text=f"Auto = {self.is_auto} | {self.control_streamer.control_tx}",
+                                text=f"Auto = {self.is_auto} | {self.control_streamer.control_tx} | "
+                                     f"Steering Offset: {round(self.ios_config.steering_offset, 3)}",
                                 org=(20, frame.shape[0] - 20), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6,
                                 color=(0, 255, 0),  # BGR
                                 thickness=1, lineType=cv2.LINE_AA)
