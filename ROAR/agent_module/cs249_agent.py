@@ -32,9 +32,9 @@ class ObstacleEnum(Enum):
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.is_lead_car = True
-        self.name = "car_1"
-        self.car_to_follow = "car_0"
+        self.is_lead_car = False
+        self.name = "car_2"
+        self.car_to_follow = "car_1"
 
         self.udp_multicast = UDPMulticastCommunicator(agent=self,
                                                       mcast_group="224.1.1.1",
@@ -89,31 +89,6 @@ class CS249Agent(Agent):
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
 
-        # if obstacle is detected, deal with obstacle first
-        if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
-            left, center, right = self.find_obstacles_via_depth_to_pcd()
-            if left[0] and center[0] and right[0]:
-                # self.logger.info("Can't find feasible path around obstacle")
-                return VehicleControl(brake=True)
-
-            # if there is a way to avoid it or i am already avoiding it
-            if (left[0] or center[0] or right[0]) and \
-                    (self.mode != CS249AgentModes.OBSTACLE_AVOID and
-                     self.mode != CS249AgentModes.OBSTACLE_BYPASS and
-                     self.mode != CS249AgentModes.OBSTACLE_RECOVER):
-                self.mode = CS249AgentModes.OBSTACLE_AVOID
-                self.obstacle_is_at = ObstacleEnum.LEFT if left[0] else ObstacleEnum.RIGHT
-                self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
-            elif self.mode == CS249AgentModes.OBSTACLE_AVOID or self.mode == CS249AgentModes.OBSTACLE_RECOVER \
-                    or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
-                if self.mode == CS249AgentModes.OBSTACLE_AVOID:
-                    return self.avoid_obstacle(left, center, right)
-                elif self.mode == CS249AgentModes.OBSTACLE_BYPASS:
-                    return self.bypass_obstacle()
-                elif self.mode == CS249AgentModes.OBSTACLE_RECOVER:
-                    return self.recover_obstacle()
-                else:
-                    return VehicleControl(brake=True)
         # if no obstacle detected
         if self.is_lead_car:
             return self.lead_car_step()
@@ -393,8 +368,10 @@ class CS249Agent(Agent):
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             left, center, right = self.find_obstacles_via_depth_to_pcd(debug=True)
             if left[0] or center[0] or right[0]:
-                self.logger.info(f"Braking due to obstacle: left: {left} | center: {center} | right: {right}")
-                return VehicleControl(brake=True)
+                # self.logger.info(f"Braking due to obstacle: left: {left} | center: {center} | right: {right}")
+                # return VehicleControl(brake=True)
+                self.logger.info(f"Avoiding obstacle")
+                return self.act_on_obstacle(left, center, right)
             if self.is_light_found(rgb_data=self.front_rgb_camera.data.copy(), debug=False):
                 self.logger.info("Braking due to traffic light")
                 return VehicleControl(brake=True)
@@ -413,14 +390,47 @@ class CS249Agent(Agent):
     def follower_step(self):
         if self.time_counter % 10 == 0:
             self.udp_multicast.send_current_state()
+
         # location x, y, z; rotation roll, pitch, yaw; velocity x, y, z; acceleration x, y, z
         if self.udp_multicast.msg_log.get(self.car_to_follow, None) is not None:
             control = self.controller.run_in_series(next_waypoint=Transform.from_array(
                 self.udp_multicast.msg_log[self.car_to_follow]))
+
+            left, center, right = self.find_obstacles_via_depth_to_pcd()
+            if (left[0] or center[0] or right[0]) and \
+                    Transform.from_array(self.udp_multicast.msg_log[self.car_to_follow]).location.distance(self.vehicle.transform.location) > self.controller.distance_to_keep:
+                # if obstacle is detected and the obstacle is not the following vehicle, execute avoid sequence
+                control = self.act_on_obstacle(left, center, right)
+                return control
             return control
         else:
             # self.logger.info("No other cars found")
             return VehicleControl(throttle=0, steering=0)
+
+    def act_on_obstacle(self, left, center, right):
+        # if obstacle is detected, deal with obstacle first
+        if left[0] and center[0] and right[0]:
+            self.logger.info("Can't find feasible path around obstacle")
+            return VehicleControl(brake=True)
+
+        # if there is a way to avoid it or i am already avoiding it
+        if (left[0] or center[0] or right[0]) and \
+                (self.mode != CS249AgentModes.OBSTACLE_AVOID and
+                 self.mode != CS249AgentModes.OBSTACLE_BYPASS and
+                 self.mode != CS249AgentModes.OBSTACLE_RECOVER):
+            self.mode = CS249AgentModes.OBSTACLE_AVOID
+            self.obstacle_is_at = ObstacleEnum.LEFT if left[0] else ObstacleEnum.RIGHT
+            self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
+        elif self.mode == CS249AgentModes.OBSTACLE_AVOID or self.mode == CS249AgentModes.OBSTACLE_RECOVER \
+                or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
+            if self.mode == CS249AgentModes.OBSTACLE_AVOID:
+                return self.avoid_obstacle(left, center, right)
+            elif self.mode == CS249AgentModes.OBSTACLE_BYPASS:
+                return self.bypass_obstacle()
+            elif self.mode == CS249AgentModes.OBSTACLE_RECOVER:
+                return self.recover_obstacle()
+            else:
+                return VehicleControl(brake=True)
 
     def is_light_found(self, rgb_data, low=(200, 200, 0), high=(255, 255, 100), n=500, debug=False) -> bool:
         """
