@@ -32,7 +32,7 @@ class ObstacleEnum(Enum):
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.is_lead_car = False
+        self.is_lead_car = True
         self.name = "car_0"
         self.car_to_follow = "car_1"
 
@@ -77,14 +77,14 @@ class CS249Agent(Agent):
         self.obstacle_is_at = None
 
         # obstacle avoidance hyperparameters
-        self.avoid_throttle = 0.16
+        self.avoid_throttle = 0.18
         self.avoid_left_steer = -1
         self.avoid_right_steer = 0.5
 
         self.obstacle_avoid_starting_coord: Optional[Location] = None
-        self.avoid_max_dist = 0.4
-        self.bypass_dist_dist = 0.6
-        self.recover_max_dist = 0.4
+        self.avoid_max_dist = 0.3
+        self.bypass_dist_dist = 0.5
+        self.recover_max_dist = 0.1
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
@@ -372,7 +372,8 @@ class CS249Agent(Agent):
 
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             left, center, right = self.find_obstacles_via_depth_to_pcd(debug=True)
-            if left[0] or center[0] or right[0]:
+            if left[0] or center[0] or right[0] or self.mode == CS249AgentModes.OBSTACLE_AVOID or \
+                    self.mode == CS249AgentModes.OBSTACLE_RECOVER or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
                 # self.logger.info(f"Braking due to obstacle: left: {left} | center: {center} | right: {right}")
                 # return VehicleControl(brake=True)
                 self.logger.info(f"Avoiding obstacle")
@@ -554,8 +555,8 @@ class CS249Agent(Agent):
         # mask_yellow = cv2.inRange(src=data, lowerb=(0, 130, 0), upperb=(250, 200, 110)) # TERRACE YELLOW
         mask_red = cv2.inRange(src=data, lowerb=(0, 180, 60), upperb=(250, 240, 140))  # CORY 337 RED
         mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))  # CORY 337 YELLOW
-        # mask = mask_yellow
-        mask = mask_red | mask_yellow
+        mask = mask_yellow
+        # mask = mask_red | mask_yellow
 
         # cv2.imshow("mask_red", mask_red)
         # cv2.imshow("mask_yellow", mask_yellow)
