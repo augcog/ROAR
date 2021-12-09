@@ -88,31 +88,33 @@ class CS249Agent(Agent):
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
         super().run_step(sensors_data=sensors_data, vehicle=vehicle)
-        # if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
-        #     left, center, right = self.find_obstacles_via_depth_to_pcd()
-        #     if left[0] and center[0] and right[0]:
-        #         # self.logger.info("Can't find feasible path around obstacle")
-        #         return VehicleControl(brake=True)
-        #
-        #     if (left[0] or center[0] or right[0]) and \
-        #             (self.mode != CS249AgentModes.OBSTACLE_AVOID and
-        #              self.mode != CS249AgentModes.OBSTACLE_BYPASS and
-        #              self.mode != CS249AgentModes.OBSTACLE_RECOVER):
-        #         self.mode = CS249AgentModes.OBSTACLE_AVOID
-        #         self.obstacle_is_at = ObstacleEnum.LEFT if left[0] else ObstacleEnum.RIGHT
-        #         self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
-        #     elif self.mode == CS249AgentModes.OBSTACLE_AVOID or self.mode == CS249AgentModes.OBSTACLE_RECOVER \
-        #             or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
-        #         if self.mode == CS249AgentModes.OBSTACLE_AVOID:
-        #             return self.avoid_obstacle(left, center, right)
-        #         elif self.mode == CS249AgentModes.OBSTACLE_BYPASS:
-        #             return self.bypass_obstacle()
-        #         elif self.mode == CS249AgentModes.OBSTACLE_RECOVER:
-        #             return self.recover_obstacle()
-        #         else:
-        #             return VehicleControl(brake=True)
-        # return VehicleControl(brake=True)
 
+        # if obstacle is detected, deal with obstacle first
+        if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
+            left, center, right = self.find_obstacles_via_depth_to_pcd()
+            if left[0] and center[0] and right[0]:
+                # self.logger.info("Can't find feasible path around obstacle")
+                return VehicleControl(brake=True)
+
+            # if there is a way to avoid it or i am already avoiding it
+            if (left[0] or center[0] or right[0]) and \
+                    (self.mode != CS249AgentModes.OBSTACLE_AVOID and
+                     self.mode != CS249AgentModes.OBSTACLE_BYPASS and
+                     self.mode != CS249AgentModes.OBSTACLE_RECOVER):
+                self.mode = CS249AgentModes.OBSTACLE_AVOID
+                self.obstacle_is_at = ObstacleEnum.LEFT if left[0] else ObstacleEnum.RIGHT
+                self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
+            elif self.mode == CS249AgentModes.OBSTACLE_AVOID or self.mode == CS249AgentModes.OBSTACLE_RECOVER \
+                    or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
+                if self.mode == CS249AgentModes.OBSTACLE_AVOID:
+                    return self.avoid_obstacle(left, center, right)
+                elif self.mode == CS249AgentModes.OBSTACLE_BYPASS:
+                    return self.bypass_obstacle()
+                elif self.mode == CS249AgentModes.OBSTACLE_RECOVER:
+                    return self.recover_obstacle()
+                else:
+                    return VehicleControl(brake=True)
+        # if no obstacle detected
         if self.is_lead_car:
             return self.lead_car_step()
         else:
@@ -167,14 +169,12 @@ class CS249Agent(Agent):
 
             else:
                 self.logger.info("Recovering --> DONE! Shifting to normal state")
-                # self.mode = CS249AgentModes.NORMAL
-                # self.obstacle_is_at = None
-                # self.obstacle_avoid_starting_coord = None
+                self.mode = CS249AgentModes.NORMAL
+                self.obstacle_is_at = None
+                self.obstacle_avoid_starting_coord = None
         else:
             self.logger.error("No obstacle to recover from")
         return VehicleControl(brake=True)
-
-
 
     def find_obstacles_via_depth_to_pcd(self, debug=False):
         pcd: o3d.geometry.PointCloud = self.depth2pointcloud.run_in_series(self.front_depth_camera.data,
@@ -215,14 +215,14 @@ class CS249Agent(Agent):
         backtorgb = cv2.cvtColor(occu_map, cv2.COLOR_GRAY2RGB)
 
         height, width, channel = backtorgb.shape
-        left_rec_start = (40 * width // 100, 35 * height // 100)
-        left_rec_end = (80 * width // 100, 40 * height // 100)
+        left_rec_start = (30 * width // 100, 40 * height // 100)
+        left_rec_end = (50 * width // 100, 45 * height // 100)
 
-        mid_rec_start = (40 * width // 100, 48 * height // 100)
-        mid_rec_end = (80 * width // 100, 52 * height // 100)
+        mid_rec_start = (30 * width // 100, 48 * height // 100)
+        mid_rec_end = (50 * width // 100, 52 * height // 100)
 
-        right_rec_start = (40 * width // 100, 60 * height // 100)
-        right_rec_end = (80 * width // 100, 65 * height // 100)
+        right_rec_start = (30 * width // 100, 55 * height // 100)
+        right_rec_end = (50 * width // 100, 60 * height // 100)
         right = self.is_occupied(m=occu_map, start=right_rec_start, end=right_rec_end, threshold=left_occ_thresh)
         center = self.is_occupied(m=occu_map, start=mid_rec_start, end=mid_rec_end, threshold=center_occ_thresh)
         left = self.is_occupied(m=occu_map, start=left_rec_start, end=left_rec_end, threshold=right_occ_thresh)
@@ -387,13 +387,13 @@ class CS249Agent(Agent):
         self.vis.update_renderer()
 
     def lead_car_step(self):
-        # if self.time_counter % 10 == 0:
-        #     self.udp_multicast.send_current_state()
+        if self.time_counter % 10 == 0:
+            self.udp_multicast.send_current_state()
 
         if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
             left, center, right = self.find_obstacles_via_depth_to_pcd(debug=True)
             if left[0] or center[0] or right[0]:
-                self.logger.info("Braking due to obstacle")
+                self.logger.info(f"Braking due to obstacle: left: {left} | center: {center} | right: {right}")
                 return VehicleControl(brake=True)
             if self.is_light_found(rgb_data=self.front_rgb_camera.data.copy(), debug=False):
                 self.logger.info("Braking due to traffic light")
@@ -531,7 +531,7 @@ class CS249Agent(Agent):
     def find_error_at(self, data, y_offset, error_scaling) -> Optional[float]:
         y = data.shape[0] - y_offset
         lane_x = []
-        cv2.imshow("data", data)
+        # cv2.imshow("data", data)
         # mask_red = cv2.inRange(src=data, lowerb=(0, 150, 60), upperb=(250, 240, 140))  # TERRACE RED
         # mask_yellow = cv2.inRange(src=data, lowerb=(0, 130, 0), upperb=(250, 200, 110)) # TERRACE YELLOW
         mask_red = cv2.inRange(src=data, lowerb=(0, 180, 60), upperb=(250, 240, 140))  # CORY 337 RED
@@ -544,7 +544,7 @@ class CS249Agent(Agent):
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
-        cv2.imshow("mask", mask)
+        # cv2.imshow("mask", mask)
 
         for x in range(0, data.shape[1], 5):
             if mask[y][x] > 0:
