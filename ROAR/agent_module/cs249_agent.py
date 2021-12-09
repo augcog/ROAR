@@ -32,9 +32,9 @@ class ObstacleEnum(Enum):
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.is_lead_car = False
-        self.name = "car_2"
-        self.car_to_follow = "car_1"
+        self.is_lead_car = True
+        self.name = "car_1"
+        self.car_to_follow = "car_0"
 
         self.udp_multicast = UDPMulticastCommunicator(agent=self,
                                                       mcast_group="224.1.1.1",
@@ -77,13 +77,13 @@ class CS249Agent(Agent):
         self.obstacle_is_at = None
 
         # obstacle avoidance hyperparameters
-        self.avoid_throttle = 0.2
+        self.avoid_throttle = 0.16
         self.avoid_left_steer = -1
         self.avoid_right_steer = 0.5
 
         self.obstacle_avoid_starting_coord: Optional[Location] = None
-        self.avoid_max_dist = 0.25
-        self.bypass_dist_dist = 0.8
+        self.avoid_max_dist = 0.4
+        self.bypass_dist_dist = 0.6
         self.recover_max_dist = 0.4
 
     def run_step(self, sensors_data: SensorsData, vehicle: Vehicle) -> VehicleControl:
@@ -95,7 +95,7 @@ class CS249Agent(Agent):
         else:
             return self.follower_step()
 
-    def avoid_obstacle(self, left, center, right):
+    def avoid_obstacle(self):
         if self.obstacle_is_at is not None:
             curr_coord = self.vehicle.transform.location.copy()
             if curr_coord.distance(self.obstacle_avoid_starting_coord) < self.avoid_max_dist:
@@ -109,6 +109,7 @@ class CS249Agent(Agent):
                 self.logger.info("Avoiding obstacle --> DONE! shifting to obstacle bypass")
                 self.mode = CS249AgentModes.OBSTACLE_BYPASS
                 self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
+                return VehicleControl()
         else:
             self.logger.error("No obstacle to avoid")
         return VehicleControl(brake=True)
@@ -127,6 +128,8 @@ class CS249Agent(Agent):
                 self.logger.info("BYPASSING --> DONE! Shifting to recover mode")
                 self.mode = CS249AgentModes.OBSTACLE_RECOVER
                 self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
+                return VehicleControl()
+
         else:
             self.logger.error("No obstacle to bypass")
         return VehicleControl(brake=True)
@@ -147,6 +150,8 @@ class CS249Agent(Agent):
                 self.mode = CS249AgentModes.NORMAL
                 self.obstacle_is_at = None
                 self.obstacle_avoid_starting_coord = None
+                return VehicleControl()
+
         else:
             self.logger.error("No obstacle to recover from")
         return VehicleControl(brake=True)
@@ -421,16 +426,18 @@ class CS249Agent(Agent):
             self.mode = CS249AgentModes.OBSTACLE_AVOID
             self.obstacle_is_at = ObstacleEnum.LEFT if left[0] else ObstacleEnum.RIGHT
             self.obstacle_avoid_starting_coord = self.vehicle.transform.location.copy()
+            return VehicleControl()
         elif self.mode == CS249AgentModes.OBSTACLE_AVOID or self.mode == CS249AgentModes.OBSTACLE_RECOVER \
                 or self.mode == CS249AgentModes.OBSTACLE_BYPASS:
             if self.mode == CS249AgentModes.OBSTACLE_AVOID:
-                return self.avoid_obstacle(left, center, right)
+                return self.avoid_obstacle()
             elif self.mode == CS249AgentModes.OBSTACLE_BYPASS:
                 return self.bypass_obstacle()
             elif self.mode == CS249AgentModes.OBSTACLE_RECOVER:
                 return self.recover_obstacle()
             else:
                 return VehicleControl(brake=True)
+        return VehicleControl()
 
     def is_light_found(self, rgb_data, low=(200, 200, 0), high=(255, 255, 100), n=500, debug=False) -> bool:
         """
