@@ -32,9 +32,9 @@ class ObstacleEnum(Enum):
 class CS249Agent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle, agent_settings, **kwargs)
-        self.is_lead_car = True
-        self.name = "car_1"
-        self.car_to_follow = "car_0"
+        self.is_lead_car = False
+        self.name = "car_0"
+        self.car_to_follow = "car_1"
 
         self.udp_multicast = UDPMulticastCommunicator(agent=self,
                                                       mcast_group="224.1.1.1",
@@ -401,12 +401,13 @@ class CS249Agent(Agent):
             control = self.controller.run_in_series(next_waypoint=Transform.from_array(
                 self.udp_multicast.msg_log[self.car_to_follow]))
 
-            left, center, right = self.find_obstacles_via_depth_to_pcd()
-            if (left[0] or center[0] or right[0]) and \
-                    Transform.from_array(self.udp_multicast.msg_log[self.car_to_follow]).location.distance(self.vehicle.transform.location) > self.controller.distance_to_keep:
-                # if obstacle is detected and the obstacle is not the following vehicle, execute avoid sequence
-                control = self.act_on_obstacle(left, center, right)
-                return control
+            if self.front_depth_camera.data is not None and self.front_rgb_camera.data is not None:
+                left, center, right = self.find_obstacles_via_depth_to_pcd()
+                obstacle_detected = left[0] or center[0] or right[0]
+                if obstacle_detected and Transform.from_array(self.udp_multicast.msg_log[self.car_to_follow]).location.distance(self.vehicle.transform.location) > self.controller.distance_to_keep:
+                    # if obstacle is detected and the obstacle is not the following vehicle, execute avoid sequence
+                    control = self.act_on_obstacle(left, center, right)
+                    return control
             return control
         else:
             # self.logger.info("No other cars found")

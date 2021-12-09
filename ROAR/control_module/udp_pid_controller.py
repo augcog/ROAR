@@ -21,7 +21,7 @@ class UDP_PID_CONTROLLER(Controller):
         self._dt = 0.03
 
         self.distance_to_keep = distance_to_keep
-        self.max_throttle = 0.14
+        self.max_throttle = 0.18
         self.lon_kp = 0.17  # this is how much you want to steer
         self.lon_kd = 0.1  # this is how much you want to resist change
         self.lon_ki = 0.05  # this is the correction on past error
