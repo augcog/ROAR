@@ -77,17 +77,21 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 5
-    total_score = 0
-    num_laps = 2
+    num_trials = 10
+    total_score_array = []
+    num_laps = 1
     table = PrettyTable()
     table.field_names = ["time_elapsed (sec)", "num_collisions", "laps completed"]
+
     for i in range(num_trials):
+        print(f"runner_competition_evaluator -> Trial: {i}")
         scores = run(agent_class=agent_class,
                      agent_config_file_path=Path("./ROAR/configurations/carla/carla_agent_configuration.json"),
                      carla_config_file_path=Path("./ROAR_Sim/configurations/configuration.json"),
                      num_laps=num_laps)
+        total_score_array.append(scores[0])
         table.add_row(scores)
+    table.add_row((f"AVG for {num_trials} trials = {np.average(total_score_array)}", "N/A", "N/A"))
     print(table)
 
 
