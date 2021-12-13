@@ -50,11 +50,11 @@ class CS249Agent(Agent):
         self.prev_steerings: deque = deque(maxlen=10)
 
         # point cloud visualization
-        # self.vis = o3d.visualization.Visualizer()
-        # self.vis.create_window(width=500, height=500)
-        # self.pcd = o3d.geometry.PointCloud()
-        # self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame()
-        # self.points_added = False
+        self.vis = o3d.visualization.Visualizer()
+        self.vis.create_window(width=500, height=500)
+        self.pcd = o3d.geometry.PointCloud()
+        self.coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame()
+        self.points_added = False
 
         # pointcloud and ground plane detection
         self.depth2pointcloud = DepthToPointCloudDetector(agent=self)
@@ -159,6 +159,10 @@ class CS249Agent(Agent):
     def find_obstacles_via_depth_to_pcd(self, debug=False):
         pcd: o3d.geometry.PointCloud = self.depth2pointcloud.run_in_series(self.front_depth_camera.data,
                                                                            self.front_rgb_camera.data)
+        if debug:
+            self.non_blocking_pcd_visualization(pcd=pcd,
+                                                axis_size=1,
+                                                should_show_axis=False)
         pcd = self.filter_ground(pcd=pcd,
                                  max_dist=self.max_dist,
                                  height_threshold=self.height_threshold,
@@ -166,9 +170,6 @@ class CS249Agent(Agent):
                                  ransac_n=self.ransac_n,
                                  ransac_itr=self.ransac_itr)
 
-        # self.non_blocking_pcd_visualization(pcd=pcd,
-        #                                     axis_size=1,
-        #                                     should_show_axis=True)
         occu_map = self.occu_map_from_pcd(pcd=pcd, scaling_factor=self.scaling_factor,
                                           cx=self.cx, cz=self.cz)
         left, center, right = self.find_obstacle_l_c_r(occu_map=occu_map, debug=debug)
@@ -222,7 +223,7 @@ class CS249Agent(Agent):
                                       right_rec_end,
                                       (255, 0, 0), 1)
 
-            cv2.imshow("show", backtorgb)
+            cv2.imshow("Occupancy Map", backtorgb)
             cv2.waitKey(1)
 
         return left, center, right
@@ -378,7 +379,7 @@ class CS249Agent(Agent):
                 # return VehicleControl(brake=True)
                 self.logger.info(f"Avoiding obstacle")
                 return self.act_on_obstacle(left, center, right)
-            if self.is_light_found(rgb_data=self.front_rgb_camera.data.copy(), debug=False):
+            if self.is_light_found(rgb_data=self.front_rgb_camera.data.copy(), debug=True):
                 self.logger.info("Braking due to traffic light")
                 return VehicleControl(brake=True)
             error = self.find_error()
@@ -457,7 +458,6 @@ class CS249Agent(Agent):
         mask = cv2.inRange(rgb_data, low, high)
         if debug:
             cv2.imshow("traffic light", mask)
-            print(sum(mask > 0))
         if (mask > 0).sum() > n:
             return True
         return False
@@ -555,15 +555,15 @@ class CS249Agent(Agent):
         # mask_yellow = cv2.inRange(src=data, lowerb=(0, 130, 0), upperb=(250, 200, 110)) # TERRACE YELLOW
         mask_red = cv2.inRange(src=data, lowerb=(0, 180, 60), upperb=(250, 240, 140))  # CORY 337 RED
         mask_yellow = cv2.inRange(src=data, lowerb=(0, 140, 0), upperb=(250, 200, 80))  # CORY 337 YELLOW
-        mask = mask_yellow
-        # mask = mask_red | mask_yellow
+        # mask = mask_yellow
+        mask = mask_red | mask_yellow
 
-        # cv2.imshow("mask_red", mask_red)
-        # cv2.imshow("mask_yellow", mask_yellow)
+        # cv2.imshow("Lane Mask (Red)", mask_red)
+        # cv2.imshow("Lane Mask (Yellow)", mask_yellow)
         kernel = np.ones((5, 5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=1)
         mask = cv2.dilate(mask, kernel, iterations=1)
-        # cv2.imshow("mask", mask)
+        cv2.imshow("Lane Mask (Yellow + Red)", mask)
 
         for x in range(0, data.shape[1], 5):
             if mask[y][x] > 0:
