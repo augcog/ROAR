@@ -24,7 +24,7 @@ class PointcloudRecordingAgent(Agent):
         super().__init__(vehicle, agent_settings, **kwargs)
         self.prev_steerings: deque = deque(maxlen=10)
         self.agent_settings.pid_config_file_path = (Path(self.agent_settings.pid_config_file_path).parent /
-                                                    "iOS_image_pid_config.json").as_posix()
+                                                    "iOS_pid_config.json").as_posix()
         self.controller = ImageBasedPIDController(agent=self)
 
         # START LOC
