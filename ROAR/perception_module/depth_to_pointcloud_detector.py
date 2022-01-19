@@ -46,43 +46,60 @@ class DepthToPointCloudDetector(Detector):
         intric = self.agent.front_depth_camera.intrinsics_matrix
         intrinsic = o3d.camera.PinholeCameraIntrinsic(width=rgb_data.shape[0],
                                                       height=rgb_data.shape[1],
-                                                      fx=intric[0][0],  # added this hack to flip it
+                                                      fx=-intric[0][0],  # added this hack to flip it
                                                       fy=-intric[1][1],  # added this hack to flip it
                                                       cx=intric[0][2],
                                                       cy=intric[1][2])
-        # extrinsics = self.agent.vehicle.transform.get_matrix()
-        # rot = self.agent.vehicle.transform.rotation
-        # # rot.pitch, rot.yaw, rot.roll
-        # extrinsics[0:3, 0:3] = o3d.geometry.get_rotation_matrix_from_yzx(rotation=
-        #                                                                  np.deg2rad([rot.pitch, rot.yaw, rot.roll]))
+        extrinsics = np.eye(4)
+        rot = self.agent.vehicle.transform.rotation
+        # rot.pitch, rot.yaw, rot.roll
+        rotation_matrix = o3d.geometry.get_rotation_matrix_from_xyz(rotation=np.deg2rad([
+            90 + rot.pitch,
+            180 + rot.yaw,
+            -rot.roll
+        ]))
+        extrinsics[:3, :3] = rotation_matrix
+
         pcd: o3d.geometry.PointCloud = o3d.geometry.PointCloud. \
             create_from_rgbd_image(image=rgbd,
-                                   intrinsic=intrinsic)
+                                   intrinsic=intrinsic,
+                                   extrinsic=extrinsics)
         if self.settings.should_down_sample:
             pcd = pcd.voxel_down_sample(self.settings.voxel_down_sample_size)
+        pcd.translate(self.agent.vehicle.transform.location.to_array())
         return pcd
 
     def old_way(self, depth_img):
-
-        coords = np.where(depth_img < self.settings.depth_trunc)  # it will just return all coordinate pairs
-        Is = coords[0][::self.settings.depth_image_sample_step_size]
-        Js = coords[1][::self.settings.depth_image_sample_step_size]
-        raw_p2d = np.reshape(self._pix2xyz(depth_img=depth_img, i=Is, j=Js),
-                             (3, len(Is))).T  # N x 3
         intrinsic = self.agent.front_depth_camera.intrinsics_matrix
-        cords_xyz_1: np.ndarray = np.linalg.inv(intrinsic) @ raw_p2d.T
-        cords_xyz_1 = np.vstack((cords_xyz_1, np.ones((1, cords_xyz_1.shape[1]))))
-        points = self.agent.vehicle.transform.get_matrix() @ cords_xyz_1
-        points = points.T[:, :3]  # (l_r,f_b,up_down), forward and up vector is inverse
+        ax = intrinsic[0][0]
+        ay = intrinsic[1][1]
+        cx = intrinsic[1][2]  # cx and cy flipped because of the rotation
+        cy = intrinsic[0][2]
+        z = []
+        x_over_z = []
+        y_over_z = []
+        for v in range(len(depth_img)):
+            for u in range(len(depth_img[v])):
+                z.append(depth_img[v][u])
+                x_over_z.append((cx - u) / ax)
+                y_over_z.append((cy - v) / ay)
+        z = np.array(z)
+        x_over_z = np.array(x_over_z)
+        y_over_z = np.array(y_over_z)
+        x = x_over_z * z
+        y = y_over_z * z
+        points = np.array([x, y, z])
+        points = np.vstack((points, np.ones((1, points.shape[1]))))
+        extrinsic = self.agent.vehicle.transform.get_matrix()
+        points = extrinsic @ points
+        points = points.T[:, :3]
         points[:, 1:] = points[:, 1:] * -1
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(points)
-
         if self.settings.should_down_sample:
             pcd = pcd.voxel_down_sample(self.settings.voxel_down_sample_size)
         pcd.paint_uniform_color(color=[0, 0, 0])
         return pcd
-        # return points
 
     def save(self, **kwargs):
         pass
