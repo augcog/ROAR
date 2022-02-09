@@ -13,11 +13,15 @@ from pathlib import Path
 class RealWorldImageBasedPIDController(Controller):
     def __init__(self, agent, **kwargs):
         super().__init__(agent, **kwargs)
-        long_error_deque_length = 10
-        lat_error_deque_length = 10
-        self.lat_error_queue = deque(maxlen=lat_error_deque_length)  # this is how much error you want to accumulate
-        self.long_error_queue = deque(maxlen=long_error_deque_length)  # this is how much error you want to accumulate
-        self.target_speed = 10  # m / s
+        self.long_error_deque_length = 50
+        self.lat_error_deque_length = 10
+        self.lat_error_queue = deque(
+            maxlen=self.lat_error_deque_length)  # this is how much error you want to accumulate
+        self.long_error_queue = deque(
+            maxlen=self.long_error_deque_length)  # this is how much error you want to accumulate
+        self.target_speed = 7  # m / s
+        self.max_throttle = 0.15
+        self.curr_max_throttle = self.max_throttle
         self.config = json.load(Path(self.agent.agent_settings.pid_config_file_path).open('r'))
         self.long_config = self.config["longitudinal_controller"]
         self.lat_config = self.config["latitudinal_controller"]
@@ -35,7 +39,6 @@ class RealWorldImageBasedPIDController(Controller):
         k_p, k_d, k_i = self.find_k_values(self.agent.vehicle, self.lat_config)
         # print(f"Speed = {self.agent.vehicle.get_speed(self.agent.vehicle)}"
         #       f"kp, kd, ki = {k_p, k_d, k_i} ")
-
         e_p = k_p * error
         e_d = k_d * error_dt
         e_i = k_i * error_it
@@ -54,7 +57,8 @@ class RealWorldImageBasedPIDController(Controller):
         e = self.target_speed - self.agent.vehicle.get_speed(self.agent.vehicle)
         neutral = -90
         incline = self.agent.vehicle.transform.rotation.pitch - neutral
-        e = e * - 1 if incline < -10 else e
+
+        # e = e * - 1 if incline < -10 else e
         self.long_error_queue.append(e)
         de = 0 if len(self.long_error_queue) < 2 else self.long_error_queue[-2] - self.long_error_queue[-1]
         ie = 0 if len(self.long_error_queue) < 2 else np.sum(self.long_error_queue)
@@ -64,15 +68,19 @@ class RealWorldImageBasedPIDController(Controller):
         e_d = k_d * de
         e_i = k_i * ie
         e_incline = 0.015 * incline
+
         total_error = e_p + e_d + e_i + e_incline
-        long_control = np.clip(total_error, 0, 1)
-        # print(f"speed = {self.agent.vehicle.get_speed(self.agent.vehicle)} "
-        #       f"e = {round(total_error,3)}, "
-        #       f"e_p={round(e_p,3)},"
-        #       f"e_d={round(e_d,3)},"
-        #       f"e_i={round(e_i,3)},"
-        #       f"e_incline={round(e_incline, 3)}, "
-        #       f"long_control={long_control}")
+        # print(e_p, e_d, e_i, e_incline, total_error)
+
+        if sum(self.long_error_queue) >= self.target_speed * (self.long_error_deque_length - 1):
+            self.curr_max_throttle += 0.001
+        else:
+            self.curr_max_throttle = self.max_throttle
+
+        if incline > 10:
+            self.curr_max_throttle = max(self.curr_max_throttle, 0.26)
+
+        long_control = float(np.clip(total_error, -self.curr_max_throttle, self.curr_max_throttle))
         return long_control
 
     @staticmethod

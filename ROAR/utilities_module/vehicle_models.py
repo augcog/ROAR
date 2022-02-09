@@ -32,7 +32,10 @@ class VehicleControl(BaseModel):
         return np.array([self.throttle, self.steering])
 
     def record(self):
-        return f"{self.throttle},{self.steering}"
+        return f"{self.brake},{round(self.throttle, 3)},{round(self.steering, 3)}"
+
+    def __str__(self):
+        return f"Brake: {self.brake}, Throttle: {round(self.throttle, 3)}, Steering: {round(self.steering, 3)}"
 
     @staticmethod
     def fromBytes(data: bytes):
@@ -65,10 +68,11 @@ class Vehicle(BaseModel):
             :return: speed as a float in Km/h
         """
         vel = vehicle.velocity
-        return 3.6*math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
+        return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
-    def to_array(self):
-        return np.concatenate([self.transform.to_array(), self.velocity.to_array(), self.acceleration.to_array(), self.control.to_array()])
+    def to_array(self) -> np.ndarray:
+        return np.concatenate([self.transform.to_array(), self.velocity.to_array(), self.acceleration.to_array(),
+                               self.control.to_array()])
 
     def __repr__(self):
         return f"Location: {self.transform.location.__str__()} | Rotation: {self.transform.rotation.__str__()} | " \

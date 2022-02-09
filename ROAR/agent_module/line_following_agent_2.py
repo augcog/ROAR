@@ -89,7 +89,6 @@ class LineFollowingAgent(Agent):
                     # is flat or up slope, execute adjusted previous command
                     return self.execute_prev_command()
 
-
             # we only want to follow the furthest thing we see.
             error = 0
             if error_at_10 is not None:
@@ -97,7 +96,7 @@ class LineFollowingAgent(Agent):
             if error_at_50 is not None:
                 error = error_at_50
 
-            print(error_at_10, error_at_50, error)
+            # print(error_at_10, error_at_50, error)
             self.kwargs["lat_error"] = error
             self.vehicle.control = self.controller.run_in_series()
             self.prev_steerings.append(self.vehicle.control.steering)
@@ -138,7 +137,7 @@ class LineFollowingAgent(Agent):
         # we want small error to be almost ignored, only big errors matter.
         for e, scale in error_scaling:
             if abs(error) <= e:
-                print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
+                # print(f"Error at {y_offset} -> {error, scale} -> {error * scale}")
                 error = error * scale
                 break
 
@@ -154,7 +153,7 @@ class LineFollowingAgent(Agent):
             self.vehicle.control.steering = 1
         # self.logger.info("Cannot see line, executing prev cmd")
         self.prev_steerings.append(self.vehicle.control.steering)
-        self.vehicle.control.throttle = 0.18
+        self.vehicle.control.throttle = self.vehicle.control.throttle
         self.logger.info(f"No Lane found, executing discounted prev command: {self.vehicle.control}")
         return self.vehicle.control
 
