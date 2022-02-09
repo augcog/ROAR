@@ -42,10 +42,10 @@ class Camera(BaseModel):
         intrinsics_matrix[0, 2] = self.image_size_x / 2.0
         intrinsics_matrix[1, 2] = self.image_size_y / 2.0
         intrinsics_matrix[0, 0] = self.image_size_x / (
-            2.0 * np.tan(self.fov * np.pi / 360.0)
+                2.0 * np.tan(self.fov * np.pi / 360.0)
         )
         intrinsics_matrix[1, 1] = self.image_size_y / (
-            2.0 * np.tan(self.fov * np.pi / 360.0)
+                2.0 * np.tan(self.fov * np.pi / 360.0)
         )
         self.intrinsics_matrix = intrinsics_matrix
         return intrinsics_matrix
@@ -65,3 +65,28 @@ class Camera(BaseModel):
         if self.data is not None:
             cv2.imshow(title, self.data.data)
             cv2.waitKey(duration)
+
+
+class LidarConfigModel(BaseModel):
+    channels: int = Field(32)
+    range: int = Field(100),
+    points_per_second: int = Field(56000),
+    rotation_frequency: float = Field(10),
+    upper_fov: float = Field(10),
+    lower_fov: float = Field(-30),
+    horizontal_fov: float = Field(360),
+    atmosphere_attenuation_rate: float = Field(0.004),
+    dropoff_general_rate: float = Field(0.45),
+    dropoff_intensity_limit: float = Field(0.8),
+    dropoff_zero_intensity: float = Field(0.4),
+    sensor_tick: float = Field(0),
+    noise_stddev: float = Field(0)
+
+    transform: Transform = Field(
+        default=Transform(
+            location=Location(x=1.6, y=0, z=1.7),
+            rotation=Rotation(pitch=0, yaw=0, roll=0),
+        )
+    )
+
+

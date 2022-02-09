@@ -1,6 +1,6 @@
 from pydantic import Field, BaseModel
 from pathlib import Path
-from ROAR.utilities_module.camera_models import Camera
+from ROAR.utilities_module.camera_models import Camera, LidarConfigModel
 from ROAR.utilities_module.data_structures_models import Transform, Location, Rotation
 import os
 
@@ -9,6 +9,7 @@ class Configuration(BaseModel):
     # ROAR sensors settings
     name: str = Field(default="hero", title="Name of the agent", description="Duplicate from Carla Setting. "
                                                                              "But good to have")
+    lidar_config: LidarConfigModel = Field(default=LidarConfigModel()),
     front_depth_cam: Camera = Field(default=Camera(fov=70,
                                                    transform=Transform(
                                                        location=Location(x=1.6,
@@ -75,8 +76,8 @@ class Configuration(BaseModel):
     target_speed: int = 80
     pid_config_file_path: str = Field(default="./ROAR_Sim/configurations/pid_config.json")
     pid_config: dict = Field(
-        default= {
-            60: {1,23,}
+        default={
+            60: {1, 23, }
         }
     )
     lqr_config_file_path: str = Field(default="./ROAR_Sim/configurations/lqr_config.json")

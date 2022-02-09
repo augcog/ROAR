@@ -1,4 +1,31 @@
 {
+  "lidar_config": {
+    "channels": 32,
+    "transform": {
+      "location": {
+        "x": 1,
+        "y": 1.8,
+        "z": 0
+      },
+      "rotation": {
+        "pitch": 0.0,
+        "yaw": 0.0,
+        "roll": 0.0
+      }
+    },
+    "range": 100,
+    "points_per_second": 56000,
+    "rotation_frequency": 10,
+    "upper_fov":10,
+    "lower_fov":-30,
+    "horizontal_fov":360,
+    "atmosphere_attenuation_rate":0.004,
+    "dropoff_general_rate":0.45,
+    "dropoff_intensity_limit": 0.8,
+    "dropoff_zero_intensity": 0.4,
+    "sensor_tick": 0,
+    "noise_stddev":0
+  },
   "front_depth_cam": {
     "fov": 70,
     "transform": {

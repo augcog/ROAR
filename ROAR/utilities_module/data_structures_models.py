@@ -35,7 +35,7 @@ class Location(BaseModel):
         return Location(x=self.x + other.x, y=self.y + other.y, z=self.z + other.z)
 
     def __str__(self):
-        return f"x: {round(self.x, 3)}, y: {round(self.y, 3)}, z: {round(self.z,3)}"
+        return f"x: {round(self.x, 3)}, y: {round(self.y, 3)}, z: {round(self.z, 3)}"
 
     def __truediv__(self, scalar):
         return Location(x=self.x / scalar, y=self.y / scalar, z=self.z / scalar)
@@ -195,11 +195,21 @@ class TrackingData(BaseModel):
     velocity: Vector3D = Field()
 
 
+class LidarData(BaseModel):
+    num_channel: int = Field(...)
+    horizontal_angle: float = Field(...)
+    raw_data: np.ndarray = Field(...)
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class SensorsData(BaseModel):
     front_rgb: Optional[RGBData] = Field(default=None)
     rear_rgb: Optional[RGBData] = Field(default=None)
     front_depth: Optional[DepthData] = Field(default=None)
     imu_data: Optional[IMUData] = Field(default=None)
+    lidar_data: Optional[LidarData] = Field(default=None)
     location: Optional[Location] = Field(default=None)
     rotation: Optional[Rotation] = Field(default=None)
     velocity: Optional[Vector3D] = Field(default=None)

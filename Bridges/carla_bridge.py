@@ -16,6 +16,7 @@ from ROAR.utilities_module.data_structures_models import (
     IMUData,
     Vector3D,
     Transform,
+    LidarData
 )
 
 from ROAR.utilities_module.utilities import png_to_depth
@@ -42,7 +43,7 @@ class CarlaBridge(Bridge):
         """Convert a CARLA raw rotation to Rotation(pitch=float,yaw=float,roll=float)."""
         roll, pitch, yaw = source.roll, source.pitch, source.yaw
         if yaw <= 90:
-            yaw = yaw+90
+            yaw = yaw + 90
         else:
             yaw = yaw - 270
         return Rotation(roll=roll, pitch=pitch, yaw=-yaw)
@@ -124,7 +125,25 @@ class CarlaBridge(Bridge):
             imu_data=self.convert_imu_from_source_to_agent(
                 source=source.get("imu", None)
             ),
+            lidar=self.convert_lidar_from_source_to_agent(
+                source=source.get("lidar", None)
+            )
         )
+
+    def convert_lidar_from_source_to_agent(self, source: carla.LidarMeasurement):
+        # Get the lidar data and convert it to a numpy array.
+        try:
+            p_cloud_size = len(source)
+            p_cloud = np.copy(np.frombuffer(source.raw_data, dtype=np.dtype('f4')))
+            p_cloud = np.reshape(p_cloud, (p_cloud_size, 4))
+            return LidarData(
+                num_channel=source.channels,
+                horizontal_angle=source.horizontal_angle,
+                raw_data=p_cloud
+            )
+        except Exception as e:
+            self.logger.error(e)
+            return None
 
     def convert_vehicle_from_source_to_agent(self, source: carla.Vehicle) -> Vehicle:
         """Converts Velocity, Transform, and Control of carla.Vehicle"""
