@@ -52,6 +52,7 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
                                agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent,
                                competition_mode=True,
+                               start_bbox=[2530, 99, 4064, 2543, 120, 4076],
                                lap_count=num_laps)
     try:
         my_vehicle = carla_runner.set_carla_world()
@@ -77,7 +78,7 @@ def suppress_warnings():
 def main():
     suppress_warnings()
     agent_class = PIDAgent
-    num_trials = 10
+    num_trials = 1
     total_score_array = []
     num_laps = 1
     table = PrettyTable()
