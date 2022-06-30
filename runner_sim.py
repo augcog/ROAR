@@ -8,6 +8,7 @@ import argparse
 from misc.utils import str2bool
 from ROAR.agent_module.michael_pid_agent import PIDAgent
 from ROAR.agent_module.forward_only_agent import ForwardOnlyAgent
+from ROAR.agent_module.full_mpc_agent import MPCAgent
 
 
 def main(args):
