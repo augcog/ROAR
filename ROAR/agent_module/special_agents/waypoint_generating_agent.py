@@ -8,9 +8,12 @@ from pathlib import Path
 class WaypointGeneratigAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle=vehicle, agent_settings=agent_settings, **kwargs)
-        self.output_file_path: Path = self.output_folder_path / "easy_map_waypoints.txt"
-        if self.output_folder_path.exists() is False:
-            self.output_folder_path.mkdir(exist_ok=True, parents=True)
+        #path = Path("C://Users//roar//Desktop//ROAR_record//ROAR_record//data//output//wps")
+        path = Path("C://Users//roar//Desktop//ROAR_record_TL//ROAR_record//ROAR//configurations//evGrandPrixConfig")
+        self.output_file_path: Path = path / "evGrandPrix_waypoints.txt"
+        self.output_file_path = None
+        # if self.output_folder_path.exists() is False:
+        #     self.output_folder_path.mkdir(exist_ok=True, parents=True)
         self.output_file = self.output_file_path.open('w')
 
 
@@ -18,7 +21,8 @@ class WaypointGeneratigAgent(Agent):
                  vehicle: Vehicle) -> VehicleControl:
         super(WaypointGeneratigAgent, self).run_step(sensors_data=sensors_data,
                                                      vehicle=vehicle)
-        if self.time_counter > 1:
+        if self.time_counter > 1 and self.output_file_path != None:
             print(f"Writing to [{self.output_file_path}]: {self.vehicle.transform}")
-            self.output_file.write(self.vehicle.transform.record() + "\n")
+            self.output_file.write(self.vehicle.transform.loc_record() + "\n")
         return VehicleControl()
+
