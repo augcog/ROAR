@@ -1,6 +1,6 @@
 import carla
 from carla import ColorConverter as cc
-from ROAR_Sim.carla_client.util.sensors import IMUSensor
+from ROAR_Sim.carla_client.util.sensors import GnssSensor, IMUSensor
 from Bridges.bridge import Bridge
 from typing import Union
 from ROAR.utilities_module.vehicle_models import (
@@ -16,7 +16,8 @@ from ROAR.utilities_module.data_structures_models import (
     IMUData,
     Vector3D,
     Transform,
-    LidarData
+    LidarData, 
+    GnssData
 )
 
 from ROAR.utilities_module.utilities import png_to_depth
@@ -110,23 +111,33 @@ class CarlaBridge(Bridge):
             ),
         )
 
+    def convert_gnss_from_source_to_agent(self, source: GnssSensor) -> GnssData:
+        """ Convert CARLA carla GnssData to GnssData"""
+        return GnssData(
+            lat = source.lat, 
+            lon = source.lon
+        )
+
     def convert_sensor_data_from_source_to_agent(self, source: dict) -> SensorsData:
         """Returns CARLA Sensors Data from raw front RGB, rear RGB, front depth, and IMU Data."""
         return SensorsData(
-            front_rgb=self.convert_rgb_from_source_to_agent(
-                source=source.get("front_rgb", None)
+            front_rgb = self.convert_rgb_from_source_to_agent(
+                source = source.get("front_rgb", None)
             ),
-            rear_rgb=self.convert_rgb_from_source_to_agent(
-                source=source.get("rear_rgb", None)
+            rear_rgb = self.convert_rgb_from_source_to_agent(
+                source = source.get("rear_rgb", None)
             ),
-            front_depth=self.convert_depth_from_source_to_agent(
-                source=source.get("front_depth", None)
+            front_depth = self.convert_depth_from_source_to_agent(
+                source = source.get("front_depth", None)
             ),
-            imu_data=self.convert_imu_from_source_to_agent(
-                source=source.get("imu", None)
+            imu_data = self.convert_imu_from_source_to_agent(
+                source = source.get("imu", None)
             ),
-            lidar=self.convert_lidar_from_source_to_agent(
-                source=source.get("lidar", None)
+            lidar_data = self.convert_lidar_from_source_to_agent(
+                source = source.get("lidar", None)
+            ), 
+            gnss_data = self.convert_gnss_from_source_to_agent(
+                source = source.get("gnss", None)
             )
         )
 

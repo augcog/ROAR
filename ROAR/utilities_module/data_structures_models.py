@@ -203,6 +203,12 @@ class LidarData(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+class GnssData(BaseModel):
+    lat: float = Field(...)
+    lon: float = Field(...)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class SensorsData(BaseModel):
     front_rgb: Optional[RGBData] = Field(default=None)
@@ -210,10 +216,11 @@ class SensorsData(BaseModel):
     front_depth: Optional[DepthData] = Field(default=None)
     imu_data: Optional[IMUData] = Field(default=None)
     lidar_data: Optional[LidarData] = Field(default=None)
+    gnss_data: Optional[GnssData] = Field(default=None)
     location: Optional[Location] = Field(default=None)
     rotation: Optional[Rotation] = Field(default=None)
     velocity: Optional[Vector3D] = Field(default=None)
-
+ 
 
 class MapEntry(BaseModel):
     point_a: List[float]

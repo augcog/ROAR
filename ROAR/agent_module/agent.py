@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import logging
 from ROAR.utilities_module.vehicle_models import Vehicle
-from ROAR.utilities_module.data_structures_models import SensorsData, IMUData, Transform
+from ROAR.utilities_module.data_structures_models import SensorsData, IMUData, Transform, GnssData, LidarData
 from ROAR.utilities_module.vehicle_models import VehicleControl
 from typing import Optional, List
 from pathlib import Path
@@ -16,7 +16,7 @@ import threading
 from typing import Dict, Any
 from datetime import datetime
 import threading
-from ROAR.utilities_module.camera_models import Camera
+from ROAR.utilities_module.camera_models import Camera, LidarConfigModel
 
 
 class Agent(ABC):
@@ -27,8 +27,8 @@ class Agent(ABC):
 
     """
 
-    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, imu: Optional[IMUData] = None,
-                 should_init_default_cam=True, **kwargs):
+    def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, imu: Optional[IMUData] = None, 
+                 gnss: Optional[GnssData] = None, lidar: Optional[LidarData] = None, should_init_default_cam=True, **kwargs):
         """
         Initialize cameras, output_oct_10 folder, and logging utilities
 
@@ -44,6 +44,8 @@ class Agent(ABC):
         self.front_depth_camera: Optional[Camera] = agent_settings.front_depth_cam
         self.rear_rgb_camera = agent_settings.rear_rgb_cam
         self.imu = imu
+        self.gnss = gnss
+        self.lidar = lidar
         self.is_done = False
         self.output_folder_path = \
             Path(self.agent_settings.output_data_folder_path)
@@ -178,9 +180,16 @@ class Agent(ABC):
                 else None
             )
 
-        if self.imu is not None:
-            self.imu = sensors_data.imu_data
+        # if self.imu is not None:
+        #     self.imu = sensors_data.imu_data
+        
+        # if self.gnss is not None:
+        #     self.gnss = sensors_data.gnss_data
 
+        self.imu = sensors_data.imu_data
+        self.lidar = sensors_data.lidar_data
+        self.gnss  =sensors_data.gnss_data
+        
     def save_sensor_data_async(self) -> None:
         x = threading.Thread(target=self.save_sensor_data, args=())
         x.start()
