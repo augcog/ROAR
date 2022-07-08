@@ -14,8 +14,12 @@ from ROAR.agent_module.gnss_tester import GnessTester
 
 def main(args):
     """Starts game loop"""
-    agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/evGrandPrixConfig/agent_configuration.json"))
-    carla_config = CarlaConfig.parse_file(Path("./ROAR/configurations/evGrandPrixConfig/carla_configuration.json"))
+    #agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/evGrandPrixConfig/agent_configuration.json"))
+    #carla_config = CarlaConfig.parse_file(Path("./ROAR/configurations/evGrandPrixConfig/carla_configuration.json"))
+
+    agent_config = AgentConfig.parse_file(Path("./ROAR/configurations/carla/carla_agent_configuration.json"))
+    carla_config = CarlaConfig.parse_file(Path("./ROAR_Sim/configurations/configuration.json"))
+
 
     carla_runner = CarlaRunner(carla_settings=carla_config,
                                agent_settings=agent_config,
@@ -23,7 +27,7 @@ def main(args):
     try:
         my_vehicle = carla_runner.set_carla_world()
         # agent = WaypointGeneratigAgent(vehicle=my_vehicle,agent_settings=agent_config)
-        agent = GnessTester(vehicle=my_vehicle,agent_settings=agent_config)
+        agent = PIDAgent(vehicle=my_vehicle,agent_settings=agent_config)
         carla_runner.start_game_loop(agent=agent,
                                      use_manual_control=True)
 
