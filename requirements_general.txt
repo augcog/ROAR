@@ -1,0 +1,9 @@
+pydantic
+pygame
+numpy
+scipy
+opencv-python
+open3d
+Pillow
+prettytable
+matplotlib
