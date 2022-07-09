@@ -1,6 +1,6 @@
 from pydantic import Field, BaseModel
 from pathlib import Path
-from ROAR.utilities_module.camera_models import Camera, LidarConfigModel
+from ROAR.utilities_module.camera_models import Camera, GnssConfigModel, LidarConfigModel
 from ROAR.utilities_module.data_structures_models import Transform, Location, Rotation
 import os
 
@@ -10,6 +10,7 @@ class Configuration(BaseModel):
     name: str = Field(default="hero", title="Name of the agent", description="Duplicate from Carla Setting. "
                                                                              "But good to have")
     lidar_config: LidarConfigModel = Field(default=LidarConfigModel()),
+    gnss_config: GnssConfigModel = Field(default = GnssConfigModel()),
     front_depth_cam: Camera = Field(default=Camera(fov=70,
                                                    transform=Transform(
                                                        location=Location(x=1.6,

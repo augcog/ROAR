@@ -7,6 +7,7 @@ from ROAR.utilities_module.data_structures_models import (
 )
 from typing import Optional
 import cv2
+import carla
 
 
 class Camera(BaseModel):
@@ -89,4 +90,20 @@ class LidarConfigModel(BaseModel):
         )
     )
 
+class GnssConfigModel(BaseModel):
+    noise_alt_bias: float = Field(0.0)
+    noise_alt_stddev: float = Field(0.0)
+    noise_lat_bias: float = Field(0.0)
+    noise_lat_stddev: float = Field(0.0)
+    noise_lon_bias: float = Field(0.0)
+    noise_lon_stddev: float = Field(0.0)
+    noise_seed: int = Field(0)
+    sensor_tick: float = Field(0.0)
+    x: float = Field(0.0), 
+    y: float = Field(0.0), 
+    z: float = Field(0.0), 
+    pitch: float = Field(0.0),
+    yaw: float = Field(0.0),
+    roll: float = Field(0.0)
+    
 

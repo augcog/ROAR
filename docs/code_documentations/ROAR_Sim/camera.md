@@ -1,1 +1,0 @@
-::: ROAR_Sim.carla_client.util.camera_manager

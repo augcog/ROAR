@@ -14,7 +14,8 @@ class GnessTester(Agent):
                  vehicle: Vehicle) -> VehicleControl:
         super(GnessTester, self).run_step(sensors_data=sensors_data,
                                                      vehicle=vehicle)
-        print(f"GNSS from agent: {self.gnss}")
+        if self.gnss != None:
+            print("GNSS:% 24s"% ("(% 2.3f, % 3.3f)" % (self.gnss.lat, self.gnss.lon)))
 
         return VehicleControl()
 

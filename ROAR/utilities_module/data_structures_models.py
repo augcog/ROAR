@@ -112,6 +112,9 @@ class Transform(BaseModel):
 
     def record(self):
         return f"{self.location.x},{self.location.y},{self.location.z},{self.rotation.roll},{self.rotation.pitch},{self.rotation.yaw}"
+    
+    def loc_record(self):
+        return f"{self.location.x}, {self.location.y}, {self.location.z}" 
 
     def to_array(self) -> np.ndarray:
         return np.array([self.location.x, self.location.y, self.location.z, self.rotation.roll, self.rotation.pitch,

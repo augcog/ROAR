@@ -113,6 +113,7 @@ class CarlaBridge(Bridge):
 
     def convert_gnss_from_source_to_agent(self, source: GnssSensor) -> GnssData:
         """ Convert CARLA carla GnssData to GnssData"""
+        print(f"GNSS SENSOR: {source.sensor}")
         return GnssData(
             lat = source.lat, 
             lon = source.lon

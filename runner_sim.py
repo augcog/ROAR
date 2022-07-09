@@ -20,17 +20,17 @@ def main(args):
     carla_runner = CarlaRunner(carla_settings=carla_config,
                                agent_settings=agent_config,
                                npc_agent_class=PurePursuitAgent)
-    try:
-        my_vehicle = carla_runner.set_carla_world()
-        # agent = WaypointGeneratigAgent(vehicle=my_vehicle,agent_settings=agent_config)
-        agent = GnessTester(vehicle=my_vehicle,agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent,
-                                     use_manual_control=True)
+    # try:
+    my_vehicle = carla_runner.set_carla_world()
+    # agent = WaypointGeneratigAgent(vehicle=my_vehicle,agent_settings=agent_config)
+    agent = WaypointGeneratigAgent(vehicle=my_vehicle, agent_settings=agent_config)
+    carla_runner.start_game_loop(agent=agent,
+                                    use_manual_control=True)
 
-    except Exception as e:
-        logging.error(f"Something bad happened during initialization: {e}")
-        carla_runner.on_finish()
-        logging.error(f"{e}. Might be a good idea to restart Server")
+    # except Exception as e:
+    #     logging.error(f"Something bad happened during initialization: {e}")
+    #     carla_runner.on_finish()
+    #     logging.error(f"{e}. Might be a good idea to restart Server")
 
 
 if __name__ == "__main__":

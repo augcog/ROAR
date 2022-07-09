@@ -9,9 +9,10 @@ class WaypointGeneratigAgent(Agent):
     def __init__(self, vehicle: Vehicle, agent_settings: AgentConfig, **kwargs):
         super().__init__(vehicle=vehicle, agent_settings=agent_settings, **kwargs)
         #path = Path("C://Users//roar//Desktop//ROAR_record//ROAR_record//data//output//wps")
-        path = Path("C://Users//roar//Desktop//ROAR_record_TL//ROAR_record//ROAR//configurations//evGrandPrixConfig")
-        self.output_file_path: Path = path / "evGrandPrix_waypoints.txt"
-        self.output_file_path = None
+        #path = Path("C://Users//roar//Desktop//ROAR_record_TL//ROAR_record//ROAR//configurations//evGrandPrixConfig")
+        path = Path(".//ROAR//configurations//evGrandPrixConfig")
+        self.output_file_path: Path = path / "new_evGrandPrix_waypoints.txt"
+        #self.output_file_path = None
         # if self.output_folder_path.exists() is False:
         #     self.output_folder_path.mkdir(exist_ok=True, parents=True)
         self.output_file = self.output_file_path.open('w')
