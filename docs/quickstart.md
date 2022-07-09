@@ -5,6 +5,8 @@
     - [Berkeley Major Link](https://drive.google.com/file/d/14Gsemfq_nL8Ga1Nf8-5DVQYd4C4nRHM6/view)
     - [Berkeley Minor Link](https://drive.google.com/drive/folders/1ejKIOp8_vXaTroA7prcCDrfQet9WL-oD?usp=sharing)
     - [Easy map Link](https://drive.google.com/drive/folders/13JSejJED31cZHBbfIz_gyxxPmiqABOJj?usp=sharing)
+
+    {==For competition, please download Berkeley Major Map!==}
          
 1.  Fork the Repo
     - Please click the [Fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) button on the upper right corner. Note you would need to sign in to your GitHub account first, and your account will be referred to below as `YOURUSERNAME`.
@@ -32,10 +34,8 @@
     - run simulation script runner_sim.py:
         - `python runner_sim.py`
 
-
-
-
-**   To run on a physcial car (The jetson code is out of date and out of support, it is included here just for reference):    
+<br />
+**  To run on a physcial car {==(The jetson code is out of date and out of support, it is included here just for reference)==}:    
         
 - For actual vehicle wired to your computer
     - `cd ROAR_Jetson`
