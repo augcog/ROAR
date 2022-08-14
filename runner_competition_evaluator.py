@@ -59,7 +59,7 @@ def run(agent_class, agent_config_file_path: Path, carla_config_file_path: Path,
     try:
         my_vehicle = carla_runner.set_carla_world()
         agent = agent_class(vehicle=my_vehicle, agent_settings=agent_config)
-        carla_runner.start_game_loop(agent=agent, use_manual_control=True)
+        carla_runner.start_game_loop(agent=agent, use_manual_control=False)
         return compute_score(carla_runner)
     except Exception as e:
         print(f"something bad happened during initialization: {e}")
