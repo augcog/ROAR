@@ -23,7 +23,9 @@ def compute_score(carla_runner: CarlaRunner) -> Tuple[float, int, int]:
         laps_completed: Number of laps completed
 
     """
-    time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
+    # time_elapsed: float = carla_runner.end_simulation_time - carla_runner.start_simulation_time
+    # use simulation time, not real time
+    time_elapsed: float = carla_runner.end_sim_time - carla_runner.start_sim_time
     num_collision: int = carla_runner.agent_collision_counter
     laps_completed = 0 if carla_runner.completed_lap_count < 0 else carla_runner.completed_lap_count
 
