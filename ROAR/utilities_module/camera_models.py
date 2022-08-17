@@ -69,17 +69,17 @@ class Camera(BaseModel):
 
 class LidarConfigModel(BaseModel):
     channels: int = Field(32)
-    range: int = Field(100),
-    points_per_second: int = Field(56000),
-    rotation_frequency: float = Field(10),
-    upper_fov: float = Field(10),
-    lower_fov: float = Field(-30),
-    horizontal_fov: float = Field(360),
-    atmosphere_attenuation_rate: float = Field(0.004),
-    dropoff_general_rate: float = Field(0.45),
-    dropoff_intensity_limit: float = Field(0.8),
-    dropoff_zero_intensity: float = Field(0.4),
-    sensor_tick: float = Field(0),
+    range: int = Field(100)
+    points_per_second: int = Field(56000)
+    rotation_frequency: float = Field(10)
+    upper_fov: float = Field(10)
+    lower_fov: float = Field(-30)
+    horizontal_fov: float = Field(360)
+    atmosphere_attenuation_rate: float = Field(0.004)
+    dropoff_general_rate: float = Field(0.45)
+    dropoff_intensity_limit: float = Field(0.8)
+    dropoff_zero_intensity: float = Field(0.4)
+    sensor_tick: float = Field(0)
     noise_stddev: float = Field(0)
 
     transform: Transform = Field(
