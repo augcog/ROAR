@@ -8,7 +8,7 @@ import numpy as np
 class VehicleControl(BaseModel):
     throttle: float = Field(default=0)
     steering: float = Field(default=0)
-    brake: bool = Field(default=False)
+    brake: float = Field(default=0)
 
     @staticmethod
     def clamp(n, minn, maxn):
