@@ -181,11 +181,16 @@ class CarlaBridge(Bridge):
 
     def convert_location_from_agent_to_source(self, source: Location) -> carla.Location:
         """Convert Agent's Location to a Carla.Location."""
-        return carla.Location(x=source.x, y=-source.z, z=source.y)
+        return carla.Location(x=source.x, y=source.z, z=source.y)
 
     def convert_rotation_from_agent_to_source(self, source: Rotation) -> carla.Rotation:
         """Convert Agent's Rotation to a Carla.Rotation."""
-        return carla.Rotation(pitch=source.yaw, yaw=source.pitch, roll=source.roll)
+        roll, pitch, yaw = source.roll, source.pitch, -source.yaw
+        if yaw <= 0:
+            yaw = yaw + 270
+        else:
+            yaw = yaw - 90
+        return carla.Rotation(roll=roll, pitch=pitch, yaw=yaw)
 
     def convert_transform_from_agent_to_source(
             self, source: Transform
